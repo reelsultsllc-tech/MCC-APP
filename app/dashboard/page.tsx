@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import MccLogo from '@/components/MccLogo'
 import ScoreGauge from '@/components/ScoreGauge'
 import Toast from '@/components/Toast'
+import { ActivityCard, type Goal } from '@/components/ui/activity-card'
 import { disputes, scoreHistory, CLIENT } from '@/lib/data'
 import { daysAgo, formatDate } from '@/lib/utils'
 
@@ -101,10 +102,23 @@ function DisputeProgress({ stageIdx, result }: { stageIdx: number; result: strin
   )
 }
 
+const CASE_METRICS = [
+  { label: 'Disputas', value: '4', trend: 80 },
+  { label: 'Score',    value: '+77', trend: 70 },
+  { label: 'Docs',     value: '4',  trend: 60 },
+]
+
+const INITIAL_GOALS: Goal[] = [
+  { id: '1', title: 'Enviar segunda carta a TransUnion', isCompleted: true },
+  { id: '2', title: 'Subir estado de cuenta bancario', isCompleted: false },
+  { id: '3', title: 'Agendar revisión de score', isCompleted: false },
+]
+
 export default function DashboardPage() {
   const router = useRouter()
   const [activeNav, setActiveNav] = useState('resumen')
   const [toastMsg, setToastMsg] = useState('')
+  const [goals, setGoals] = useState<Goal[]>(INITIAL_GOALS)
 
   useEffect(() => {
     sessionStorage.setItem('mcc_disclosure_done', 'true')
@@ -398,19 +412,14 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* Motivational card */}
-              <div className="rounded-2xl overflow-hidden shadow-sm relative" style={{ background: 'linear-gradient(135deg, #3a0d14 0%, #7A1E2C 100%)', minHeight: '180px' }}>
-                <div className="p-5 relative z-10">
-                  <p className="font-lora text-lg font-medium text-white mb-2 leading-tight">Estamos contigo<br/>en cada paso.</p>
-                  <p className="text-xs text-white/70 leading-snug mb-4">¿Tienes preguntas sobre tu progreso? Tu equipo de especialistas está listo para ayudarte.</p>
-                  <button onClick={() => flash('Chat próximamente')} className="px-4 py-2 rounded-lg bg-white text-[#7A1E2C] text-xs font-bold hover:bg-white/90 transition-colors">
-                    Chatear con soporte
-                  </button>
-                  <p className="text-xs text-white/50 mt-2">Respuesta en minutos</p>
-                </div>
-                {/* Coffee cup decoration */}
-                <div className="absolute right-3 bottom-3 opacity-20 text-7xl select-none">☕</div>
-              </div>
+              {/* Progress card */}
+              <ActivityCard
+                metrics={CASE_METRICS}
+                dailyGoals={goals}
+                onToggleGoal={(id) => setGoals(prev => prev.map(g => g.id === id ? { ...g, isCompleted: !g.isCompleted } : g))}
+                onAddGoal={() => flash('Agregar tarea próximamente')}
+                onViewDetails={() => flash('Progreso completo próximamente')}
+              />
             </div>
           </div>
         </main>
