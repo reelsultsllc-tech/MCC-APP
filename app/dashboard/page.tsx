@@ -6,6 +6,7 @@ import MccLogo from '@/components/MccLogo'
 import ScoreGauge from '@/components/ScoreGauge'
 import Toast from '@/components/Toast'
 import { ActivityCard, type Goal } from '@/components/ui/activity-card'
+import { FinancialScoreCards } from '@/components/ui/financial-score-cards'
 import { disputes, scoreHistory, CLIENT } from '@/lib/data'
 import { daysAgo, formatDate } from '@/lib/utils'
 
@@ -421,6 +422,15 @@ export default function DashboardPage() {
                 onViewDetails={() => flash('Progreso completo próximamente')}
               />
             </div>
+          </div>
+
+          {/* ── FINANCIAL SCORE CARDS ── */}
+          <div className="mt-5">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm font-semibold text-[#241014]">Tus scores financieros</p>
+              <span className="text-xs text-[#9C9492]">Actualizado hoy</span>
+            </div>
+            <FinancialScoreCards />
           </div>
         </main>
       </div>
