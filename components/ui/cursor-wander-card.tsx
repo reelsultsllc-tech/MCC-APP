@@ -84,15 +84,21 @@ const CursorWanderCard: React.FC<CursorWanderCardProps> = ({
     }
   }, [isHovered])
 
+  const w = typeof width === 'number' ? `${width}px` : width
+  const h = typeof height === 'number' ? `${height}px` : height
+
   return (
-    <div className={`${className}`} style={{ perspective: "2000px" }}>
+    <div
+      className={className}
+      style={{ perspective: "2000px", width: w, height: h, position: 'relative' }}
+    >
       <div
         ref={cardRef}
         style={{
+          position: 'absolute',
+          inset: 0,
           transition: isHovered ? "transform 0.1s ease-out" : "transform 0.05s linear",
           transformStyle: "preserve-3d",
-          width,
-          height,
         }}
       >
         {/* Card face */}

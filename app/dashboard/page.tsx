@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
+import { CheckCircle2 } from 'lucide-react'
 import MccLogo from '@/components/MccLogo'
 import ScoreGauge from '@/components/ScoreGauge'
 import Toast from '@/components/Toast'
 import { ActivityCard, type Goal } from '@/components/ui/activity-card'
 import { FinancialScoreCards } from '@/components/ui/financial-score-cards'
-import ProgressIndicator from '@/components/ui/progress-indicator'
 import CursorWanderCard from '@/components/ui/cursor-wander-card'
 import { disputes, scoreHistory, CLIENT } from '@/lib/data'
 import { daysAgo, formatDate } from '@/lib/utils'
@@ -261,35 +262,108 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* ── ONBOARDING STEPS + CARD ── */}
+          {/* ── PLAN ROADMAP + CREDIT CARD ── */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
-            {/* Progress steps widget */}
+            {/* LEFT: 4-step animated roadmap */}
             <div className="bg-white rounded-2xl border border-[#E7E2E1] shadow-sm p-6">
-              <p className="text-xs font-semibold text-[#9C9492] uppercase tracking-wide mb-1">Tu camino al crédito ideal</p>
-              <p className="text-sm font-semibold text-[#241014] mb-5">Completa los pasos de tu plan</p>
-              <ProgressIndicator
-                steps={3}
-                initialStep={2}
-                stepLabels={['Verificar identidad', 'Revisión de disputas', 'Score optimizado']}
-                continueLabel="Siguiente paso"
-                finishLabel="¡Listo!"
-                backLabel="Atrás"
-                onComplete={() => flash('¡Felicidades! Proceso completado.')}
-                className="items-start"
-              />
+              <p className="text-xs font-semibold text-[#9C9492] uppercase tracking-widest mb-1">Tu plan de reparación</p>
+              <p className="text-sm font-semibold text-[#241014] mb-8">4 pasos hacia un crédito excelente</p>
+              <div className="relative">
+                {/* Gray track */}
+                <div className="absolute h-0.5 bg-[#E7E2E1]" style={{ top: '15px', left: '35px', right: '35px' }} />
+                {/* Animated green fill — step 1 + 2 done, step 3 active → ~67% */}
+                <motion.div
+                  className="absolute h-0.5 bg-[#4F9A5C] origin-left"
+                  style={{ top: '15px', left: '35px', right: '35px' }}
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 0.67 }}
+                  transition={{ duration: 1.0, delay: 0.4, ease: 'easeOut' }}
+                />
+                <div className="flex justify-between">
+                  {([
+                    { label: 'Verificación', desc: 'Identidad verificada', status: 'done' },
+                    { label: 'Análisis', desc: 'Reporte revisado', status: 'done' },
+                    { label: 'Disputas', desc: '4 en proceso', status: 'active' },
+                    { label: 'Optimización', desc: 'Score 750+', status: 'pending' },
+                  ] as const).map((step, i) => (
+                    <motion.div
+                      key={i}
+                      className="flex flex-col items-center text-center w-[70px]"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.08 + i * 0.1, duration: 0.4, ease: 'easeOut' }}
+                    >
+                      <motion.div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center mb-2 border-2 ${
+                          step.status === 'done' ? 'bg-[#4F9A5C] border-[#4F9A5C]' :
+                          step.status === 'active' ? 'bg-[#7A1E2C] border-[#7A1E2C]' :
+                          'bg-white border-[#C4BEBC]'
+                        }`}
+                        initial={{ scale: 0.5 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.15 + i * 0.1, type: 'spring', stiffness: 500, damping: 18 }}
+                      >
+                        {step.status === 'done' && <CheckCircle2 size={13} className="text-white" />}
+                        {step.status === 'active' && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
+                        {step.status === 'pending' && <span className="text-[10px] font-bold text-[#C4BEBC]">{i + 1}</span>}
+                      </motion.div>
+                      <p className={`text-[10px] font-semibold leading-tight ${
+                        step.status === 'done' ? 'text-[#4F9A5C]' :
+                        step.status === 'active' ? 'text-[#241014]' : 'text-[#9C9492]'
+                      }`}>{step.label}</p>
+                      <p className="text-[9px] text-[#9C9492] mt-0.5 leading-tight">{step.desc}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+              <motion.div
+                className="mt-7 p-3.5 rounded-xl bg-[#F5E4E6] flex items-start gap-2.5"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7, duration: 0.4, ease: 'easeOut' }}
+              >
+                <span className="text-sm mt-0.5">⚡</span>
+                <div>
+                  <p className="text-xs font-semibold text-[#241014]">Estás en el Paso 3 de 4</p>
+                  <p className="text-xs text-[#57504E] leading-snug mt-0.5">Tus disputas están en proceso. Próxima acción: seguimiento a Capital One con Equifax.</p>
+                </div>
+              </motion.div>
             </div>
 
-            {/* Interactive credit card */}
+            {/* RIGHT: Credit card + features */}
             <div className="bg-white rounded-2xl border border-[#E7E2E1] shadow-sm p-6 flex flex-col">
-              <p className="text-xs font-semibold text-[#9C9492] uppercase tracking-wide mb-1">Tu tarjeta MCC</p>
-              <p className="text-sm font-semibold text-[#241014] mb-4">Muévela para explorar</p>
-              <div className="flex-1 flex items-center justify-center">
+              <p className="text-xs font-semibold text-[#9C9492] uppercase tracking-widest mb-5">Tu tarjeta MCC</p>
+              <div className="flex justify-center mb-5">
                 <CursorWanderCard
                   cardholderName={CLIENT.name.toUpperCase()}
-                  width="100%"
-                  height="200px"
+                  width={280}
+                  height={175}
                 />
               </div>
+              <div className="space-y-3 flex-1">
+                {[
+                  { icon: '🛡️', text: 'Protección de crédito 24/7 incluida' },
+                  { icon: '📊', text: 'Monitoreo de los 3 burós en tiempo real' },
+                  { icon: '⚡', text: 'Alertas instantáneas de cambios en tu historial' },
+                ].map((f, i) => (
+                  <motion.div
+                    key={i}
+                    className="flex items-center gap-2.5"
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + i * 0.1, duration: 0.4, ease: 'easeOut' }}
+                  >
+                    <span className="text-base">{f.icon}</span>
+                    <p className="text-xs text-[#57504E]">{f.text}</p>
+                  </motion.div>
+                ))}
+              </div>
+              <button
+                className="mt-4 text-xs font-semibold text-[#7A1E2C] hover:underline text-left"
+                onClick={() => flash('Beneficios próximamente')}
+              >
+                Ver todos los beneficios →
+              </button>
             </div>
           </div>
 
@@ -373,45 +447,6 @@ export default function DashboardPage() {
                 <button className="mt-4 text-xs font-semibold text-[#7A1E2C] hover:underline" onClick={() => flash('Actividad completa próximamente')}>Ver toda la actividad →</button>
               </div>
 
-              {/* Next step - Advisor card */}
-              <div className="bg-white rounded-2xl border border-[#E7E2E1] shadow-sm p-5">
-                <p className="text-xs font-semibold text-[#9C9492] uppercase tracking-wide mb-1">Sugerencia de tu asesora</p>
-                <p className="text-sm text-[#241014] leading-snug mb-3">
-                  Podemos dar seguimiento proactivo a tu disputa con Capital One para acelerar la respuesta de Equifax.
-                </p>
-                <div className="space-y-1.5 mb-4">
-                  {[
-                    'Aumenta las probabilidades de respuesta más rápida',
-                    'Demuestra seguimiento y perseverancia',
-                    'Te mantiene en movimiento hacia tu meta',
-                  ].map(b => (
-                    <div key={b} className="flex items-start gap-2">
-                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="mt-0.5 shrink-0"><circle cx="7" cy="7" r="6" fill="#E7EFDE"/><path d="M4 7l2 2 4-3" stroke="#3E6B2E" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                      <p className="text-xs text-[#57504E] leading-snug">{b}</p>
-                    </div>
-                  ))}
-                </div>
-                {/* Advisor */}
-                <div className="flex items-center gap-3 mb-4 pb-4 border-b border-[#F7F5F4]">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#B8862E] to-[#7A1E2C] flex items-center justify-center text-white font-bold text-sm shrink-0">AR</div>
-                  <div>
-                    <p className="text-xs text-[#9C9492]">Tu asesora</p>
-                    <p className="text-sm font-semibold text-[#241014]">Andrea Ruiz</p>
-                    <p className="text-xs text-[#9C9492]">Especialista en crédito</p>
-                    <div className="flex items-center gap-1 mt-0.5">
-                      <span className="text-[#B8862E] text-xs">★</span>
-                      <span className="text-xs font-medium text-[#241014]">4.9</span>
-                      <span className="text-xs text-[#9C9492]">(320 reseñas)</span>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => flash('Solicitud enviada. Andrea te contactará pronto.')}
-                  className="w-full py-2.5 rounded-xl bg-[#7A1E2C] text-white text-sm font-semibold hover:bg-[#5C1520] transition-colors"
-                >
-                  Solicitar seguimiento
-                </button>
-              </div>
             </div>
 
             {/* RIGHT: VAULT + MOTIVATIONAL */}
@@ -447,15 +482,58 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* Progress card */}
-              <ActivityCard
-                metrics={CASE_METRICS}
-                dailyGoals={goals}
-                onToggleGoal={(id) => setGoals(prev => prev.map(g => g.id === id ? { ...g, isCompleted: !g.isCompleted } : g))}
-                onAddGoal={() => flash('Agregar tarea próximamente')}
-                onViewDetails={() => flash('Progreso completo próximamente')}
-              />
             </div>
+          </div>
+
+          {/* ── ADVISOR + ACTIVITY CARD ── */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 mt-5">
+            {/* LEFT: Advisor suggestion */}
+            <div className="bg-white rounded-2xl border border-[#E7E2E1] shadow-sm p-5">
+              <p className="text-xs font-semibold text-[#9C9492] uppercase tracking-wide mb-1">Sugerencia de tu asesora</p>
+              <p className="text-sm text-[#241014] leading-snug mb-3">
+                Podemos dar seguimiento proactivo a tu disputa con Capital One para acelerar la respuesta de Equifax.
+              </p>
+              <div className="space-y-1.5 mb-4">
+                {[
+                  'Aumenta las probabilidades de respuesta más rápida',
+                  'Demuestra seguimiento y perseverancia',
+                  'Te mantiene en movimiento hacia tu meta',
+                ].map(b => (
+                  <div key={b} className="flex items-start gap-2">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="mt-0.5 shrink-0"><circle cx="7" cy="7" r="6" fill="#E7EFDE"/><path d="M4 7l2 2 4-3" stroke="#3E6B2E" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    <p className="text-xs text-[#57504E] leading-snug">{b}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="flex items-center gap-3 mb-4 pb-4 border-b border-[#F7F5F4]">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#B8862E] to-[#7A1E2C] flex items-center justify-center text-white font-bold text-sm shrink-0">AR</div>
+                <div>
+                  <p className="text-xs text-[#9C9492]">Tu asesora</p>
+                  <p className="text-sm font-semibold text-[#241014]">Andrea Ruiz</p>
+                  <p className="text-xs text-[#9C9492]">Especialista en crédito</p>
+                  <div className="flex items-center gap-1 mt-0.5">
+                    <span className="text-[#B8862E] text-xs">★</span>
+                    <span className="text-xs font-medium text-[#241014]">4.9</span>
+                    <span className="text-xs text-[#9C9492]">(320 reseñas)</span>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => flash('Solicitud enviada. Andrea te contactará pronto.')}
+                className="w-full py-2.5 rounded-xl bg-[#7A1E2C] text-white text-sm font-semibold hover:bg-[#5C1520] transition-colors"
+              >
+                Solicitar seguimiento
+              </button>
+            </div>
+
+            {/* RIGHT: Case progress + goals */}
+            <ActivityCard
+              metrics={CASE_METRICS}
+              dailyGoals={goals}
+              onToggleGoal={(id) => setGoals(prev => prev.map(g => g.id === id ? { ...g, isCompleted: !g.isCompleted } : g))}
+              onAddGoal={() => flash('Agregar tarea próximamente')}
+              onViewDetails={() => flash('Progreso completo próximamente')}
+            />
           </div>
 
           {/* ── FINANCIAL SCORE CARDS ── */}
