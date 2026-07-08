@@ -7,6 +7,8 @@ import ScoreGauge from '@/components/ScoreGauge'
 import Toast from '@/components/Toast'
 import { ActivityCard, type Goal } from '@/components/ui/activity-card'
 import { FinancialScoreCards } from '@/components/ui/financial-score-cards'
+import ProgressIndicator from '@/components/ui/progress-indicator'
+import CursorWanderCard from '@/components/ui/cursor-wander-card'
 import { disputes, scoreHistory, CLIENT } from '@/lib/data'
 import { daysAgo, formatDate } from '@/lib/utils'
 
@@ -256,6 +258,38 @@ export default function DashboardPage() {
             <div className="shrink-0 max-w-[200px] bg-white/10 rounded-xl p-4 text-white">
               <p className="text-sm font-bold mb-1.5">⚡ ¡Vas por excelente camino!</p>
               <p className="text-xs text-white/70 leading-snug">Tu dedicación está dando resultados. Seguimos trabajando para llevar tu crédito al siguiente nivel.</p>
+            </div>
+          </div>
+
+          {/* ── ONBOARDING STEPS + CARD ── */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+            {/* Progress steps widget */}
+            <div className="bg-white rounded-2xl border border-[#E7E2E1] shadow-sm p-6">
+              <p className="text-xs font-semibold text-[#9C9492] uppercase tracking-wide mb-1">Tu camino al crédito ideal</p>
+              <p className="text-sm font-semibold text-[#241014] mb-5">Completa los pasos de tu plan</p>
+              <ProgressIndicator
+                steps={3}
+                initialStep={2}
+                stepLabels={['Verificar identidad', 'Revisión de disputas', 'Score optimizado']}
+                continueLabel="Siguiente paso"
+                finishLabel="¡Listo!"
+                backLabel="Atrás"
+                onComplete={() => flash('¡Felicidades! Proceso completado.')}
+                className="items-start"
+              />
+            </div>
+
+            {/* Interactive credit card */}
+            <div className="bg-white rounded-2xl border border-[#E7E2E1] shadow-sm p-6 flex flex-col">
+              <p className="text-xs font-semibold text-[#9C9492] uppercase tracking-wide mb-1">Tu tarjeta MCC</p>
+              <p className="text-sm font-semibold text-[#241014] mb-4">Muévela para explorar</p>
+              <div className="flex-1 flex items-center justify-center">
+                <CursorWanderCard
+                  cardholderName={CLIENT.name.toUpperCase()}
+                  width="100%"
+                  height="200px"
+                />
+              </div>
             </div>
           </div>
 
