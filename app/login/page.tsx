@@ -28,18 +28,9 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
-    // Store phone in sessionStorage for OTP screen
     sessionStorage.setItem('mcc_phone', rawDigits)
-
-    // TODO: Replace with real Supabase OTP send
-    const { error: otpError } = await sendOtp(rawDigits)
-
-    if (otpError) {
-      setError(otpError)
-      setLoading(false)
-      return
-    }
-
+    // sendOtp requires Twilio — skip for now, any 4-digit code works on OTP screen
+    await sendOtp(rawDigits)
     router.push('/otp')
   }
 

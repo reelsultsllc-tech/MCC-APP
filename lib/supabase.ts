@@ -5,25 +5,16 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-// Send OTP to phone — sms_autoconfirm ON means no Twilio needed yet
-export async function sendOtp(phone: string): Promise<{ error: string | null }> {
-  const { error } = await supabase.auth.signInWithOtp({
-    phone: `+1${phone}`,
-  })
-  return { error: error?.message ?? null }
+// Demo: phone OTP bypassed until Twilio is configured
+export async function sendOtp(_phone: string): Promise<{ error: string | null }> {
+  return { error: null }
 }
 
-// Verify OTP — any code works while sms_autoconfirm is ON
 export async function verifyOtp(
-  phone: string,
-  token: string
+  _phone: string,
+  _token: string
 ): Promise<{ error: string | null }> {
-  const { error } = await supabase.auth.verifyOtp({
-    phone: `+1${phone}`,
-    token,
-    type: 'sms',
-  })
-  return { error: error?.message ?? null }
+  return { error: null }
 }
 
 // Team: send OTP to email

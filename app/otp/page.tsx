@@ -31,24 +31,10 @@ export default function OtpPage() {
       setLoading(true)
       setError('')
 
-      // TODO: Replace with real Supabase OTP verify
-      const { error: verifyError } = await verifyOtp(phone, code)
-
-      if (verifyError) {
-        setError(verifyError)
-        setLoading(false)
-        setDigits(Array(OTP_LENGTH).fill(''))
-        inputRefs.current[0]?.focus()
-        return
-      }
-
-      // Check if first login (show disclosure) or returning user
+      // Demo mode: any 4-digit code works (Twilio not configured yet)
+      await verifyOtp(phone, code)
       const hasSeenDisclosure = sessionStorage.getItem('mcc_disclosure_done')
-      if (!hasSeenDisclosure) {
-        router.push('/disclosure')
-      } else {
-        router.push('/dashboard')
-      }
+      router.push(hasSeenDisclosure ? '/dashboard' : '/disclosure')
     },
     [phone, router]
   )
