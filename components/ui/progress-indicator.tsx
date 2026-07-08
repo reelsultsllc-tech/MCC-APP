@@ -15,6 +15,7 @@ interface ProgressIndicatorProps {
   backLabel?: string
   stepLabels?: string[]
   className?: string
+  dark?: boolean
 }
 
 const ProgressIndicator = ({
@@ -27,6 +28,7 @@ const ProgressIndicator = ({
   backLabel = 'Atrás',
   stepLabels,
   className,
+  dark = false,
 }: ProgressIndicatorProps) => {
   const [step, setStep] = useState(initialStep)
   const [isExpanded, setIsExpanded] = useState(initialStep === 1)
@@ -64,7 +66,7 @@ const ProgressIndicator = ({
           key={step}
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-xs font-medium text-[#9C9492] uppercase tracking-widest"
+          className={cn('text-xs font-medium uppercase tracking-widest', dark ? 'text-white/50' : 'text-[#9C9492]')}
         >
           {stepLabels[step - 1]}
         </motion.p>
@@ -77,7 +79,9 @@ const ProgressIndicator = ({
             key={dot}
             className={cn(
               'w-2 h-2 rounded-full relative z-10 transition-colors duration-300',
-              dot <= step ? 'bg-[#241014]' : 'bg-[#C4BEBC]'
+              dark
+                ? dot <= step ? 'bg-white' : 'bg-white/30'
+                : dot <= step ? 'bg-[#241014]' : 'bg-[#C4BEBC]'
             )}
           />
         ))}
@@ -105,7 +109,12 @@ const ProgressIndicator = ({
                 opacity: { duration: 0.2 },
               }}
               onClick={handleBack}
-              className="px-4 py-2.5 text-[#57504E] flex items-center justify-center bg-[#F7F5F4] border border-[#E7E2E1] font-semibold rounded-full hover:bg-[#EDE7E6] transition-colors flex-1 w-16 text-sm"
+              className={cn(
+                'px-4 py-2.5 flex items-center justify-center font-semibold rounded-full transition-colors flex-1 w-16 text-sm',
+                dark
+                  ? 'text-white/70 bg-white/10 border border-white/20 hover:bg-white/20'
+                  : 'text-[#57504E] bg-[#F7F5F4] border border-[#E7E2E1] hover:bg-[#EDE7E6]'
+              )}
             >
               {backLabel}
             </motion.button>

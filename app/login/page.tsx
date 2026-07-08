@@ -4,8 +4,19 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import MccLogo from '@/components/MccLogo'
+import { TextLoop } from '@/components/ui/text-loop'
+import HeroBadge from '@/components/ui/hero-badge'
+import { Icons } from '@/components/ui/icons'
 import { formatPhone } from '@/lib/utils'
 import { sendOtp } from '@/lib/supabase'
+
+const BENEFITS = [
+  'Monitorea tus disputas en tiempo real',
+  'Score de crédito actualizado cada mes',
+  'Documentos seguros en tu vault',
+  'Asesoría personalizada con tu experta',
+  'Notificaciones de cada avance en tu caso',
+]
 
 export default function LoginPage() {
   const router = useRouter()
@@ -27,9 +38,7 @@ export default function LoginPage() {
     if (!isValid) return
     setLoading(true)
     setError('')
-
     sessionStorage.setItem('mcc_phone', rawDigits)
-    // sendOtp requires Twilio — skip for now, any 4-digit code works on OTP screen
     await sendOtp(rawDigits)
     router.push('/otp')
   }
@@ -37,15 +46,36 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen bg-[#F7F5F4] flex flex-col items-center justify-center px-6 py-12">
       <div className="w-full max-w-[430px]">
+
+        {/* Hero badge */}
+        <div className="flex justify-center mb-6">
+          <HeroBadge
+            text="Portal de crédito disponible"
+            icon={<span className="text-sm">✨</span>}
+            endIcon={<Icons.chevronRight className="w-3.5 h-3.5" />}
+            size="sm"
+          />
+        </div>
+
         {/* Logo + branding */}
-        <div className="flex flex-col items-center mb-10">
+        <div className="flex flex-col items-center mb-8">
           <MccLogo size={72} />
-          <h1 className="font-lora text-[28px] font-medium text-[#241014] mt-4 mb-1">
+          <h1 className="font-lora text-[28px] font-medium text-[#241014] mt-4 mb-3">
             My Credit Coffee
           </h1>
-          <p className="text-sm text-[#57504E] text-center">
-            Tu portal de reparación de crédito
-          </p>
+
+          {/* TextLoop rotating benefits */}
+          <div className="h-6 flex items-center justify-center">
+            <TextLoop
+              interval={3}
+              transition={{ duration: 0.4 }}
+              className="text-sm text-[#7A1E2C] font-medium text-center"
+            >
+              {BENEFITS.map(b => (
+                <span key={b} className="block text-center">{b}</span>
+              ))}
+            </TextLoop>
+          </div>
         </div>
 
         {/* Phone form */}
@@ -65,29 +95,17 @@ export default function LoginPage() {
                 value={displayPhone}
                 onChange={handlePhoneChange}
                 placeholder="(555) 000-0000"
-                className="
-                  w-full pl-12 pr-4 py-3.5 text-base text-[#241014]
-                  bg-white border border-[#E7E2E1] rounded-xl
-                  focus:outline-none focus:border-[#7A1E2C] focus:ring-1 focus:ring-[#7A1E2C]
-                  placeholder:text-[#9C9492]
-                  transition-colors
-                "
+                autoFocus
+                className="w-full pl-12 pr-4 py-3.5 text-base text-[#241014] bg-white border border-[#E7E2E1] rounded-xl focus:outline-none focus:border-[#7A1E2C] focus:ring-1 focus:ring-[#7A1E2C] placeholder:text-[#9C9492] transition-colors"
               />
             </div>
-            {error && (
-              <p className="mt-2 text-sm text-red-600">{error}</p>
-            )}
+            {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
           </div>
 
           <button
             type="submit"
             disabled={!isValid || loading}
-            className="
-              w-full py-3.5 rounded-xl font-medium text-base text-white
-              bg-[#7A1E2C] hover:bg-[#5C1520] active:bg-[#5C1520]
-              disabled:opacity-40 disabled:cursor-not-allowed
-              transition-colors duration-150
-            "
+            className="w-full py-3.5 rounded-xl font-medium text-base text-white bg-[#7A1E2C] hover:bg-[#5C1520] active:bg-[#5C1520] disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150"
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
@@ -97,18 +115,12 @@ export default function LoginPage() {
                 </svg>
                 Enviando...
               </span>
-            ) : (
-              'Continuar'
-            )}
+            ) : 'Continuar'}
           </button>
         </form>
 
-        {/* Team link */}
         <p className="text-center text-sm text-[#57504E] mt-8">
-          <Link
-            href="/team/login"
-            className="text-[#7A1E2C] font-medium hover:underline"
-          >
+          <Link href="/team/login" className="text-[#7A1E2C] font-medium hover:underline">
             ¿Eres del equipo? Ingresa aquí
           </Link>
         </p>
