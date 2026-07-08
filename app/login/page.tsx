@@ -69,7 +69,7 @@ export default function LoginPage() {
               </div>
               <input
                 id="phone"
-                type="tel"
+                type="text"
                 inputMode="numeric"
                 value={displayPhone}
                 onChange={handlePhoneChange}
