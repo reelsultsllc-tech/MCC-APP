@@ -26,12 +26,18 @@ export async function verifyOtp(
   return { error: error?.message ?? null }
 }
 
-// Team email/password login
-export async function signInWithPassword(
+// Team: send OTP to email
+export async function sendEmailOtp(email: string): Promise<{ error: string | null }> {
+  const { error } = await supabase.auth.signInWithOtp({ email })
+  return { error: error?.message ?? null }
+}
+
+// Team: verify email OTP code
+export async function verifyEmailOtp(
   email: string,
-  password: string
+  token: string
 ): Promise<{ error: string | null }> {
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  const { error } = await supabase.auth.verifyOtp({ email, token, type: 'email' })
   return { error: error?.message ?? null }
 }
 
