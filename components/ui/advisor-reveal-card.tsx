@@ -80,11 +80,11 @@ export function AdvisorRevealCard({
           background: 'linear-gradient(135deg, #5C1520 0%, #7A1E2C 65%, #9B3040 100%)',
           willChange: 'clip-path',
         }}
-        initial={{ clipPath: 'circle(36px at 43px 84px)' }}
+        initial={{ clipPath: 'circle(0px at 43px 64px)' }}
         animate={{
           clipPath: hovered
-            ? 'circle(600px at 43px 84px)'
-            : 'circle(36px at 43px 84px)',
+            ? 'circle(600px at 43px 64px)'
+            : 'circle(0px at 43px 64px)',
         }}
         transition={{ duration: 0.72, ease: [0.76, 0, 0.24, 1] }}
       >

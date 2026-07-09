@@ -30,12 +30,12 @@ const DOCS = [
 ]
 
 const NAV = [
-  { id: 'resumen',          label: 'Resumen',            icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="1" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/><rect x="10" y="1" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/><rect x="1" y="10" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/><rect x="10" y="10" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/></svg> },
-  { id: 'disputas',         label: 'Disputas activas',   icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5L2 5v4c0 4 3.1 7.4 7 8 3.9-.6 7-4 7-8V5L9 1.5z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/></svg> },
-  { id: 'vault',            label: 'Vault de documentos',icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.5"/><path d="M2 7h14" stroke="currentColor" strokeWidth="1.5"/><path d="M6 11h.5M9 11h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
-  { id: 'actividad',        label: 'Actividad',          icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><polyline points="1,13 5,7 8,10 12,5 17,9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  { id: 'reportes',         label: 'Reportes',           icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="10" width="3" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="7.5" y="6" width="3" height="10" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="13" y="2" width="3" height="14" rx="1" stroke="currentColor" strokeWidth="1.5"/></svg> },
-  { id: 'recomendaciones',  label: 'Recomendaciones',    icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v2M9 15v2M1 9h2M15 9h2M3.2 3.2l1.4 1.4M13.4 13.4l1.4 1.4M3.2 14.8l1.4-1.4M13.4 4.6l1.4-1.4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><circle cx="9" cy="9" r="3" stroke="currentColor" strokeWidth="1.5"/></svg> },
+  { id: 'resumen',         label: 'Resumen',             icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="1" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/><rect x="10" y="1" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/><rect x="1" y="10" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/><rect x="10" y="10" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/></svg> },
+  { id: 'disputas',        label: 'Disputas activas',    icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5L2 5v4c0 4 3.1 7.4 7 8 3.9-.6 7-4 7-8V5L9 1.5z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/></svg> },
+  { id: 'vault',           label: 'Vault de documentos', icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.5"/><path d="M2 7h14" stroke="currentColor" strokeWidth="1.5"/><path d="M6 11h.5M9 11h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
+  { id: 'actividad',       label: 'Actividad',           icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><polyline points="1,13 5,7 8,10 12,5 17,9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  { id: 'reportes',        label: 'Reportes',            icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="10" width="3" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="7.5" y="6" width="3" height="10" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="13" y="2" width="3" height="14" rx="1" stroke="currentColor" strokeWidth="1.5"/></svg> },
+  { id: 'recomendaciones', label: 'Recomendaciones',     icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v2M9 15v2M1 9h2M15 9h2M3.2 3.2l1.4 1.4M13.4 13.4l1.4 1.4M3.2 14.8l1.4-1.4M13.4 4.6l1.4-1.4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><circle cx="9" cy="9" r="3" stroke="currentColor" strokeWidth="1.5"/></svg> },
 ]
 
 const PILL: Record<string, { bg: string; color: string; label: string }> = {
@@ -53,15 +53,47 @@ function getPill(d: typeof disputes[0]) {
 }
 
 function ActivityIcon({ type }: { type: string }) {
-  const map: Record<string, { bg: string; icon: string }> = {
-    new:     { bg: '#F5E4E6', icon: '📍' },
-    success: { bg: '#E7EFDE', icon: '✅' },
-    sent:    { bg: '#F6EFDF', icon: '📨' },
-    wait:    { bg: '#EDE7E6', icon: '⏳' },
+  const icons = {
+    new: {
+      bg: '#F5E4E6',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="5.5" stroke="#7A1E2C" strokeWidth="1.4"/>
+          <path d="M8 5v3M8 9.5v.5" stroke="#7A1E2C" strokeWidth="1.4" strokeLinecap="round"/>
+        </svg>
+      ),
+    },
+    success: {
+      bg: '#E7EFDE',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="5.5" stroke="#4F9A5C" strokeWidth="1.4"/>
+          <path d="M5.5 8l2 2 3-3" stroke="#4F9A5C" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+    },
+    sent: {
+      bg: '#F6EFDF',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <rect x="2" y="4" width="12" height="8.5" rx="1.2" stroke="#B8862E" strokeWidth="1.3"/>
+          <path d="M2 5.5l6 4 6-4" stroke="#B8862E" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+    },
+    wait: {
+      bg: '#EDE7E6',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="5.5" stroke="#57504E" strokeWidth="1.4"/>
+          <path d="M8 5.5v2.8l2 1.2" stroke="#57504E" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+    },
   }
-  const { bg, icon } = map[type] ?? map.wait
+  const { bg, icon } = icons[type as keyof typeof icons] ?? icons.wait
   return (
-    <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-base" style={{ background: bg }}>
+    <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: bg }}>
       {icon}
     </div>
   )
@@ -162,12 +194,15 @@ export default function DashboardPage() {
             <button
               key={item.id}
               onClick={() => setActiveNav(item.id)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-left ${
+              className={`relative overflow-hidden w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 text-left ${
                 activeNav === item.id
-                  ? 'bg-[#7A1E2C] text-white'
+                  ? 'bg-[#F5E4E6] text-[#7A1E2C]'
                   : 'text-[#57504E] hover:bg-[#F7F5F4] hover:text-[#241014]'
               }`}
             >
+              {activeNav === item.id && (
+                <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full bg-[#7A1E2C]" />
+              )}
               <span className="shrink-0">{item.icon}</span>
               {item.label}
             </button>
@@ -176,7 +211,9 @@ export default function DashboardPage() {
 
         <div className="mx-3 mb-3 p-3.5 rounded-xl bg-[#F5E4E6]">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-base">🚀</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="shrink-0">
+              <path d="M8 1L6 6H1l4 3-1.5 5L8 11l4.5 3L11 9l4-3H10L8 1z" fill="#7A1E2C" stroke="#7A1E2C" strokeWidth="0.3" strokeLinejoin="round"/>
+            </svg>
             <p className="text-sm font-semibold text-[#241014]">Plan Premium</p>
           </div>
           <p className="text-xs text-[#57504E] mb-2 leading-snug">Tienes acceso completo a todas las herramientas.</p>
@@ -206,7 +243,7 @@ export default function DashboardPage() {
         {/* Top bar */}
         <header className="bg-white border-b border-[#E7E2E1] px-6 h-14 flex items-center justify-between shrink-0">
           <h1 className="font-lora text-lg font-medium text-[#241014]">
-            Hola, {CLIENT.name} 👋
+            Hola, {CLIENT.name}
           </h1>
           <div className="flex items-center gap-3">
             <button className="relative p-2 text-[#57504E] hover:text-[#241014] hover:bg-[#F7F5F4] rounded-lg transition-colors" onClick={() => flash('2 notificaciones')}>
@@ -247,8 +284,7 @@ export default function DashboardPage() {
                   {/* Top-edge shimmer */}
                   <div className="absolute top-0 left-0 right-0 h-px pointer-events-none" style={{ background: 'linear-gradient(90deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)' }} />
 
-                  {/* ── INNER WRAPPER: the "tope arquitectónico" ──
-                      Content stays grouped; background bleeds to the right naturally */}
+                  {/* Inner wrapper — content grouped, background bleeds to right naturally */}
                   <div className="relative z-10 p-7 flex flex-col sm:flex-row items-center gap-10">
 
                     {/* SCORE */}
@@ -266,9 +302,9 @@ export default function DashboardPage() {
                       </div>
                     </div>
 
-                    {/* GAUGE */}
+                    {/* GAUGE — viewBox extended so labels clear the arc stroke */}
                     <div className="shrink-0">
-                      <svg width="200" height="108" viewBox="0 0 220 120">
+                      <svg width="200" height="114" viewBox="0 0 220 130">
                         <path d="M20 110 A90 90 0 0 1 200 110" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="16" strokeLinecap="round"/>
                         <motion.path
                           d="M20 110 A90 90 0 0 1 200 110"
@@ -281,8 +317,8 @@ export default function DashboardPage() {
                           animate={{ strokeDashoffset: 283 - 283 * ((615 - 300) / 550) }}
                           transition={{ duration: 1.8, ease: [0.25, 1, 0.5, 1], delay: 0.3 }}
                         />
-                        <text x="22"  y="118" fill="rgba(255,255,255,0.3)" fontSize="10" fontFamily="system-ui">300</text>
-                        <text x="185" y="118" fill="rgba(255,255,255,0.3)" fontSize="10" fontFamily="system-ui">850</text>
+                        <text x="20"  y="127" fill="rgba(255,255,255,0.35)" fontSize="10" fontFamily="system-ui" textAnchor="start">300</text>
+                        <text x="200" y="127" fill="rgba(255,255,255,0.35)" fontSize="10" fontFamily="system-ui" textAnchor="end">850</text>
                       </svg>
                     </div>
 
@@ -307,19 +343,28 @@ export default function DashboardPage() {
                         <p className="text-[11px] text-white/35 mt-2">desde que comenzamos</p>
                       </div>
 
-                      {/* Mini stats column */}
+                      {/* Mini stats column — SVG icons, no OS emoji */}
                       <div className="space-y-2 pt-1">
                         {[
-                          { icon: '🛡️', value: '4', label: 'Disputas' },
-                          { icon: '📅', value: '3', label: 'Meses' },
-                          { icon: '📄', value: '4', label: 'Documentos' },
+                          {
+                            icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1.5L2 4.5v4c0 3.5 2.5 6.5 6 7.5 3.5-1 6-4 6-7.5v-4L8 1.5z" stroke="rgba(255,255,255,0.65)" strokeWidth="1.4" strokeLinejoin="round"/></svg>,
+                            value: '4', label: 'Disputas',
+                          },
+                          {
+                            icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="rgba(255,255,255,0.65)" strokeWidth="1.4"/><path d="M2 7h12M6 3V1M10 3V1" stroke="rgba(255,255,255,0.65)" strokeWidth="1.4" strokeLinecap="round"/></svg>,
+                            value: '3', label: 'Meses',
+                          },
+                          {
+                            icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="3" y="1.5" width="10" height="13" rx="1.5" stroke="rgba(255,255,255,0.65)" strokeWidth="1.4"/><path d="M6 5.5h4M6 8h4M6 10.5h2.5" stroke="rgba(255,255,255,0.65)" strokeWidth="1.2" strokeLinecap="round"/></svg>,
+                            value: '4', label: 'Documentos',
+                          },
                         ].map(s => (
                           <div
                             key={s.label}
                             className="flex items-center gap-2 rounded-lg px-3 py-1.5"
                             style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.06)' }}
                           >
-                            <span className="text-sm">{s.icon}</span>
+                            <span className="shrink-0">{s.icon}</span>
                             <span className="text-sm font-bold font-lora text-white">{s.value}</span>
                             <span className="text-[11px] text-white/50">{s.label}</span>
                           </div>
@@ -338,13 +383,21 @@ export default function DashboardPage() {
 
                     {/* Steps: max-w prevents wire-clothes-line effect on ultrawide */}
                     <div className="max-w-[440px] mx-auto relative">
+                      {/* Track: grey base */}
                       <div
                         className="absolute bg-[#E7E2E1] rounded-full"
                         style={{ height: '3px', top: '19px', left: '40px', right: '40px' }}
                       />
+                      {/* Track: green fill with glow */}
                       <motion.div
                         className="absolute bg-[#4F9A5C] rounded-full origin-left"
-                        style={{ height: '3px', top: '19px', left: '40px', right: '40px' }}
+                        style={{
+                          height: '3px',
+                          top: '19px',
+                          left: '40px',
+                          right: '40px',
+                          filter: 'drop-shadow(0 0 4px rgba(79,154,92,0.6))',
+                        }}
                         initial={{ scaleX: 0 }}
                         animate={{ scaleX: 0.67 }}
                         transition={{ duration: 1.0, delay: 0.4, ease: 'easeOut' }}
@@ -363,27 +416,43 @@ export default function DashboardPage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.08 + i * 0.1, duration: 0.4, ease: 'easeOut' }}
                           >
-                            <motion.div
-                              className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 border-2 ${
-                                step.status === 'done'    ? 'bg-[#4F9A5C] border-[#4F9A5C]' :
-                                step.status === 'active'  ? 'bg-[#7A1E2C] border-[#7A1E2C]' :
-                                'bg-white border-[#D4CCCA]'
-                              }`}
-                              style={step.status === 'pending' ? { boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.06)' } : undefined}
-                              initial={{ scale: 0.5 }}
-                              animate={{ scale: 1 }}
-                              transition={{ delay: 0.15 + i * 0.1, type: 'spring', stiffness: 500, damping: 18 }}
-                            >
-                              {step.status === 'done'    && <CheckCircle2 size={16} className="text-white" />}
-                              {step.status === 'active'  && <div className="w-3 h-3 rounded-full bg-white" />}
-                              {step.status === 'pending' && <span className="text-xs font-bold text-[#B8ABA9]">{i + 1}</span>}
-                            </motion.div>
+                            {/* Node wrapper: relative so ping ring can be absolute */}
+                            <div className="relative mb-2">
+                              {step.status === 'active' && (
+                                <div
+                                  className="absolute inset-0 rounded-full animate-ping"
+                                  style={{ background: 'rgba(122,30,44,0.25)' }}
+                                />
+                              )}
+                              <motion.div
+                                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                                  step.status === 'done'    ? 'bg-[#4F9A5C] border-2 border-[#4F9A5C]' :
+                                  step.status === 'active'  ? 'bg-[#7A1E2C] border-4 border-white' :
+                                  'bg-white border-2 border-[#D4CCCA] opacity-50'
+                                }`}
+                                style={
+                                  step.status === 'active'
+                                    ? { boxShadow: '0 0 15px rgba(122,30,44,0.4)' }
+                                    : step.status === 'pending'
+                                    ? { boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.06)' }
+                                    : undefined
+                                }
+                                initial={{ scale: 0.5 }}
+                                animate={{ scale: 1 }}
+                                transition={{ delay: 0.15 + i * 0.1, type: 'spring', stiffness: 500, damping: 18 }}
+                                whileHover={step.status === 'done' ? { scale: 1.1 } : undefined}
+                              >
+                                {step.status === 'done'    && <CheckCircle2 size={16} className="text-white" />}
+                                {step.status === 'active'  && <div className="w-3 h-3 rounded-full bg-white" />}
+                                {step.status === 'pending' && <span className="text-xs font-bold text-[#B8ABA9]">{i + 1}</span>}
+                              </motion.div>
+                            </div>
                             <p className={`text-[11px] font-semibold leading-tight ${
                               step.status === 'done'    ? 'text-[#4F9A5C]' :
-                              step.status === 'active'  ? 'text-[#241014]' : 'text-[#9C9492]'
+                              step.status === 'active'  ? 'text-[#241014]' : 'text-[#B0A4A2]'
                             }`}>{step.label}</p>
                             <p className={`text-[10px] mt-0.5 leading-tight ${
-                              step.status === 'pending' ? 'text-[#B0A4A2] font-medium' : 'text-[#9C9492]'
+                              step.status === 'pending' ? 'text-[#C4BEBC]' : 'text-[#9C9492]'
                             }`}>{step.desc}</p>
                           </motion.div>
                         ))}
@@ -410,10 +479,22 @@ export default function DashboardPage() {
                 {/* 4 STATS */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                   {[
-                    { icon: '🛡️', value: disputes.length, label: 'Disputas activas',              link: 'Ver detalles' },
-                    { icon: '📄', value: 4,               label: 'Documentos guardados',           link: 'Ver vault' },
-                    { icon: '📈', value: '+77',           label: 'Puntos ganados',                 link: 'Ver historial' },
-                    { icon: '📅', value: 8,               label: 'Días desde última actualización',link: 'Ver calendario' },
+                    {
+                      icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5L2 5v4c0 4 3.1 7.4 7 8 3.9-.6 7-4 7-8V5L9 1.5z" stroke="#7A1E2C" strokeWidth="1.5" strokeLinejoin="round"/></svg>,
+                      value: disputes.length, label: 'Disputas activas', link: 'Ver detalles',
+                    },
+                    {
+                      icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="11" height="14" rx="1.5" stroke="#7A1E2C" strokeWidth="1.4"/><path d="M6 6h6M6 9h6M6 12h4" stroke="#7A1E2C" strokeWidth="1.2" strokeLinecap="round"/></svg>,
+                      value: 4, label: 'Documentos guardados', link: 'Ver vault',
+                    },
+                    {
+                      icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><polyline points="2,14 6,8 9,11 13,5 16,8" stroke="#7A1E2C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M13 5h3v3" stroke="#7A1E2C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+                      value: '+77', label: 'Puntos ganados', link: 'Ver historial',
+                    },
+                    {
+                      icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="13" rx="1.5" stroke="#7A1E2C" strokeWidth="1.4"/><path d="M2 7h14M6 3V1M12 3V1" stroke="#7A1E2C" strokeWidth="1.4" strokeLinecap="round"/></svg>,
+                      value: 8, label: 'Días desde última actualización', link: 'Ver calendario',
+                    },
                   ].map((s, i) => (
                     <motion.div
                       key={s.label}
@@ -422,7 +503,7 @@ export default function DashboardPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.1 + i * 0.07, duration: 0.4 }}
                     >
-                      <div className="w-9 h-9 rounded-lg bg-[#F5E4E6] flex items-center justify-center text-lg mb-3">{s.icon}</div>
+                      <div className="w-9 h-9 rounded-lg bg-[#F5E4E6] flex items-center justify-center mb-3">{s.icon}</div>
                       <p className="text-3xl font-bold font-lora text-[#241014] mb-0.5">{s.value}</p>
                       <p className="text-xs text-[#9C9492] mb-2 leading-tight">{s.label}</p>
                       <button className="text-xs font-semibold text-[#7A1E2C] hover:underline" onClick={() => flash(`${s.link} próximamente`)}>{s.link} →</button>
@@ -585,9 +666,18 @@ export default function DashboardPage() {
                     </motion.div>
                     <div className="space-y-2.5">
                       {[
-                        { icon: '🛡️', text: 'Protección de crédito 24/7 incluida' },
-                        { icon: '📊', text: 'Monitoreo de los 3 burós en tiempo real' },
-                        { icon: '⚡', text: 'Alertas instantáneas de cambios' },
+                        {
+                          icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1.5L2 4.5v4c0 3.5 2.5 6.5 6 7.5 3.5-1 6-4 6-7.5v-4L8 1.5z" stroke="#7A1E2C" strokeWidth="1.4" strokeLinejoin="round"/></svg>,
+                          text: 'Protección de crédito 24/7 incluida',
+                        },
+                        {
+                          icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="9" width="3" height="5" rx="0.8" stroke="#7A1E2C" strokeWidth="1.3"/><rect x="6.5" y="6" width="3" height="8" rx="0.8" stroke="#7A1E2C" strokeWidth="1.3"/><rect x="12" y="3" width="3" height="11" rx="0.8" stroke="#7A1E2C" strokeWidth="1.3"/></svg>,
+                          text: 'Monitoreo de los 3 burós en tiempo real',
+                        },
+                        {
+                          icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1v4M8 11v4M1 8h4M11 8h4" stroke="#7A1E2C" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="8" r="2.5" stroke="#7A1E2C" strokeWidth="1.3"/></svg>,
+                          text: 'Alertas instantáneas de cambios',
+                        },
                       ].map((f, i) => (
                         <motion.div
                           key={i}
@@ -596,7 +686,7 @@ export default function DashboardPage() {
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.4 + i * 0.1, duration: 0.4, ease: 'easeOut' }}
                         >
-                          <span className="text-sm">{f.icon}</span>
+                          <span className="shrink-0">{f.icon}</span>
                           <p className="text-xs text-[#57504E]">{f.text}</p>
                         </motion.div>
                       ))}
