@@ -10,6 +10,8 @@ import Toast from '@/components/Toast'
 import { ActivityCard, type Goal } from '@/components/ui/activity-card'
 import { FinancialScoreCards } from '@/components/ui/financial-score-cards'
 import CursorWanderCard from '@/components/ui/cursor-wander-card'
+import { LiquidCard, CardContent } from '@/components/ui/liquid-glass-card'
+import { LiquidButton } from '@/components/ui/liquid-glass-button'
 import { disputes, scoreHistory, CLIENT } from '@/lib/data'
 import { daysAgo, formatDate } from '@/lib/utils'
 
@@ -265,9 +267,10 @@ export default function DashboardPage() {
           {/* ── PLAN ROADMAP + CREDIT CARD ── */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
             {/* LEFT: 4-step animated roadmap */}
-            <div className="bg-white rounded-2xl border border-[#E7E2E1] shadow-sm p-6">
+            <LiquidCard className="rounded-2xl py-0 gap-0">
+              <CardContent className="p-6">
               <p className="text-xs font-semibold text-[#9C9492] uppercase tracking-widest mb-1">Tu plan de reparación</p>
-              <p className="text-sm font-semibold text-[#241014] mb-8">4 pasos hacia un crédito excelente</p>
+              <p className="text-base font-semibold font-lora text-[#241014] mb-8">4 pasos hacia un crédito excelente</p>
               <div className="relative">
                 {/* Gray track */}
                 <div className="absolute h-0.5 bg-[#E7E2E1]" style={{ top: '15px', left: '35px', right: '35px' }} />
@@ -328,10 +331,12 @@ export default function DashboardPage() {
                   <p className="text-xs text-[#57504E] leading-snug mt-0.5">Tus disputas están en proceso. Próxima acción: seguimiento a Capital One con Equifax.</p>
                 </div>
               </motion.div>
-            </div>
+              </CardContent>
+            </LiquidCard>
 
             {/* RIGHT: Credit card + features */}
-            <div className="bg-white rounded-2xl border border-[#E7E2E1] shadow-sm p-6 flex flex-col">
+            <LiquidCard className="rounded-2xl py-0 gap-0">
+              <CardContent className="p-6 flex flex-col">
               <p className="text-xs font-semibold text-[#9C9492] uppercase tracking-widest mb-5">Tu tarjeta MCC</p>
               <div className="flex justify-center mb-5">
                 <CursorWanderCard
@@ -364,7 +369,8 @@ export default function DashboardPage() {
               >
                 Ver todos los beneficios →
               </button>
-            </div>
+              </CardContent>
+            </LiquidCard>
           </div>
 
           {/* ── 4 STATS ── */}
@@ -390,7 +396,7 @@ export default function DashboardPage() {
             {/* DISPUTES TABLE */}
             <div className="xl:col-span-1 bg-white rounded-2xl border border-[#E7E2E1] shadow-sm overflow-hidden">
               <div className="px-5 py-4 border-b border-[#E7E2E1] flex items-center justify-between">
-                <p className="text-sm font-semibold text-[#241014]">Tus disputas activas</p>
+                <p className="text-sm font-semibold font-lora text-[#241014]">Tus disputas activas</p>
                 <button className="text-xs font-semibold text-[#7A1E2C] hover:underline" onClick={() => flash('Ver todas próximamente')}>Ver todas →</button>
               </div>
               <div className="divide-y divide-[#F7F5F4]">
@@ -432,7 +438,7 @@ export default function DashboardPage() {
             <div className="xl:col-span-1 space-y-5">
               {/* Activity */}
               <div className="bg-white rounded-2xl border border-[#E7E2E1] shadow-sm p-5">
-                <p className="text-sm font-semibold text-[#241014] mb-4">Actividad reciente esta semana</p>
+                <p className="text-sm font-semibold font-lora text-[#241014] mb-4">Actividad reciente esta semana</p>
                 <div className="space-y-3.5">
                   {ACTIVITY.map(a => (
                     <div key={a.id} className="flex items-start gap-3">
@@ -454,7 +460,7 @@ export default function DashboardPage() {
               {/* Vault */}
               <div className="bg-white rounded-2xl border border-[#E7E2E1] shadow-sm overflow-hidden">
                 <div className="px-5 py-4 border-b border-[#E7E2E1] flex items-center justify-between">
-                  <p className="text-sm font-semibold text-[#241014]">Vault de documentos</p>
+                  <p className="text-sm font-semibold font-lora text-[#241014]">Vault de documentos</p>
                   <button className="text-xs font-semibold text-[#7A1E2C] hover:underline" onClick={() => flash('Ver vault próximamente')}>Ver todos →</button>
                 </div>
                 <div className="divide-y divide-[#F7F5F4]">
@@ -488,7 +494,8 @@ export default function DashboardPage() {
           {/* ── ADVISOR + ACTIVITY CARD ── */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 mt-5">
             {/* LEFT: Advisor suggestion */}
-            <div className="bg-white rounded-2xl border border-[#E7E2E1] shadow-sm p-5">
+            <LiquidCard className="rounded-2xl py-0 gap-0">
+              <CardContent className="p-5">
               <p className="text-xs font-semibold text-[#9C9492] uppercase tracking-wide mb-1">Sugerencia de tu asesora</p>
               <p className="text-sm text-[#241014] leading-snug mb-3">
                 Podemos dar seguimiento proactivo a tu disputa con Capital One para acelerar la respuesta de Equifax.
@@ -518,13 +525,16 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </div>
-              <button
+              <LiquidButton
+                variant="default"
+                size="lg"
+                className="w-full"
                 onClick={() => flash('Solicitud enviada. Andrea te contactará pronto.')}
-                className="w-full py-2.5 rounded-xl bg-[#7A1E2C] text-white text-sm font-semibold hover:bg-[#5C1520] transition-colors"
               >
                 Solicitar seguimiento
-              </button>
-            </div>
+              </LiquidButton>
+              </CardContent>
+            </LiquidCard>
 
             {/* RIGHT: Case progress + goals */}
             <ActivityCard
@@ -539,7 +549,7 @@ export default function DashboardPage() {
           {/* ── FINANCIAL SCORE CARDS ── */}
           <div className="mt-5">
             <div className="flex items-center justify-between mb-4">
-              <p className="text-sm font-semibold text-[#241014]">Tus scores financieros</p>
+              <p className="text-sm font-semibold font-lora text-[#241014]">Tus scores financieros</p>
               <span className="text-xs text-[#9C9492]">Actualizado hoy</span>
             </div>
             <FinancialScoreCards />
