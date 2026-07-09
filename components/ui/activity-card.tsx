@@ -76,27 +76,26 @@ export function ActivityCard({
             onMouseEnter={() => setIsHovering(metric.label)}
             onMouseLeave={() => setIsHovering(null)}
           >
-            <div className="relative w-20 h-20">
+            <div className="relative w-[72px] h-[72px]">
               {/* Track ring */}
               <svg className="w-full h-full -rotate-90" viewBox="0 0 80 80">
-                <circle cx="40" cy="40" r="32" fill="none" stroke="#F7F5F4" strokeWidth="8" />
+                <circle cx="40" cy="40" r="30" fill="none" stroke="#E7E2E1" strokeWidth="10" />
                 <circle
-                  cx="40" cy="40" r="32" fill="none"
+                  cx="40" cy="40" r="30" fill="none"
                   stroke={METRIC_COLORS[metric.label] ?? "#7A1E2C"}
-                  strokeWidth="8"
+                  strokeWidth="10"
                   strokeLinecap="round"
-                  strokeDasharray={`${2 * Math.PI * 32}`}
-                  strokeDashoffset={`${2 * Math.PI * 32 * (1 - metric.trend / 100)}`}
-                  className={cn("transition-all duration-700", isHovering === metric.label && "opacity-90")}
+                  strokeDasharray={`${2 * Math.PI * 30}`}
+                  strokeDashoffset={`${2 * Math.PI * 30 * (1 - metric.trend / 100)}`}
+                  className={cn("transition-all duration-700", isHovering === metric.label && "opacity-85")}
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-base font-bold text-[#241014] leading-none">{metric.value}</span>
+                <span className="text-lg font-extrabold text-[#241014] leading-none tracking-tight">{metric.value}</span>
                 {metric.unit && <span className="text-[9px] text-[#9C9492] mt-0.5">{metric.unit}</span>}
               </div>
             </div>
-            <span className="mt-2 text-xs font-medium text-[#57504E]">{metric.label}</span>
-            <span className="text-[10px] text-[#9C9492]">{metric.trend}%</span>
+            <span className="mt-1.5 text-[11px] font-semibold text-[#57504E]">{metric.label}</span>
           </div>
         ))}
       </div>
@@ -126,20 +125,21 @@ export function ActivityCard({
               key={goal.id}
               onClick={() => onToggleGoal?.(goal.id)}
               className={cn(
-                "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left",
-                "bg-[#F7F5F4] border border-[#F7F5F4]",
-                "hover:border-[#E7E2E1] transition-all"
+                "w-full flex items-center gap-3 p-3 rounded-lg text-left",
+                "bg-[#F7F5F4] border border-transparent",
+                "hover:bg-white hover:border-[#241014] hover:shadow-sm",
+                "transition-all duration-150"
               )}
             >
               <CheckCircle2
                 className={cn(
                   "w-4 h-4 shrink-0",
-                  goal.isCompleted ? "text-[#4F9A5C]" : "text-[#D4C0C3]"
+                  goal.isCompleted ? "text-[#4F9A5C]" : "text-[#C4BEBC]"
                 )}
               />
               <span
                 className={cn(
-                  "text-xs",
+                  "text-xs font-medium",
                   goal.isCompleted
                     ? "text-[#9C9492] line-through"
                     : "text-[#241014]"

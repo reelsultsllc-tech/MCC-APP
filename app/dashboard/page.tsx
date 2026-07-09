@@ -226,7 +226,7 @@ export default function DashboardPage() {
 
         {/* Content */}
         <main className="flex-1 overflow-auto p-5 xl:p-6">
-          <div className="max-w-[1440px] mx-auto w-full">
+          <div className="max-w-[1200px] mx-auto w-full">
 
             {/* ── 2-COLUMN LAYOUT ── */}
             <div className="flex gap-5 items-start">

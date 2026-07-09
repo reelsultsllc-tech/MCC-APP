@@ -54,16 +54,20 @@ export function BureauSelector({ className, onSelect }: BureauSelectorProps) {
               onClick={() => handleSelect(b.id)}
               onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && handleSelect(b.id)}
               className={cn(
-                'relative flex items-center gap-3 rounded-xl p-3.5 cursor-pointer transition-colors',
+                'relative flex items-center gap-3 rounded-xl p-3.5 cursor-pointer transition-all duration-150',
                 'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7A1E2C]',
-                isSelected ? 'text-white' : 'hover:bg-[#F7F5F4]'
+                isSelected ? 'text-white' : 'hover:bg-[#F7F5F4] hover:shadow-sm'
               )}
             >
-              {/* Animated spring highlight */}
+              {/* Animated spring highlight — deep dark with inner relief */}
               {isSelected && (
                 <motion.div
                   layoutId="bureau-highlight"
-                  className="absolute inset-0 rounded-xl bg-[#7A1E2C]"
+                  className="absolute inset-0 rounded-xl"
+                  style={{
+                    background: '#241014',
+                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(0,0,0,0.25), 0 4px 12px rgba(36,16,20,0.3)',
+                  }}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ type: 'spring', stiffness: 320, damping: 28 }}
@@ -74,8 +78,9 @@ export function BureauSelector({ className, onSelect }: BureauSelectorProps) {
               <div
                 className="relative z-10 w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
                 style={{
-                  background: isSelected ? 'rgba(255,255,255,0.18)' : '#F5E4E6',
-                  color: isSelected ? 'white' : '#7A1E2C',
+                  background: isSelected ? 'rgba(255,255,255,0.12)' : '#F5E4E6',
+                  color: isSelected ? 'rgba(255,255,255,0.9)' : '#7A1E2C',
+                  boxShadow: isSelected ? 'inset 0 1px 0 rgba(255,255,255,0.15)' : undefined,
                 }}
               >
                 {b.abbr}
