@@ -27,6 +27,7 @@ const config: Config = {
         card: '#FFFFFF',
       },
       fontFamily: {
+        sans: ['Plus Jakarta Sans', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
         lora: ['Lora', 'Georgia', 'serif'],
         body: ['system-ui', 'sans-serif'],
       },
