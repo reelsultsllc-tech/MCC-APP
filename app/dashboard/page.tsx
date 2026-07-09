@@ -453,35 +453,62 @@ export default function DashboardPage() {
                   </button>
                 </div>
 
-                {/* VAULT */}
-                <div className="bg-white rounded-2xl border border-[#E7E2E1] card-lift overflow-hidden">
-                  <div className="px-5 py-4 border-b border-[#E7E2E1] flex items-center justify-between">
-                    <p className="text-sm font-semibold font-lora text-[#241014]">Vault de documentos</p>
-                    <button className="text-xs font-semibold text-[#7A1E2C] hover:underline" onClick={() => flash('Ver vault próximamente')}>Ver todos →</button>
-                  </div>
-                  <div className="divide-y divide-[#F7F5F4]">
-                    {DOCS.map(doc => (
-                      <div key={doc.id} className="flex items-center gap-3 px-4 py-3">
-                        <div className="w-9 h-9 rounded-lg bg-[#F5E4E6] flex items-center justify-center shrink-0">
-                          <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><rect x="3" y="1" width="11" height="15" rx="1.5" stroke="#7A1E2C" strokeWidth="1.3"/><path d="M6 6h6M6 9h6M6 12h4" stroke="#7A1E2C" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5">
-                            <p className="text-xs font-semibold text-[#241014] truncate">{doc.name}</p>
-                            {doc.isNew && <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#E7EFDE] text-[#3E6B2E]">Nuevo</span>}
+                {/* VAULT + ADVISOR: paired 3fr / 2fr grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-5 items-start">
+
+                  {/* LEFT: Vault */}
+                  <div className="bg-white rounded-2xl border border-[#E7E2E1] card-lift overflow-hidden">
+                    <div className="px-5 py-4 border-b border-[#E7E2E1] flex items-center justify-between">
+                      <p className="text-sm font-semibold font-lora text-[#241014]">Vault de documentos</p>
+                      <button className="text-xs font-semibold text-[#7A1E2C] hover:underline" onClick={() => flash('Ver vault próximamente')}>Ver todos →</button>
+                    </div>
+                    <div className="divide-y divide-[#F7F5F4]">
+                      {DOCS.map(doc => (
+                        <div key={doc.id} className="flex items-center gap-3 px-4 py-3.5">
+                          <div className="w-9 h-9 rounded-lg bg-[#F5E4E6] flex items-center justify-center shrink-0">
+                            <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><rect x="3" y="1" width="11" height="15" rx="1.5" stroke="#7A1E2C" strokeWidth="1.3"/><path d="M6 6h6M6 9h6M6 12h4" stroke="#7A1E2C" strokeWidth="1.2" strokeLinecap="round"/></svg>
                           </div>
-                          <p className="text-xs text-[#9C9492] truncate">{doc.sub}</p>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <p className="text-xs font-semibold text-[#241014] truncate">{doc.name}</p>
+                              {doc.isNew && <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#E7EFDE] text-[#3E6B2E]">Nuevo</span>}
+                            </div>
+                            <p className="text-xs text-[#9C9492] truncate">{doc.sub}</p>
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button onClick={() => flash('Previsualizar próximamente')} className="p-1.5 text-[#9C9492] hover:text-[#241014] transition-colors" title="Previsualizar">
+                              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.4"/></svg>
+                            </button>
+                            <button onClick={() => flash('Descarga próximamente')} className="p-1.5 text-[#9C9492] hover:text-[#241014] transition-colors" title="Descargar">
+                              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v9M5 8l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 13h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                            </button>
+                          </div>
                         </div>
-                        <button onClick={() => flash('Descarga próximamente')} className="p-1.5 text-[#9C9492] hover:text-[#241014] transition-colors">
-                          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v9M5 8l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 13h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                        </button>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                    <div className="px-5 py-3 bg-[#F7F5F4] flex items-center gap-2">
+                      <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#9C9492" strokeWidth="1.2"/><path d="M7 5v2M7 9v.5" stroke="#9C9492" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                      <p className="text-xs text-[#9C9492]">Tu información está segura y encriptada.</p>
+                    </div>
                   </div>
-                  <div className="px-5 py-3 bg-[#F7F5F4] flex items-center gap-2">
-                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#9C9492" strokeWidth="1.2"/><path d="M7 5v2M7 9v.5" stroke="#9C9492" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                    <p className="text-xs text-[#9C9492]">Tu información está segura y encriptada.</p>
-                  </div>
+
+                  {/* RIGHT: Advisor card — compact, natural text wrap */}
+                  <AdvisorRevealCard
+                    name="Andrea Ruiz"
+                    role="Especialista en crédito"
+                    rating={4.9}
+                    reviewCount={320}
+                    initials="AR"
+                    suggestion="Podemos dar seguimiento proactivo a tu disputa con Capital One para acelerar la respuesta de Equifax."
+                    benefits={[
+                      'Aumenta la probabilidad de respuesta rápida',
+                      'Demuestra seguimiento y perseverancia',
+                      'Te mantiene en movimiento hacia tu meta',
+                    ]}
+                    onAction={() => flash('Solicitud enviada. Andrea te contactará pronto.')}
+                    className="h-full"
+                  />
+
                 </div>
 
                 {/* FINANCIAL SCORE CARDS */}
@@ -497,22 +524,6 @@ export default function DashboardPage() {
 
               {/* ─────────── STICKY SIDEBAR ─────────── */}
               <div className="hidden xl:flex flex-col gap-5 w-80 shrink-0 sticky top-6">
-
-                {/* ADVISOR REVEAL CARD */}
-                <AdvisorRevealCard
-                  name="Andrea Ruiz"
-                  role="Especialista en crédito"
-                  rating={4.9}
-                  reviewCount={320}
-                  initials="AR"
-                  suggestion="Podemos dar seguimiento proactivo a tu disputa con Capital One para acelerar la respuesta de Equifax."
-                  benefits={[
-                    'Aumenta las probabilidades de respuesta rápida',
-                    'Demuestra seguimiento y perseverancia',
-                    'Te mantiene en movimiento hacia tu meta',
-                  ]}
-                  onAction={() => flash('Solicitud enviada. Andrea te contactará pronto.')}
-                />
 
                 {/* CREDIT CARD PANEL */}
                 <LiquidCard className="rounded-2xl py-0 gap-0 relative overflow-hidden">
