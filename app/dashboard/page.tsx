@@ -223,9 +223,10 @@ export default function DashboardPage() {
 
         {/* Content */}
         <main className="flex-1 overflow-auto p-5 xl:p-6">
+          <div className="max-w-[1440px] mx-auto w-full">
 
           {/* ── HERO SCORE CARD ── */}
-          <div className="rounded-2xl p-6 mb-5 flex flex-col sm:flex-row items-center sm:items-start gap-6" style={{ background: 'linear-gradient(135deg, #5C1520 0%, #7A1E2C 60%, #9B3040 100%)' }}>
+          <div className="rounded-2xl p-6 mb-5 flex flex-col sm:flex-row items-center sm:items-start gap-6 justify-between" style={{ background: 'linear-gradient(135deg, #5C1520 0%, #7A1E2C 60%, #9B3040 100%)' }}>
             {/* Score */}
             <div className="text-white shrink-0">
               <p className="text-xs font-semibold uppercase tracking-widest text-white/60 mb-2">Tu score de crédito</p>
@@ -245,22 +246,37 @@ export default function DashboardPage() {
               </svg>
             </div>
 
-            {/* Delta */}
-            <div className="flex-1 text-white">
-              <div className="flex items-center gap-1.5 mb-2">
-                <span className="text-green-300 text-lg">↑</span>
-                <span className="text-4xl font-bold font-lora" style={{ color: '#6EE7A0' }}>+77</span>
-                <div className="ml-1">
-                  <p className="text-xs font-bold text-white/80 uppercase tracking-wide">PUNTOS</p>
-                  <p className="text-xs text-white/60">desde que comenzamos</p>
+            {/* Delta + Motivational grouped */}
+            <div className="flex items-start gap-5 shrink-0">
+              <div className="text-white">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <span className="text-lg" style={{ color: '#6EE7A0' }}>↑</span>
+                  <span className="text-4xl font-bold font-lora" style={{ color: '#6EE7A0' }}>+77</span>
+                  <div className="ml-1">
+                    <p className="text-xs font-bold text-white/80 uppercase tracking-wide">PUNTOS</p>
+                    <p className="text-xs text-white/60">desde que comenzamos</p>
+                  </div>
+                </div>
+                <div className="flex gap-3 mt-2">
+                  {[
+                    { label: '4', sub: 'Disputas activas' },
+                    { label: '3', sub: 'Meses trabajando' },
+                  ].map(s => (
+                    <div key={s.label} className="bg-white/10 rounded-lg px-3 py-1.5 text-center">
+                      <p className="text-base font-bold font-lora text-white">{s.label}</p>
+                      <p className="text-[10px] text-white/50 leading-tight">{s.sub}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
-
-            {/* Motivational */}
-            <div className="shrink-0 max-w-[200px] bg-white/10 rounded-xl p-4 text-white">
-              <p className="text-sm font-bold mb-1.5">⚡ ¡Vas por excelente camino!</p>
-              <p className="text-xs text-white/70 leading-snug">Tu dedicación está dando resultados. Seguimos trabajando para llevar tu crédito al siguiente nivel.</p>
+              <div className="max-w-[220px] bg-white/10 rounded-xl p-4 text-white border border-white/10">
+                <p className="text-sm font-bold font-lora mb-1.5">⚡ ¡Vas por excelente camino!</p>
+                <p className="text-xs text-white/70 leading-snug">Tu dedicación está dando resultados. Seguimos trabajando para llevar tu crédito al siguiente nivel.</p>
+                <div className="mt-3 flex items-center gap-1.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#6EE7A0] animate-pulse" />
+                  <span className="text-[10px] text-white/50">Actualizado hace 2 días</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -554,6 +570,7 @@ export default function DashboardPage() {
             </div>
             <FinancialScoreCards />
           </div>
+          </div>{/* end max-width wrapper */}
         </main>
       </div>
 
