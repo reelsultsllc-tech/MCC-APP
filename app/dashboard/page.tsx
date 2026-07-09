@@ -234,71 +234,100 @@ export default function DashboardPage() {
               {/* ─────────── MAIN COLUMN ─────────── */}
               <div className="flex-1 min-w-0 space-y-5">
 
-                {/* HERO */}
+                {/* HERO — background fills full width, content constrained inside */}
                 <div
-                  className="rounded-2xl p-6 flex flex-col sm:flex-row items-center sm:items-start gap-6 justify-between"
-                  style={{ background: 'linear-gradient(135deg, #5C1520 0%, #7A1E2C 60%, #9B3040 100%)' }}
+                  className="rounded-2xl relative overflow-hidden"
+                  style={{
+                    background: 'linear-gradient(135deg, #5C1520 0%, #7A1E2C 55%, #8B2535 100%)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                  }}
                 >
-                  {/* Score */}
-                  <div className="text-white shrink-0">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-white/60 mb-2">Tu score de crédito</p>
-                    <p className="text-7xl font-bold font-lora leading-none mb-1">{displayScore}</p>
-                    <p className="text-xl font-medium" style={{ color: '#F4A0A8' }}>Bueno</p>
-                    <p className="text-xs text-white/50 mt-3">Próxima actualización: 26 jun 2026 ⓘ</p>
-                  </div>
+                  {/* Radial glow: premium glass-panel feel */}
+                  <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 18% 50%, rgba(255,255,255,0.07) 0%, transparent 58%)' }} />
+                  {/* Top-edge shimmer */}
+                  <div className="absolute top-0 left-0 right-0 h-px pointer-events-none" style={{ background: 'linear-gradient(90deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)' }} />
 
-                  {/* Animated Gauge */}
-                  <div className="shrink-0">
-                    <svg width="220" height="120" viewBox="0 0 220 120">
-                      <path d="M20 110 A90 90 0 0 1 200 110" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="16" strokeLinecap="round"/>
-                      <motion.path
-                        d="M20 110 A90 90 0 0 1 200 110"
-                        fill="none"
-                        stroke="white"
-                        strokeWidth="16"
-                        strokeLinecap="round"
-                        strokeDasharray="283"
-                        initial={{ strokeDashoffset: 283 }}
-                        animate={{ strokeDashoffset: 283 - 283 * ((615 - 300) / 550) }}
-                        transition={{ duration: 1.8, ease: [0.25, 1, 0.5, 1], delay: 0.3 }}
-                      />
-                      <text x="22"  y="118" fill="rgba(255,255,255,0.4)" fontSize="10" fontFamily="system-ui">300</text>
-                      <text x="185" y="118" fill="rgba(255,255,255,0.4)" fontSize="10" fontFamily="system-ui">850</text>
-                    </svg>
-                  </div>
+                  {/* ── INNER WRAPPER: the "tope arquitectónico" ──
+                      Content stays grouped; background bleeds to the right naturally */}
+                  <div className="relative z-10 p-7 flex flex-col sm:flex-row items-center gap-10">
 
-                  {/* Delta + Motivational */}
-                  <div className="flex items-start gap-4 shrink-0">
-                    <div className="text-white">
-                      <div className="flex items-center gap-1.5 mb-2">
-                        <span className="text-lg" style={{ color: '#6EE7A0' }}>↑</span>
-                        <span className="text-4xl font-bold font-lora" style={{ color: '#6EE7A0' }}>+{displayDelta}</span>
-                        <div className="ml-1">
-                          <p className="text-xs font-bold text-white/80 uppercase tracking-wide">PUNTOS</p>
-                          <p className="text-xs text-white/60">desde que comenzamos</p>
-                        </div>
+                    {/* SCORE */}
+                    <div className="text-white shrink-0">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/50 mb-3">Tu score de crédito</p>
+                      <p className="text-8xl font-bold font-lora leading-none tracking-tight">{displayScore}</p>
+                      <div className="flex items-center gap-2 mt-3">
+                        <span
+                          className="px-2.5 py-0.5 rounded-full text-xs font-semibold text-white/90"
+                          style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)' }}
+                        >
+                          Bueno
+                        </span>
+                        <p className="text-xs text-white/40">próx. 26 jun 2026</p>
                       </div>
-                      <div className="flex gap-3 mt-2">
+                    </div>
+
+                    {/* GAUGE */}
+                    <div className="shrink-0">
+                      <svg width="200" height="108" viewBox="0 0 220 120">
+                        <path d="M20 110 A90 90 0 0 1 200 110" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="16" strokeLinecap="round"/>
+                        <motion.path
+                          d="M20 110 A90 90 0 0 1 200 110"
+                          fill="none"
+                          stroke="white"
+                          strokeWidth="16"
+                          strokeLinecap="round"
+                          strokeDasharray="283"
+                          initial={{ strokeDashoffset: 283 }}
+                          animate={{ strokeDashoffset: 283 - 283 * ((615 - 300) / 550) }}
+                          transition={{ duration: 1.8, ease: [0.25, 1, 0.5, 1], delay: 0.3 }}
+                        />
+                        <text x="22"  y="118" fill="rgba(255,255,255,0.3)" fontSize="10" fontFamily="system-ui">300</text>
+                        <text x="185" y="118" fill="rgba(255,255,255,0.3)" fontSize="10" fontFamily="system-ui">850</text>
+                      </svg>
+                    </div>
+
+                    {/* +77 METRIC CHIP + MINI STATS */}
+                    <div className="flex items-start gap-4 shrink-0">
+
+                      {/* Dark glass metric chip */}
+                      <div
+                        className="rounded-2xl px-5 py-4 shrink-0"
+                        style={{ background: 'rgba(0,0,0,0.28)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}
+                      >
+                        <p className="text-[10px] font-semibold text-white/40 uppercase tracking-[0.18em] mb-2">Puntos ganados</p>
+                        <div className="flex items-baseline gap-1">
+                          <span
+                            className="font-extrabold leading-none tracking-tighter"
+                            style={{ fontSize: '3.25rem', color: '#6EE7A0' }}
+                          >
+                            +{displayDelta}
+                          </span>
+                          <span className="text-base font-bold ml-0.5" style={{ color: '#6EE7A0' }}>pts</span>
+                        </div>
+                        <p className="text-[11px] text-white/35 mt-2">desde que comenzamos</p>
+                      </div>
+
+                      {/* Mini stats column */}
+                      <div className="space-y-2 pt-1">
                         {[
-                          { label: '4', sub: 'Disputas activas' },
-                          { label: '3', sub: 'Meses trabajando' },
+                          { icon: '🛡️', value: '4', label: 'Disputas' },
+                          { icon: '📅', value: '3', label: 'Meses' },
+                          { icon: '📄', value: '4', label: 'Documentos' },
                         ].map(s => (
-                          <div key={s.label} className="bg-white/10 rounded-lg px-3 py-1.5 text-center">
-                            <p className="text-base font-bold font-lora text-white">{s.label}</p>
-                            <p className="text-[10px] text-white/50 leading-tight">{s.sub}</p>
+                          <div
+                            key={s.label}
+                            className="flex items-center gap-2 rounded-lg px-3 py-1.5"
+                            style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.06)' }}
+                          >
+                            <span className="text-sm">{s.icon}</span>
+                            <span className="text-sm font-bold font-lora text-white">{s.value}</span>
+                            <span className="text-[11px] text-white/50">{s.label}</span>
                           </div>
                         ))}
                       </div>
+
                     </div>
-                    <div className="max-w-[200px] bg-white/10 rounded-xl p-4 text-white border border-white/10">
-                      <p className="text-sm font-bold font-lora mb-1.5">⚡ ¡Vas por excelente camino!</p>
-                      <p className="text-xs text-white/70 leading-snug">Tu dedicación está dando resultados. Seguimos trabajando para llevar tu crédito al siguiente nivel.</p>
-                      <div className="mt-3 flex items-center gap-1.5">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#6EE7A0] animate-pulse" />
-                        <span className="text-[10px] text-white/50">Actualizado hace 2 días</span>
-                      </div>
-                    </div>
-                  </div>
+                  </div>{/* end inner wrapper */}
                 </div>
 
                 {/* ROADMAP */}
@@ -306,11 +335,16 @@ export default function DashboardPage() {
                   <CardContent className="p-6">
                     <p className="text-xs font-semibold text-[#9C9492] uppercase tracking-widest mb-1">Tu plan de reparación</p>
                     <p className="text-base font-semibold font-lora text-[#241014] mb-8">4 pasos hacia un crédito excelente</p>
-                    <div className="relative">
-                      <div className="absolute h-0.5 bg-[#E7E2E1]" style={{ top: '15px', left: '35px', right: '35px' }} />
+
+                    {/* Steps: max-w prevents wire-clothes-line effect on ultrawide */}
+                    <div className="max-w-[440px] mx-auto relative">
+                      <div
+                        className="absolute bg-[#E7E2E1] rounded-full"
+                        style={{ height: '3px', top: '19px', left: '40px', right: '40px' }}
+                      />
                       <motion.div
-                        className="absolute h-0.5 bg-[#4F9A5C] origin-left"
-                        style={{ top: '15px', left: '35px', right: '35px' }}
+                        className="absolute bg-[#4F9A5C] rounded-full origin-left"
+                        style={{ height: '3px', top: '19px', left: '40px', right: '40px' }}
                         initial={{ scaleX: 0 }}
                         animate={{ scaleX: 0.67 }}
                         transition={{ duration: 1.0, delay: 0.4, ease: 'easeOut' }}
@@ -324,41 +358,47 @@ export default function DashboardPage() {
                         ] as const).map((step, i) => (
                           <motion.div
                             key={i}
-                            className="flex flex-col items-center text-center w-[70px]"
+                            className="flex flex-col items-center text-center w-[80px]"
                             initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.08 + i * 0.1, duration: 0.4, ease: 'easeOut' }}
                           >
                             <motion.div
-                              className={`w-8 h-8 rounded-full flex items-center justify-center mb-2 border-2 ${
+                              className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 border-2 ${
                                 step.status === 'done'    ? 'bg-[#4F9A5C] border-[#4F9A5C]' :
                                 step.status === 'active'  ? 'bg-[#7A1E2C] border-[#7A1E2C]' :
-                                'bg-white border-[#C4BEBC]'
+                                'bg-white border-[#D4CCCA]'
                               }`}
+                              style={step.status === 'pending' ? { boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.06)' } : undefined}
                               initial={{ scale: 0.5 }}
                               animate={{ scale: 1 }}
                               transition={{ delay: 0.15 + i * 0.1, type: 'spring', stiffness: 500, damping: 18 }}
                             >
-                              {step.status === 'done'    && <CheckCircle2 size={13} className="text-white" />}
-                              {step.status === 'active'  && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
-                              {step.status === 'pending' && <span className="text-[10px] font-bold text-[#C4BEBC]">{i + 1}</span>}
+                              {step.status === 'done'    && <CheckCircle2 size={16} className="text-white" />}
+                              {step.status === 'active'  && <div className="w-3 h-3 rounded-full bg-white" />}
+                              {step.status === 'pending' && <span className="text-xs font-bold text-[#B8ABA9]">{i + 1}</span>}
                             </motion.div>
-                            <p className={`text-[10px] font-semibold leading-tight ${
+                            <p className={`text-[11px] font-semibold leading-tight ${
                               step.status === 'done'    ? 'text-[#4F9A5C]' :
                               step.status === 'active'  ? 'text-[#241014]' : 'text-[#9C9492]'
                             }`}>{step.label}</p>
-                            <p className="text-[9px] text-[#9C9492] mt-0.5 leading-tight">{step.desc}</p>
+                            <p className={`text-[10px] mt-0.5 leading-tight ${
+                              step.status === 'pending' ? 'text-[#B0A4A2] font-medium' : 'text-[#9C9492]'
+                            }`}>{step.desc}</p>
                           </motion.div>
                         ))}
                       </div>
                     </div>
+
                     <motion.div
                       className="mt-7 p-3.5 rounded-xl bg-[#F5E4E6] flex items-start gap-2.5"
                       initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.7, duration: 0.4, ease: 'easeOut' }}
                     >
-                      <span className="text-sm mt-0.5">⚡</span>
+                      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" className="mt-0.5 shrink-0">
+                        <path d="M9 1.5L2.5 8.5H7L7 14.5L13.5 7.5H9L9 1.5Z" fill="#7A1E2C" stroke="#7A1E2C" strokeWidth="0.5" strokeLinejoin="round"/>
+                      </svg>
                       <div>
                         <p className="text-xs font-semibold text-[#241014]">Estás en el Paso 3 de 4</p>
                         <p className="text-xs text-[#57504E] leading-snug mt-0.5">Tus disputas están en proceso. Próxima acción: seguimiento a Capital One con Equifax.</p>
