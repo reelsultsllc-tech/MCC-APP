@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { CheckCircle2 } from 'lucide-react'
 import MccLogo from '@/components/MccLogo'
 import Toast from '@/components/Toast'
 import { ActivityCard, type Goal } from '@/components/ui/activity-card'
 import { FinancialScoreCards } from '@/components/ui/financial-score-cards'
-import CursorWanderCard from '@/components/ui/cursor-wander-card'
 import { LiquidCard, CardContent } from '@/components/ui/liquid-glass-card'
 import { AdvisorRevealCard } from '@/components/ui/advisor-reveal-card'
 import { BureauSelector } from '@/components/ui/bureau-selector'
@@ -54,42 +53,10 @@ function getPill(d: typeof disputes[0]) {
 
 function ActivityIcon({ type }: { type: string }) {
   const icons = {
-    new: {
-      bg: '#F5E4E6',
-      icon: (
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <circle cx="8" cy="8" r="5.5" stroke="#7A1E2C" strokeWidth="1.4"/>
-          <path d="M8 5v3M8 9.5v.5" stroke="#7A1E2C" strokeWidth="1.4" strokeLinecap="round"/>
-        </svg>
-      ),
-    },
-    success: {
-      bg: '#E7EFDE',
-      icon: (
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <circle cx="8" cy="8" r="5.5" stroke="#4F9A5C" strokeWidth="1.4"/>
-          <path d="M5.5 8l2 2 3-3" stroke="#4F9A5C" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      ),
-    },
-    sent: {
-      bg: '#F6EFDF',
-      icon: (
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <rect x="2" y="4" width="12" height="8.5" rx="1.2" stroke="#B8862E" strokeWidth="1.3"/>
-          <path d="M2 5.5l6 4 6-4" stroke="#B8862E" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      ),
-    },
-    wait: {
-      bg: '#EDE7E6',
-      icon: (
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <circle cx="8" cy="8" r="5.5" stroke="#57504E" strokeWidth="1.4"/>
-          <path d="M8 5.5v2.8l2 1.2" stroke="#57504E" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      ),
-    },
+    new:     { bg: '#F5E4E6', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="#7A1E2C" strokeWidth="1.4"/><path d="M8 5v3M8 9.5v.5" stroke="#7A1E2C" strokeWidth="1.4" strokeLinecap="round"/></svg> },
+    success: { bg: '#E7EFDE', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="#4F9A5C" strokeWidth="1.4"/><path d="M5.5 8l2 2 3-3" stroke="#4F9A5C" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+    sent:    { bg: '#F6EFDF', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="8.5" rx="1.2" stroke="#B8862E" strokeWidth="1.3"/><path d="M2 5.5l6 4 6-4" stroke="#B8862E" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+    wait:    { bg: '#EDE7E6', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="#57504E" strokeWidth="1.4"/><path d="M8 5.5v2.8l2 1.2" stroke="#57504E" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg> },
   }
   const { bg, icon } = icons[type as keyof typeof icons] ?? icons.wait
   return (
@@ -106,12 +73,10 @@ function DisputeProgress({ stageIdx, result }: { stageIdx: number; result: strin
       {steps.map((label, i) => {
         const stepStage = i + 1
         const done = stageIdx > stepStage
-        const current = stageIdx === stepStage
         const resolved = stageIdx === 3 && i === 2
-        let dotBg = '#E7E2E1'
-        let dotBorder = '#E7E2E1'
+        let dotBg = '#E7E2E1'; let dotBorder = '#E7E2E1'
         if (done || resolved) { dotBg = '#4F9A5C'; dotBorder = '#4F9A5C' }
-        else if (current) { dotBg = '#7A1E2C'; dotBorder = '#7A1E2C' }
+        else if (stageIdx === stepStage) { dotBg = '#7A1E2C'; dotBorder = '#7A1E2C' }
         return (
           <div key={i} className="flex items-center gap-1">
             {i > 0 && <div className="w-5 h-px" style={{ background: done ? '#4F9A5C' : '#E7E2E1' }} />}
@@ -148,8 +113,7 @@ function useCountUp(target: number, duration: number, delay = 0) {
       const tick = () => {
         const elapsed = Date.now() - start
         const progress = Math.min(elapsed / duration, 1)
-        const eased = 1 - Math.pow(1 - progress, 3)
-        setValue(Math.round(eased * target))
+        setValue(Math.round((1 - Math.pow(1 - progress, 3)) * target))
         if (progress < 1) requestAnimationFrame(tick)
       }
       requestAnimationFrame(tick)
@@ -168,9 +132,7 @@ export default function DashboardPage() {
   const displayScore = useCountUp(615, 1600, 200)
   const displayDelta = useCountUp(77,  1400, 500)
 
-  useEffect(() => {
-    sessionStorage.setItem('mcc_disclosure_done', 'true')
-  }, [])
+  useEffect(() => { sessionStorage.setItem('mcc_disclosure_done', 'true') }, [])
 
   function flash(msg: string) {
     setToastMsg(msg)
@@ -180,98 +142,102 @@ export default function DashboardPage() {
   return (
     <div className="flex min-h-screen bg-[#F7F5F4]">
 
-      {/* ── SIDEBAR NAV ── */}
-      <aside className="hidden lg:flex flex-col w-52 xl:w-56 bg-white border-r border-[#E7E2E1] shrink-0">
-        <div className="px-5 py-5 border-b border-[#E7E2E1]">
-          <div className="flex items-center gap-2.5">
-            <MccLogo size={34} />
-            <span className="font-lora text-base font-medium text-[#241014] leading-tight">My Credit<br/><span className="text-[#7A1E2C]">Café</span></span>
+      {/* ══════════════════════════════════
+          ZONA 1 — LEFT ANCHOR (260px fixed)
+          ══════════════════════════════════ */}
+      <aside className="hidden lg:flex flex-col w-[260px] shrink-0 bg-white border-r border-[#E7E2E1] h-screen sticky top-0">
+
+        {/* Logo — more breathing room */}
+        <div className="px-6 py-6 border-b border-[#E7E2E1]">
+          <div className="flex items-center gap-3">
+            <MccLogo size={36} />
+            <span className="font-lora text-base font-medium text-[#241014] leading-tight">
+              My Credit<br/><span className="text-[#7A1E2C]">Café</span>
+            </span>
           </div>
         </div>
 
-        <nav className="flex-1 px-3 py-4 space-y-0.5">
+        {/* Navigation — translucent active state */}
+        <nav className="flex-1 px-4 py-5 space-y-0.5 overflow-y-auto">
           {NAV.map(item => (
             <button
               key={item.id}
               onClick={() => setActiveNav(item.id)}
-              className={`relative overflow-hidden w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 text-left ${
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 text-left ${
                 activeNav === item.id
-                  ? 'bg-[#F5E4E6] text-[#7A1E2C]'
+                  ? 'text-[#7A1E2C] font-semibold'
                   : 'text-[#57504E] hover:bg-[#F7F5F4] hover:text-[#241014]'
               }`}
+              style={activeNav === item.id ? { background: 'rgba(139,35,50,0.08)' } : undefined}
             >
-              {activeNav === item.id && (
-                <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full bg-[#7A1E2C]" />
-              )}
               <span className="shrink-0">{item.icon}</span>
               {item.label}
             </button>
           ))}
         </nav>
 
-        <div className="mx-3 mb-3 p-3.5 rounded-xl bg-[#F5E4E6]">
-          <div className="flex items-center gap-2 mb-1">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="shrink-0">
-              <path d="M8 1L6 6H1l4 3-1.5 5L8 11l4.5 3L11 9l4-3H10L8 1z" fill="#7A1E2C" stroke="#7A1E2C" strokeWidth="0.3" strokeLinejoin="round"/>
-            </svg>
-            <p className="text-sm font-semibold text-[#241014]">Plan Premium</p>
+        {/* Plan Premium — pinned to absolute bottom, SVG icon, no emoji */}
+        <div className="px-4 pb-6">
+          <div className="p-4 rounded-xl" style={{ background: 'rgba(139,35,50,0.06)', border: '1px solid rgba(139,35,50,0.10)' }}>
+            <div className="flex items-center gap-2 mb-1.5">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                <path d="M7 1L4.5 6H1l3.5 3-1.3 4.5L7 11l3.8 2.5L9.5 9 13 6H9.5L7 1z" fill="#57504E"/>
+              </svg>
+              <p className="text-sm font-semibold text-[#241014]">Plan Premium</p>
+            </div>
+            <p className="text-xs text-[#57504E] mb-2.5 leading-snug">Tienes acceso completo a todas las herramientas.</p>
+            <button onClick={() => flash('Beneficios próximamente')} className="text-xs font-semibold text-[#7A1E2C] hover:underline">
+              Ver beneficios →
+            </button>
           </div>
-          <p className="text-xs text-[#57504E] mb-2 leading-snug">Tienes acceso completo a todas las herramientas.</p>
-          <button onClick={() => flash('Beneficios próximamente')} className="text-xs font-semibold text-[#7A1E2C] hover:underline">Ver beneficios →</button>
-        </div>
-
-        <div className="mx-3 mb-4 p-3.5 rounded-xl border border-[#E7E2E1]">
-          <p className="text-sm font-semibold text-[#241014] mb-0.5">¿Necesitas ayuda?</p>
-          <p className="text-xs text-[#57504E] mb-2.5">Estamos aquí para ti.</p>
-          <div className="flex -space-x-2 mb-2.5">
-            {(['#7A1E2C', '#4F9A5C', '#B8862E'] as const).map((c, i) => (
-              <div key={i} className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-bold" style={{ background: c }}>
-                {['A', 'S', 'M'][i]}
-              </div>
-            ))}
-          </div>
-          <button onClick={() => flash('Chat próximamente')} className="w-full py-2 rounded-lg bg-[#241014] text-white text-xs font-semibold hover:bg-[#3a1a1f] transition-colors">
-            Chatear con soporte
-          </button>
-          <p className="text-xs text-[#9C9492] text-center mt-1.5">Respuesta en minutos</p>
         </div>
       </aside>
 
-      {/* ── MAIN AREA ── */}
-      <div className="flex-1 flex flex-col min-w-0">
+      {/* ══════════════════════════════════
+          ZONAS 2+3 — content right of sidebar
+          ══════════════════════════════════ */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
 
-        {/* Top bar */}
-        <header className="bg-white border-b border-[#E7E2E1] px-6 h-14 flex items-center justify-between shrink-0">
-          <h1 className="font-lora text-lg font-medium text-[#241014]">
-            Hola, {CLIENT.name}
-          </h1>
-          <div className="flex items-center gap-3">
-            <button className="relative p-2 text-[#57504E] hover:text-[#241014] hover:bg-[#F7F5F4] rounded-lg transition-colors" onClick={() => flash('2 notificaciones')}>
-              <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
-                <path d="M11 2C7.69 2 5 4.69 5 8v5l-2 2v1h16v-1l-2-2V8c0-3.31-2.69-6-6-6z" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinejoin="round"/>
-                <path d="M9 18a2 2 0 0 0 4 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-              <span className="absolute top-1 right-1 w-4 h-4 bg-[#7A1E2C] rounded-full text-white text-[9px] font-bold flex items-center justify-center">2</span>
-            </button>
-            <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#E7E2E1] hover:bg-[#F7F5F4] transition-colors" onClick={() => flash('Configuración próximamente')}>
-              <div className="w-6 h-6 rounded-full bg-[#7A1E2C] flex items-center justify-center text-white text-xs font-bold">MV</div>
-              <span className="text-sm text-[#241014] font-medium hidden sm:block">Mi cuenta</span>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="#57504E" strokeWidth="1.5" strokeLinecap="round"/></svg>
-            </button>
+        {/* Header — constrained to match content max-width */}
+        <header className="bg-white border-b border-[#E7E2E1] shrink-0 sticky top-0 z-20">
+          <div className="max-w-[1240px] mx-auto px-6 h-14 flex items-center justify-between">
+            <h1 className="font-lora text-lg font-medium text-[#241014]">
+              Hola, {CLIENT.name}
+            </h1>
+            <div className="flex items-center gap-3">
+              <button
+                className="relative p-2 text-[#57504E] hover:text-[#241014] hover:bg-[#F7F5F4] rounded-lg transition-colors"
+                onClick={() => flash('2 notificaciones')}
+              >
+                <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
+                  <path d="M11 2C7.69 2 5 4.69 5 8v5l-2 2v1h16v-1l-2-2V8c0-3.31-2.69-6-6-6z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+                  <path d="M9 18a2 2 0 0 0 4 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+                <span className="absolute -top-0.5 -right-0.5 w-[18px] h-[18px] bg-[#7A1E2C] rounded-full text-white text-[9px] font-bold grid place-items-center leading-none">2</span>
+              </button>
+              <button
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#E7E2E1] hover:bg-[#F7F5F4] transition-colors"
+                onClick={() => flash('Configuración próximamente')}
+              >
+                <div className="w-6 h-6 rounded-full bg-[#7A1E2C] flex items-center justify-center text-white text-xs font-bold">MV</div>
+                <span className="text-sm text-[#241014] font-medium hidden sm:block">Mi cuenta</span>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="#57504E" strokeWidth="1.5" strokeLinecap="round"/></svg>
+              </button>
+            </div>
           </div>
         </header>
 
-        {/* Content */}
-        <main className="flex-1 overflow-auto p-5 xl:p-6">
-          <div className="max-w-[1200px] mx-auto w-full">
-
-            {/* ── 2-COLUMN LAYOUT ── */}
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-auto">
+          <div className="max-w-[1240px] mx-auto p-5 xl:p-6">
             <div className="flex gap-5 items-start">
 
-              {/* ─────────── MAIN COLUMN ─────────── */}
+              {/* ══════════════════════════════════
+                  ZONA 2 — CENTER STAGE (flex-1)
+                  ══════════════════════════════════ */}
               <div className="flex-1 min-w-0 space-y-5">
 
-                {/* HERO — background fills full width, content constrained inside */}
+                {/* ── HERO BANNER: 3-column grid ── */}
                 <div
                   className="rounded-2xl relative overflow-hidden"
                   style={{
@@ -279,16 +245,13 @@ export default function DashboardPage() {
                     border: '1px solid rgba(255,255,255,0.08)',
                   }}
                 >
-                  {/* Radial glow: premium glass-panel feel */}
-                  <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 18% 50%, rgba(255,255,255,0.07) 0%, transparent 58%)' }} />
-                  {/* Top-edge shimmer */}
+                  <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.07) 0%, transparent 60%)' }} />
                   <div className="absolute top-0 left-0 right-0 h-px pointer-events-none" style={{ background: 'linear-gradient(90deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)' }} />
 
-                  {/* Inner wrapper — content grouped, background bleeds to right naturally */}
-                  <div className="relative z-10 p-7 flex flex-col sm:flex-row items-center gap-10">
+                  <div className="relative z-10 p-6 grid grid-cols-[1fr_auto_1fr] items-center gap-6">
 
-                    {/* SCORE */}
-                    <div className="text-white shrink-0">
+                    {/* LEFT — Score + label */}
+                    <div className="text-white">
                       <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/50 mb-3">Tu score de crédito</p>
                       <p className="text-8xl font-bold font-lora leading-none tracking-tight">{displayScore}</p>
                       <div className="flex items-center gap-2 mt-3">
@@ -302,16 +265,13 @@ export default function DashboardPage() {
                       </div>
                     </div>
 
-                    {/* GAUGE — viewBox extended so labels clear the arc stroke */}
-                    <div className="shrink-0">
-                      <svg width="200" height="114" viewBox="0 0 220 130">
+                    {/* CENTER — Arc gauge (visual bridge) */}
+                    <div>
+                      <svg width="190" height="110" viewBox="0 0 220 130">
                         <path d="M20 110 A90 90 0 0 1 200 110" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="16" strokeLinecap="round"/>
                         <motion.path
                           d="M20 110 A90 90 0 0 1 200 110"
-                          fill="none"
-                          stroke="white"
-                          strokeWidth="16"
-                          strokeLinecap="round"
+                          fill="none" stroke="white" strokeWidth="16" strokeLinecap="round"
                           strokeDasharray="283"
                           initial={{ strokeDashoffset: 283 }}
                           animate={{ strokeDashoffset: 283 - 283 * ((615 - 300) / 550) }}
@@ -322,82 +282,42 @@ export default function DashboardPage() {
                       </svg>
                     </div>
 
-                    {/* +77 METRIC CHIP + MINI STATS */}
-                    <div className="flex items-start gap-4 shrink-0">
-
-                      {/* Dark glass metric chip */}
-                      <div
-                        className="rounded-2xl px-5 py-4 shrink-0"
-                        style={{ background: 'rgba(0,0,0,0.28)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}
-                      >
-                        <p className="text-[10px] font-semibold text-white/40 uppercase tracking-[0.18em] mb-2">Puntos ganados</p>
-                        <div className="flex items-baseline gap-1">
-                          <span
-                            className="font-extrabold leading-none tracking-tighter"
-                            style={{ fontSize: '3.25rem', color: '#6EE7A0' }}
-                          >
-                            +{displayDelta}
-                          </span>
-                          <span className="text-base font-bold ml-0.5" style={{ color: '#6EE7A0' }}>pts</span>
-                        </div>
-                        <p className="text-[11px] text-white/35 mt-2">desde que comenzamos</p>
+                    {/* RIGHT — +77 top, 2-col mini grid below */}
+                    <div className="text-white">
+                      <p className="text-[10px] font-semibold text-white/40 uppercase tracking-[0.18em] mb-1.5">Puntos ganados</p>
+                      <div className="flex items-baseline gap-1 mb-4">
+                        <span className="font-extrabold leading-none tracking-tighter" style={{ fontSize: '3rem', color: '#6EE7A0' }}>
+                          +{displayDelta}
+                        </span>
+                        <span className="text-base font-bold ml-0.5" style={{ color: '#6EE7A0' }}>pts</span>
                       </div>
-
-                      {/* Mini stats column — SVG icons, no OS emoji */}
-                      <div className="space-y-2 pt-1">
+                      <div className="grid grid-cols-2 gap-2">
                         {[
-                          {
-                            icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1.5L2 4.5v4c0 3.5 2.5 6.5 6 7.5 3.5-1 6-4 6-7.5v-4L8 1.5z" stroke="rgba(255,255,255,0.65)" strokeWidth="1.4" strokeLinejoin="round"/></svg>,
-                            value: '4', label: 'Disputas',
-                          },
-                          {
-                            icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="rgba(255,255,255,0.65)" strokeWidth="1.4"/><path d="M2 7h12M6 3V1M10 3V1" stroke="rgba(255,255,255,0.65)" strokeWidth="1.4" strokeLinecap="round"/></svg>,
-                            value: '3', label: 'Meses',
-                          },
-                          {
-                            icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="3" y="1.5" width="10" height="13" rx="1.5" stroke="rgba(255,255,255,0.65)" strokeWidth="1.4"/><path d="M6 5.5h4M6 8h4M6 10.5h2.5" stroke="rgba(255,255,255,0.65)" strokeWidth="1.2" strokeLinecap="round"/></svg>,
-                            value: '4', label: 'Documentos',
-                          },
-                        ].map(s => (
-                          <div
-                            key={s.label}
-                            className="flex items-center gap-2 rounded-lg px-3 py-1.5"
-                            style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.06)' }}
-                          >
-                            <span className="shrink-0">{s.icon}</span>
-                            <span className="text-sm font-bold font-lora text-white">{s.value}</span>
-                            <span className="text-[11px] text-white/50">{s.label}</span>
+                          { value: String(disputes.length), label: 'Disputas' },
+                          { value: '3',                     label: 'Meses' },
+                        ].map(m => (
+                          <div key={m.label} className="rounded-xl px-3 py-2.5" style={{ background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.22)' }}>
+                            <p className="text-xl font-bold font-lora text-white leading-none">{m.value}</p>
+                            <p className="text-[10px] text-white/50 mt-0.5">{m.label}</p>
                           </div>
                         ))}
                       </div>
-
                     </div>
-                  </div>{/* end inner wrapper */}
+
+                  </div>
                 </div>
 
-                {/* ROADMAP */}
+                {/* ── ROADMAP (directly below banner) ── */}
                 <LiquidCard className="rounded-2xl py-0 gap-0">
                   <CardContent className="p-6">
                     <p className="text-xs font-semibold text-[#9C9492] uppercase tracking-widest mb-1">Tu plan de reparación</p>
                     <p className="text-base font-semibold font-lora text-[#241014] mb-8">4 pasos hacia un crédito excelente</p>
 
-                    {/* Steps: max-w prevents wire-clothes-line effect on ultrawide */}
                     <div className="max-w-[440px] mx-auto relative">
-                      {/* Track: grey base */}
-                      <div
-                        className="absolute bg-[#E7E2E1] rounded-full"
-                        style={{ height: '3px', top: '19px', left: '40px', right: '40px' }}
-                      />
-                      {/* Track: green fill with glow */}
+                      <div className="absolute bg-[#E7E2E1] rounded-full" style={{ height: '3px', top: '19px', left: '40px', right: '40px' }} />
                       <motion.div
                         className="absolute bg-[#4F9A5C] rounded-full origin-left"
-                        style={{
-                          height: '3px',
-                          top: '19px',
-                          left: '40px',
-                          right: '40px',
-                          filter: 'drop-shadow(0 0 4px rgba(79,154,92,0.6))',
-                        }}
+                        style={{ height: '3px', top: '19px', left: '40px', right: '40px', filter: 'drop-shadow(0 0 4px rgba(79,154,92,0.6))' }}
                         initial={{ scaleX: 0 }}
                         animate={{ scaleX: 0.67 }}
                         transition={{ duration: 1.0, delay: 0.4, ease: 'easeOut' }}
@@ -416,13 +336,9 @@ export default function DashboardPage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.08 + i * 0.1, duration: 0.4, ease: 'easeOut' }}
                           >
-                            {/* Node wrapper: relative so ping ring can be absolute */}
                             <div className="relative mb-2">
                               {step.status === 'active' && (
-                                <div
-                                  className="absolute inset-0 rounded-full animate-ping"
-                                  style={{ background: 'rgba(122,30,44,0.25)' }}
-                                />
+                                <div className="absolute inset-0 rounded-full animate-ping" style={{ background: 'rgba(122,30,44,0.25)' }} />
                               )}
                               <motion.div
                                 className={`w-10 h-10 rounded-full flex items-center justify-center ${
@@ -431,11 +347,8 @@ export default function DashboardPage() {
                                   'bg-white border-2 border-[#D4CCCA] opacity-50'
                                 }`}
                                 style={
-                                  step.status === 'active'
-                                    ? { boxShadow: '0 0 15px rgba(122,30,44,0.4)' }
-                                    : step.status === 'pending'
-                                    ? { boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.06)' }
-                                    : undefined
+                                  step.status === 'active'  ? { boxShadow: '0 0 15px rgba(122,30,44,0.4)' } :
+                                  step.status === 'pending' ? { boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.06)' } : undefined
                                 }
                                 initial={{ scale: 0.5 }}
                                 animate={{ scale: 1 }}
@@ -458,63 +371,13 @@ export default function DashboardPage() {
                         ))}
                       </div>
                     </div>
-
-                    <motion.div
-                      className="mt-7 p-3.5 rounded-xl bg-[#F5E4E6] flex items-start gap-2.5"
-                      initial={{ opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.7, duration: 0.4, ease: 'easeOut' }}
-                    >
-                      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" className="mt-0.5 shrink-0">
-                        <path d="M9 1.5L2.5 8.5H7L7 14.5L13.5 7.5H9L9 1.5Z" fill="#7A1E2C" stroke="#7A1E2C" strokeWidth="0.5" strokeLinejoin="round"/>
-                      </svg>
-                      <div>
-                        <p className="text-xs font-semibold text-[#241014]">Estás en el Paso 3 de 4</p>
-                        <p className="text-xs text-[#57504E] leading-snug mt-0.5">Tus disputas están en proceso. Próxima acción: seguimiento a Capital One con Equifax.</p>
-                      </div>
-                    </motion.div>
                   </CardContent>
                 </LiquidCard>
 
-                {/* 4 STATS */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                  {[
-                    {
-                      icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5L2 5v4c0 4 3.1 7.4 7 8 3.9-.6 7-4 7-8V5L9 1.5z" stroke="#7A1E2C" strokeWidth="1.5" strokeLinejoin="round"/></svg>,
-                      value: disputes.length, label: 'Disputas activas', link: 'Ver detalles',
-                    },
-                    {
-                      icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="11" height="14" rx="1.5" stroke="#7A1E2C" strokeWidth="1.4"/><path d="M6 6h6M6 9h6M6 12h4" stroke="#7A1E2C" strokeWidth="1.2" strokeLinecap="round"/></svg>,
-                      value: 4, label: 'Documentos guardados', link: 'Ver vault',
-                    },
-                    {
-                      icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><polyline points="2,14 6,8 9,11 13,5 16,8" stroke="#7A1E2C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M13 5h3v3" stroke="#7A1E2C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-                      value: '+77', label: 'Puntos ganados', link: 'Ver historial',
-                    },
-                    {
-                      icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="13" rx="1.5" stroke="#7A1E2C" strokeWidth="1.4"/><path d="M2 7h14M6 3V1M12 3V1" stroke="#7A1E2C" strokeWidth="1.4" strokeLinecap="round"/></svg>,
-                      value: 8, label: 'Días desde última actualización', link: 'Ver calendario',
-                    },
-                  ].map((s, i) => (
-                    <motion.div
-                      key={s.label}
-                      className="bg-white rounded-xl border border-[#E7E2E1] p-4 card-lift"
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 + i * 0.07, duration: 0.4 }}
-                    >
-                      <div className="w-9 h-9 rounded-lg bg-[#F5E4E6] flex items-center justify-center mb-3">{s.icon}</div>
-                      <p className="text-3xl font-bold font-lora text-[#241014] mb-0.5">{s.value}</p>
-                      <p className="text-xs text-[#9C9492] mb-2 leading-tight">{s.label}</p>
-                      <button className="text-xs font-semibold text-[#7A1E2C] hover:underline" onClick={() => flash(`${s.link} próximamente`)}>{s.link} →</button>
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* BUREAU SELECTOR */}
+                {/* ── BUREAU SELECTOR ── */}
                 <BureauSelector onSelect={(id) => flash(`Filtrando por ${id}`)} />
 
-                {/* DISPUTES TABLE */}
+                {/* ── DISPUTES TABLE ── */}
                 <div className="bg-white rounded-2xl border border-[#E7E2E1] card-lift overflow-hidden">
                   <div className="px-5 py-4 border-b border-[#E7E2E1] flex items-center justify-between">
                     <p className="text-sm font-semibold font-lora text-[#241014]">Tus disputas activas</p>
@@ -523,7 +386,6 @@ export default function DashboardPage() {
                   <div className="divide-y divide-[#F7F5F4]">
                     {disputes.map(d => {
                       const pill = getPill(d)
-                      const initial = d.creditor.charAt(0).toUpperCase()
                       return (
                         <button
                           key={d.id}
@@ -531,16 +393,14 @@ export default function DashboardPage() {
                           className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[#F7F5F4] transition-colors text-left"
                         >
                           <div className="w-9 h-9 rounded-full bg-[#241014] flex items-center justify-center text-white text-sm font-bold shrink-0">
-                            {initial}
+                            {d.creditor.charAt(0).toUpperCase()}
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-semibold text-[#241014] truncate">{d.creditor}</p>
                             <p className="text-xs text-[#9C9492] truncate">{d.item}</p>
-                            <div className="mt-1.5">
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold" style={{ background: pill.bg, color: pill.color }}>
-                                {pill.label}
-                              </span>
-                            </div>
+                            <span className="inline-flex items-center mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold" style={{ background: pill.bg, color: pill.color }}>
+                              {pill.label}
+                            </span>
                           </div>
                           <div className="shrink-0 text-right">
                             <DisputeProgress stageIdx={d.stageIdx} result={d.result} />
@@ -555,7 +415,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                {/* ACTIVITY FEED */}
+                {/* ── ACTIVITY FEED ── */}
                 <div className="bg-white rounded-2xl border border-[#E7E2E1] card-lift p-5">
                   <p className="text-sm font-semibold font-lora text-[#241014] mb-4">Actividad reciente</p>
                   <div className="space-y-3.5">
@@ -574,65 +434,43 @@ export default function DashboardPage() {
                   </button>
                 </div>
 
-                {/* VAULT + ADVISOR: paired 3fr / 2fr grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-5 items-start">
-
-                  {/* LEFT: Vault */}
-                  <div className="bg-white rounded-2xl border border-[#E7E2E1] card-lift overflow-hidden">
-                    <div className="px-5 py-4 border-b border-[#E7E2E1] flex items-center justify-between">
-                      <p className="text-sm font-semibold font-lora text-[#241014]">Vault de documentos</p>
-                      <button className="text-xs font-semibold text-[#7A1E2C] hover:underline" onClick={() => flash('Ver vault próximamente')}>Ver todos →</button>
-                    </div>
-                    <div className="divide-y divide-[#F7F5F4]">
-                      {DOCS.map(doc => (
-                        <div key={doc.id} className="flex items-center gap-3 px-4 py-3.5">
-                          <div className="w-9 h-9 rounded-lg bg-[#F5E4E6] flex items-center justify-center shrink-0">
-                            <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><rect x="3" y="1" width="11" height="15" rx="1.5" stroke="#7A1E2C" strokeWidth="1.3"/><path d="M6 6h6M6 9h6M6 12h4" stroke="#7A1E2C" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-1.5">
-                              <p className="text-xs font-semibold text-[#241014] truncate">{doc.name}</p>
-                              {doc.isNew && <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#E7EFDE] text-[#3E6B2E]">Nuevo</span>}
-                            </div>
-                            <p className="text-xs text-[#9C9492] truncate">{doc.sub}</p>
-                          </div>
-                          <div className="flex items-center gap-1 shrink-0">
-                            <button onClick={() => flash('Previsualizar próximamente')} className="p-1.5 text-[#9C9492] hover:text-[#241014] transition-colors" title="Previsualizar">
-                              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.4"/></svg>
-                            </button>
-                            <button onClick={() => flash('Descarga próximamente')} className="p-1.5 text-[#9C9492] hover:text-[#241014] transition-colors" title="Descargar">
-                              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v9M5 8l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 13h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="px-5 py-3 bg-[#F7F5F4] flex items-center gap-2">
-                      <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#9C9492" strokeWidth="1.2"/><path d="M7 5v2M7 9v.5" stroke="#9C9492" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                      <p className="text-xs text-[#9C9492]">Tu información está segura y encriptada.</p>
-                    </div>
+                {/* ── VAULT (full-width now) ── */}
+                <div className="bg-white rounded-2xl border border-[#E7E2E1] card-lift overflow-hidden">
+                  <div className="px-5 py-4 border-b border-[#E7E2E1] flex items-center justify-between">
+                    <p className="text-sm font-semibold font-lora text-[#241014]">Vault de documentos</p>
+                    <button className="text-xs font-semibold text-[#7A1E2C] hover:underline" onClick={() => flash('Ver vault próximamente')}>Ver todos →</button>
                   </div>
-
-                  {/* RIGHT: Advisor card — compact, natural text wrap */}
-                  <AdvisorRevealCard
-                    name="Andrea Ruiz"
-                    role="Especialista en crédito"
-                    rating={4.9}
-                    reviewCount={320}
-                    initials="AR"
-                    suggestion="Podemos dar seguimiento proactivo a tu disputa con Capital One para acelerar la respuesta de Equifax."
-                    benefits={[
-                      'Aumenta la probabilidad de respuesta rápida',
-                      'Demuestra seguimiento y perseverancia',
-                      'Te mantiene en movimiento hacia tu meta',
-                    ]}
-                    onAction={() => flash('Solicitud enviada. Andrea te contactará pronto.')}
-                    className="h-full"
-                  />
-
+                  <div className="divide-y divide-[#F7F5F4]">
+                    {DOCS.map(doc => (
+                      <div key={doc.id} className="flex items-center gap-3 px-4 py-3.5">
+                        <div className="w-9 h-9 rounded-lg bg-[#F5E4E6] flex items-center justify-center shrink-0">
+                          <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><rect x="3" y="1" width="11" height="15" rx="1.5" stroke="#7A1E2C" strokeWidth="1.3"/><path d="M6 6h6M6 9h6M6 12h4" stroke="#7A1E2C" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            <p className="text-xs font-semibold text-[#241014] truncate">{doc.name}</p>
+                            {doc.isNew && <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#E7EFDE] text-[#3E6B2E]">Nuevo</span>}
+                          </div>
+                          <p className="text-xs text-[#9C9492] truncate">{doc.sub}</p>
+                        </div>
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button onClick={() => flash('Previsualizar próximamente')} className="p-1.5 text-[#9C9492] hover:text-[#241014] transition-colors">
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.4"/></svg>
+                          </button>
+                          <button onClick={() => flash('Descarga próximamente')} className="p-1.5 text-[#9C9492] hover:text-[#241014] transition-colors">
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v9M5 8l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 13h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="px-5 py-3 bg-[#F7F5F4] flex items-center gap-2">
+                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#9C9492" strokeWidth="1.2"/><path d="M7 5v2M7 9v.5" stroke="#9C9492" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                    <p className="text-xs text-[#9C9492]">Tu información está segura y encriptada.</p>
+                  </div>
                 </div>
 
-                {/* FINANCIAL SCORE CARDS */}
+                {/* ── FINANCIAL SCORES ── */}
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <p className="text-sm font-semibold font-lora text-[#241014]">Tus scores financieros</p>
@@ -641,66 +479,108 @@ export default function DashboardPage() {
                   <FinancialScoreCards />
                 </div>
 
-              </div>{/* end main column */}
+              </div>{/* end Zone 2 */}
 
-              {/* ─────────── STICKY SIDEBAR ─────────── */}
-              <div className="hidden xl:flex flex-col gap-5 w-80 shrink-0 sticky top-6">
+              {/* ══════════════════════════════════
+                  ZONA 3 — RIGHT INTELLIGENCE (340px)
+                  ══════════════════════════════════ */}
+              <div className="hidden xl:flex flex-col gap-4 w-[340px] shrink-0 sticky top-6">
 
-                {/* CREDIT CARD PANEL */}
-                <LiquidCard className="rounded-2xl py-0 gap-0 relative overflow-hidden">
-                  {/* Glow from feature-highlight-card pattern */}
-                  <div className="absolute left-1/2 top-0 -z-0 h-48 w-48 -translate-x-1/2 -translate-y-1/4 rounded-full bg-[#7A1E2C]/8 blur-3xl pointer-events-none" />
-                  <CardContent className="p-5 flex flex-col gap-4 relative">
-                    <p className="text-[10px] font-semibold text-[#9C9492] uppercase tracking-widest">Tu tarjeta MCC</p>
-                    <motion.div
-                      className="flex justify-center"
-                      initial={{ opacity: 0, scale: 0.92 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
-                    >
-                      <CursorWanderCard
-                        cardholderName={CLIENT.name.toUpperCase()}
-                        width={280}
-                        height={175}
-                      />
-                    </motion.div>
-                    <div className="space-y-2.5">
-                      {[
-                        {
-                          icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1.5L2 4.5v4c0 3.5 2.5 6.5 6 7.5 3.5-1 6-4 6-7.5v-4L8 1.5z" stroke="#7A1E2C" strokeWidth="1.4" strokeLinejoin="round"/></svg>,
-                          text: 'Protección de crédito 24/7 incluida',
-                        },
-                        {
-                          icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="9" width="3" height="5" rx="0.8" stroke="#7A1E2C" strokeWidth="1.3"/><rect x="6.5" y="6" width="3" height="8" rx="0.8" stroke="#7A1E2C" strokeWidth="1.3"/><rect x="12" y="3" width="3" height="11" rx="0.8" stroke="#7A1E2C" strokeWidth="1.3"/></svg>,
-                          text: 'Monitoreo de los 3 burós en tiempo real',
-                        },
-                        {
-                          icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1v4M8 11v4M1 8h4M11 8h4" stroke="#7A1E2C" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="8" r="2.5" stroke="#7A1E2C" strokeWidth="1.3"/></svg>,
-                          text: 'Alertas instantáneas de cambios',
-                        },
-                      ].map((f, i) => (
-                        <motion.div
-                          key={i}
-                          className="flex items-center gap-2.5"
-                          initial={{ opacity: 0, x: -8 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.4 + i * 0.1, duration: 0.4, ease: 'easeOut' }}
-                        >
-                          <span className="shrink-0">{f.icon}</span>
-                          <p className="text-xs text-[#57504E]">{f.text}</p>
-                        </motion.div>
-                      ))}
+                {/* TOP: Step progress notification */}
+                <motion.div
+                  className="bg-white rounded-2xl border border-[#E7E2E1] p-4"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6, duration: 0.4 }}
+                >
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="w-9 h-9 rounded-xl bg-[#F5E4E6] flex items-center justify-center shrink-0">
+                      <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                        <path d="M9 1.5L2.5 8.5H7L7 14.5L13.5 7.5H9L9 1.5Z" fill="#7A1E2C" strokeLinejoin="round"/>
+                      </svg>
                     </div>
-                    <button
-                      className="text-xs font-semibold text-[#7A1E2C] hover:underline text-left"
-                      onClick={() => flash('Beneficios próximamente')}
-                    >
-                      Ver todos los beneficios →
-                    </button>
-                  </CardContent>
-                </LiquidCard>
+                    <div>
+                      <p className="text-[10px] font-semibold text-[#9C9492] uppercase tracking-widest">Progreso actual</p>
+                      <p className="text-sm font-semibold text-[#241014] mt-0.5">Estás en el Paso 3 de 4</p>
+                      <p className="text-xs text-[#57504E] leading-snug mt-1">Próxima acción: seguimiento a Capital One con Equifax.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-1.5 rounded-full bg-[#E7E2E1] overflow-hidden">
+                      <motion.div
+                        className="h-full bg-[#7A1E2C] rounded-full"
+                        initial={{ width: 0 }}
+                        animate={{ width: '75%' }}
+                        transition={{ duration: 1.2, delay: 0.8, ease: 'easeOut' }}
+                      />
+                    </div>
+                    <span className="text-[10px] font-semibold text-[#7A1E2C] shrink-0">75%</span>
+                  </div>
+                </motion.div>
 
-                {/* ACTIVITY CARD (case progress + daily goals) */}
+                {/* MIDDLE: Advisor card */}
+                <AdvisorRevealCard
+                  name="Andrea Ruiz"
+                  role="Especialista en crédito"
+                  rating={4.9}
+                  reviewCount={320}
+                  initials="AR"
+                  suggestion="Podemos dar seguimiento proactivo a tu disputa con Capital One para acelerar la respuesta de Equifax."
+                  benefits={[
+                    'Aumenta la probabilidad de respuesta rápida',
+                    'Demuestra seguimiento y perseverancia',
+                    'Te mantiene en movimiento hacia tu meta',
+                  ]}
+                  onAction={() => flash('Solicitud enviada. Andrea te contactará pronto.')}
+                />
+
+                {/* BOTTOM: Quick stats — vertical list, single-color SVG icons */}
+                <div className="bg-white rounded-2xl border border-[#E7E2E1] p-4">
+                  <p className="text-[10px] font-semibold text-[#9C9492] uppercase tracking-widest mb-2">Accesos rápidos</p>
+                  <div className="space-y-0.5">
+                    {[
+                      {
+                        icon: <svg width="15" height="15" viewBox="0 0 18 18" fill="none"><path d="M9 1.5L2 5v4c0 4 3.1 7.4 7 8 3.9-.6 7-4 7-8V5L9 1.5z" stroke="#7A1E2C" strokeWidth="1.5" strokeLinejoin="round"/></svg>,
+                        value: `${disputes.length}`, label: 'Disputas activas',
+                        action: () => flash('Disputas próximamente'),
+                      },
+                      {
+                        icon: <svg width="15" height="15" viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="11" height="14" rx="1.5" stroke="#7A1E2C" strokeWidth="1.4"/><path d="M6 6h6M6 9h6M6 12h4" stroke="#7A1E2C" strokeWidth="1.2" strokeLinecap="round"/></svg>,
+                        value: '4', label: 'Documentos guardados',
+                        action: () => flash('Vault próximamente'),
+                      },
+                      {
+                        icon: <svg width="15" height="15" viewBox="0 0 18 18" fill="none"><polyline points="2,14 6,8 9,11 13,5 16,8" stroke="#7A1E2C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M13 5h3v3" stroke="#7A1E2C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+                        value: '+77 pts', label: 'Ganados en total',
+                        action: () => flash('Historial próximamente'),
+                      },
+                      {
+                        icon: <svg width="15" height="15" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="13" rx="1.5" stroke="#7A1E2C" strokeWidth="1.4"/><path d="M2 7h14M6 3V1M12 3V1" stroke="#7A1E2C" strokeWidth="1.4" strokeLinecap="round"/></svg>,
+                        value: '8 días', label: 'Última actualización',
+                        action: () => flash('Calendario próximamente'),
+                      },
+                    ].map(s => (
+                      <button
+                        key={s.label}
+                        onClick={s.action}
+                        className="w-full flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-[#F7F5F4] transition-colors text-left"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-[#F5E4E6] flex items-center justify-center shrink-0">
+                          {s.icon}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold font-lora text-[#241014] leading-tight">{s.value}</p>
+                          <p className="text-[10px] text-[#9C9492] leading-tight">{s.label}</p>
+                        </div>
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-[#9C9492] shrink-0">
+                          <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                        </svg>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Activity rings + goals */}
                 <ActivityCard
                   metrics={CASE_METRICS}
                   dailyGoals={goals}
@@ -709,11 +589,11 @@ export default function DashboardPage() {
                   onViewDetails={() => flash('Progreso completo próximamente')}
                 />
 
-              </div>{/* end sidebar */}
+              </div>{/* end Zone 3 */}
 
-            </div>{/* end 2-col layout */}
-          </div>{/* end max-width */}
-        </main>
+            </div>
+          </div>
+        </div>
       </div>
 
       {toastMsg && <Toast message={toastMsg} onDismiss={() => setToastMsg('')} />}
