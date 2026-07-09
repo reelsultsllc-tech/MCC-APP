@@ -130,8 +130,8 @@ function FinancialScoreCard({ children }: FinancialScoreCardProps) {
   if (!appearing) return null
 
   return (
-    <LiquidCard className="w-full max-w-md animate-in fade-in slide-in-from-bottom-8 duration-700">
-      <CardContent className="p-9">{children}</CardContent>
+    <LiquidCard className="w-full animate-in fade-in slide-in-from-bottom-8 duration-700">
+      <CardContent className="p-5">{children}</CardContent>
     </LiquidCard>
   )
 }
@@ -234,7 +234,7 @@ function FinancialScoreHeader({ title, strength }: FinancialScoreHeaderProps) {
   }
 
   return (
-    <CardHeader className="flex flex-row items-center justify-between gap-6 pb-8 px-0 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <CardHeader className="flex flex-row items-center justify-between gap-3 pb-5 px-0 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <h2 className="text-lg font-semibold text-[#241014] truncate">{title}</h2>
       {hasStrength && strength && (
         <span
@@ -262,11 +262,11 @@ function FinancialScore({ title, description, initialScore }: FinancialScoreProp
   return (
     <FinancialScoreCard>
       <FinancialScoreHeader title={title} strength={strength} />
-      <div className="relative mb-10 animate-in fade-in duration-500">
+      <div className="relative mb-6 animate-in fade-in duration-500">
         <FinancialScoreHalfCircle value={score} max={max} />
         <FinancialScoreDisplay value={score} max={max} />
       </div>
-      <p className="text-[#9C9492] text-center mb-8 min-h-[4.5rem] text-sm leading-relaxed animate-in fade-in duration-500">
+      <p className="text-[#9C9492] text-center mb-5 min-h-[3.5rem] text-xs leading-relaxed animate-in fade-in duration-500">
         {description}
       </p>
       <LiquidButton
@@ -284,7 +284,7 @@ function FinancialScore({ title, description, initialScore }: FinancialScoreProp
 // Main export — use as a page section, not full-page
 export function FinancialScoreCards() {
   return (
-    <div className="flex flex-wrap items-start justify-center gap-5 mx-auto py-4">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 py-4">
       <CounterProvider>
         {data.map((card, i) => (
           <FinancialScore key={i} {...card} />
