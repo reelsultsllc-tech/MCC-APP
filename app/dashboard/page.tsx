@@ -463,6 +463,15 @@ export default function DashboardPage() {
                 </LiquidCard>
                 </MccBorderGlow>
 
+                {/* ── FINANCIAL SCORES — immediately after roadmap ── */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-sm font-semibold font-lora text-[#241014]">Tus scores financieros</p>
+                    <span className="text-xs text-[#9C9492]">Actualizado hoy</span>
+                  </div>
+                  <FinancialScoreCards />
+                </div>
+
                 {/* ── BUREAU SELECTOR ── */}
                 <BureauSelector onSelect={(id) => flash(`Filtrando por ${id}`)} />
 
@@ -559,14 +568,6 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                {/* ── FINANCIAL SCORES ── */}
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <p className="text-sm font-semibold font-lora text-[#241014]">Tus scores financieros</p>
-                    <span className="text-xs text-[#9C9492]">Actualizado hoy</span>
-                  </div>
-                  <FinancialScoreCards />
-                </div>
 
               </div>{/* end Zone 2 */}
 

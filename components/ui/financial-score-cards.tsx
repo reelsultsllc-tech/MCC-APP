@@ -217,11 +217,63 @@ function FinancialScoreHeader({ title, strength }: FinancialScoreHeaderProps) {
   )
 }
 
+function FinancialScoreEmpty({ title, description }: { title: string; description: string }) {
+  const [done, setDone] = useState(false)
+
+  if (done) return null
+
+  return (
+    <div
+      className="w-full bg-white rounded-2xl border border-dashed border-[#D4CCCA] animate-in fade-in slide-in-from-bottom-4 duration-700"
+      style={{ animationDelay: '700ms' }}
+    >
+      <div className="p-5 flex flex-col h-full">
+        {/* Header row */}
+        <div className="flex items-start justify-between gap-2 mb-4">
+          <div>
+            <h2 className="text-sm font-semibold text-[#241014] leading-snug mb-0.5">{title}</h2>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#F0EEEC] text-[#9C9492]">
+              Sin datos
+            </span>
+          </div>
+          {/* Lock icon */}
+          <div className="w-9 h-9 rounded-xl bg-[#F0EEEC] flex items-center justify-center shrink-0">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <rect x="3" y="7" width="10" height="8" rx="1.5" stroke="#B0A4A2" strokeWidth="1.3"/>
+              <path d="M5 7V5a3 3 0 0 1 6 0v2" stroke="#B0A4A2" strokeWidth="1.3" strokeLinecap="round"/>
+            </svg>
+          </div>
+        </div>
+
+        {/* Horizontal progress placeholder */}
+        <div className="flex-1 flex flex-col justify-center py-3">
+          <div className="h-1.5 w-full rounded-full bg-[#F0EEEC] mb-4 overflow-hidden">
+            <div className="h-full w-0 rounded-full bg-[#D4CCCA]" />
+          </div>
+          <p className="text-xs text-[#9C9492] leading-relaxed">{description}</p>
+        </div>
+
+        {/* Compact CTA */}
+        <button
+          onClick={() => setDone(true)}
+          className="mt-4 w-full py-2 rounded-xl text-xs font-semibold text-[#7A1E2C] border border-[#D4CCCA] hover:bg-[#F7F5F4] transition-colors"
+        >
+          Calcular gratis — 3 min →
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function FinancialScore({ title, description, initialScore }: FinancialScoreProps) {
   const [score, setScore] = useState<Score>(initialScore ?? null)
   const hasScore = score !== null
   const max = 100
   const strength = Utils.getStrength(score, max)
+
+  if (initialScore === undefined && !hasScore) {
+    return <FinancialScoreEmpty title={title} description={description} />
+  }
 
   return (
     <FinancialScoreCard>
@@ -247,7 +299,7 @@ function FinancialScore({ title, description, initialScore }: FinancialScoreProp
 
 export function FinancialScoreCards() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 py-4">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-[820px]">
       <CounterProvider>
         {data.map((card, i) => (
           <FinancialScore key={i} {...card} />

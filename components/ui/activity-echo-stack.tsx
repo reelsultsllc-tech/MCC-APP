@@ -101,13 +101,13 @@ export function ActivityEchoStack({ items, interval = 4200 }: ActivityEchoStackP
     <div>
       {/* Card viewport — overflow hidden clips the slide animation */}
       <div className="relative overflow-hidden rounded-xl" style={{ height: 108 }}>
-        <AnimatePresence mode="popLayout" initial={false}>
+        <AnimatePresence mode="sync" initial={false}>
           <motion.div
             key={idx}
-            initial={{ y: '105%', opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: '-105%', opacity: 0 }}
-            transition={{ duration: 0.52, ease: [0.4, 0, 0.2, 1] }}
+            initial={{ y: '105%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '-105%' }}
+            transition={{ duration: 0.48, ease: [0.4, 0, 0.2, 1] }}
             style={{ position: 'absolute', inset: 0 }}
           >
             <ActivityCard item={items[idx]} />
