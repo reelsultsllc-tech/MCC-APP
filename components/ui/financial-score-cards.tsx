@@ -3,6 +3,7 @@
 import type React from "react"
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react"
 import { LiquidButton } from "@/components/ui/liquid-glass-button"
+import SpotlightCard from "@/components/ui/spotlight-card"
 
 enum Strength {
   None     = "none",
@@ -93,10 +94,14 @@ function FinancialScoreCard({ children }: FinancialScoreCardProps) {
   if (!visible) return null
 
   return (
-    <div className="w-full bg-white rounded-2xl border border-[#E7E2E1] overflow-hidden animate-in fade-in slide-in-from-bottom-6 duration-700"
-      style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(36,16,20,0.04)' }}>
+    <SpotlightCard
+      className="w-full bg-white rounded-2xl border border-[#E7E2E1] animate-in fade-in slide-in-from-bottom-6 duration-700"
+      style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(36,16,20,0.04)' }}
+      spotlightColor="rgba(184, 134, 46, 0.10)"
+      radius={200}
+    >
       <div className="p-5">{children}</div>
-    </div>
+    </SpotlightCard>
   )
 }
 

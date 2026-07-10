@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { CheckCircle2 } from 'lucide-react'
@@ -121,6 +121,45 @@ function useCountUp(target: number, duration: number, delay = 0) {
     return () => clearTimeout(timer)
   }, [target, duration, delay])
   return value
+}
+
+function QuickStatRow({ icon, value, label, action }: { icon: ReactNode; value: string; label: string; action: () => void }) {
+  const ref = useRef<HTMLButtonElement>(null)
+  const [pos, setPos] = useState({ x: 0, y: 0 })
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <button
+      ref={ref}
+      onClick={action}
+      onMouseMove={e => {
+        if (!ref.current) return
+        const rect = ref.current.getBoundingClientRect()
+        setPos({ x: e.clientX - rect.left, y: e.clientY - rect.top })
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="relative w-full flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-[#F7F5F4] transition-colors text-left overflow-hidden"
+    >
+      <div
+        className="pointer-events-none absolute inset-0 transition-opacity duration-500 ease-in-out"
+        style={{
+          opacity: hovered ? 1 : 0,
+          background: `radial-gradient(circle 100px at ${pos.x}px ${pos.y}px, rgba(122,30,44,0.07), transparent)`,
+        }}
+      />
+      <div className="relative z-10 w-8 h-8 rounded-lg bg-[#F5E4E6] flex items-center justify-center shrink-0">
+        {icon}
+      </div>
+      <div className="relative z-10 flex-1 min-w-0">
+        <p className="text-sm font-bold font-lora text-[#241014] leading-tight">{value}</p>
+        <p className="text-[10px] text-[#9C9492] leading-tight">{label}</p>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="relative z-10 text-[#9C9492] shrink-0">
+        <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+    </button>
+  )
 }
 
 export default function DashboardPage() {
@@ -548,45 +587,26 @@ export default function DashboardPage() {
                 <div className="bg-white rounded-2xl border border-[#E7E2E1] p-4">
                   <p className="text-[10px] font-semibold text-[#9C9492] uppercase tracking-widest mb-2">Accesos rápidos</p>
                   <div className="space-y-0.5">
-                    {[
-                      {
-                        icon: <svg width="15" height="15" viewBox="0 0 18 18" fill="none"><path d="M9 1.5L2 5v4c0 4 3.1 7.4 7 8 3.9-.6 7-4 7-8V5L9 1.5z" stroke="#7A1E2C" strokeWidth="1.5" strokeLinejoin="round"/></svg>,
-                        value: `${disputes.length}`, label: 'Disputas activas',
-                        action: () => flash('Disputas próximamente'),
-                      },
-                      {
-                        icon: <svg width="15" height="15" viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="11" height="14" rx="1.5" stroke="#7A1E2C" strokeWidth="1.4"/><path d="M6 6h6M6 9h6M6 12h4" stroke="#7A1E2C" strokeWidth="1.2" strokeLinecap="round"/></svg>,
-                        value: '4', label: 'Documentos guardados',
-                        action: () => flash('Vault próximamente'),
-                      },
-                      {
-                        icon: <svg width="15" height="15" viewBox="0 0 18 18" fill="none"><polyline points="2,14 6,8 9,11 13,5 16,8" stroke="#7A1E2C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M13 5h3v3" stroke="#7A1E2C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-                        value: '+77 pts', label: 'Ganados en total',
-                        action: () => flash('Historial próximamente'),
-                      },
-                      {
-                        icon: <svg width="15" height="15" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="13" rx="1.5" stroke="#7A1E2C" strokeWidth="1.4"/><path d="M2 7h14M6 3V1M12 3V1" stroke="#7A1E2C" strokeWidth="1.4" strokeLinecap="round"/></svg>,
-                        value: '8 días', label: 'Última actualización',
-                        action: () => flash('Calendario próximamente'),
-                      },
-                    ].map(s => (
-                      <button
-                        key={s.label}
-                        onClick={s.action}
-                        className="w-full flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-[#F7F5F4] transition-colors text-left"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-[#F5E4E6] flex items-center justify-center shrink-0">
-                          {s.icon}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold font-lora text-[#241014] leading-tight">{s.value}</p>
-                          <p className="text-[10px] text-[#9C9492] leading-tight">{s.label}</p>
-                        </div>
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-[#9C9492] shrink-0">
-                          <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                        </svg>
-                      </button>
-                    ))}
+                    <QuickStatRow
+                      icon={<svg width="15" height="15" viewBox="0 0 18 18" fill="none"><path d="M9 1.5L2 5v4c0 4 3.1 7.4 7 8 3.9-.6 7-4 7-8V5L9 1.5z" stroke="#7A1E2C" strokeWidth="1.5" strokeLinejoin="round"/></svg>}
+                      value={`${disputes.length}`} label="Disputas activas"
+                      action={() => flash('Disputas próximamente')}
+                    />
+                    <QuickStatRow
+                      icon={<svg width="15" height="15" viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="11" height="14" rx="1.5" stroke="#7A1E2C" strokeWidth="1.4"/><path d="M6 6h6M6 9h6M6 12h4" stroke="#7A1E2C" strokeWidth="1.2" strokeLinecap="round"/></svg>}
+                      value="4" label="Documentos guardados"
+                      action={() => flash('Vault próximamente')}
+                    />
+                    <QuickStatRow
+                      icon={<svg width="15" height="15" viewBox="0 0 18 18" fill="none"><polyline points="2,14 6,8 9,11 13,5 16,8" stroke="#7A1E2C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M13 5h3v3" stroke="#7A1E2C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                      value="+77 pts" label="Ganados en total"
+                      action={() => flash('Historial próximamente')}
+                    />
+                    <QuickStatRow
+                      icon={<svg width="15" height="15" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="13" rx="1.5" stroke="#7A1E2C" strokeWidth="1.4"/><path d="M2 7h14M6 3V1M12 3V1" stroke="#7A1E2C" strokeWidth="1.4" strokeLinecap="round"/></svg>}
+                      value="8 días" label="Última actualización"
+                      action={() => flash('Calendario próximamente')}
+                    />
                   </div>
                 </div>
 
