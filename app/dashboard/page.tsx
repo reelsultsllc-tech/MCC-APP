@@ -184,6 +184,7 @@ export default function DashboardPage() {
   const router = useRouter()
   const [activeNav, setActiveNav] = useState('resumen')
   const [toastMsg, setToastMsg] = useState('')
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   const displayScore = useCountUp(615, 1600, 200)
   const displayDelta = useCountUp(77,  1400, 500)
@@ -199,71 +200,113 @@ export default function DashboardPage() {
     <div className="flex min-h-screen bg-[#FAF7F4]">
 
       {/* ══════════════════════════════════
-          ZONA 1 — LEFT ANCHOR (260px fixed)
+          ZONA 1 — LEFT ANCHOR (collapsible)
           ══════════════════════════════════ */}
-      <aside className="hidden lg:flex flex-col w-[260px] shrink-0 bg-white border-r border-[#E7E2E1] h-screen sticky top-0">
+      <aside className={`hidden lg:flex flex-col shrink-0 bg-white border-r border-[#E7E2E1] h-screen sticky top-0 overflow-hidden transition-[width] duration-300 ease-in-out ${sidebarCollapsed ? 'w-[64px]' : 'w-[260px]'}`}>
 
-        {/* Logo — h-14 matches header height so the border-b lines are flush */}
-        <div className="px-6 h-14 flex items-center border-b border-[#E7E2E1]">
-          <div className="flex items-center gap-3">
-            <MccLogo size={36} />
-            <span className="font-lora text-base font-medium text-[#241014] leading-tight">
+        {/* Logo row — h-14 aligns with header border-b */}
+        <div className="h-14 flex items-center border-b border-[#E7E2E1] shrink-0">
+          <div className="flex items-center gap-3 flex-1 min-w-0 pl-4">
+            <MccLogo size={30} />
+            <span className={`font-lora text-sm font-medium text-[#241014] leading-tight whitespace-nowrap overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'max-w-0 opacity-0' : 'max-w-[160px] opacity-100'}`}>
               My Credit<br/><span className="text-[#7A1E2C]">Café</span>
             </span>
           </div>
+          {/* Toggle button */}
+          <button
+            onClick={() => setSidebarCollapsed(c => !c)}
+            aria-label={sidebarCollapsed ? 'Expandir sidebar' : 'Colapsar sidebar'}
+            className="shrink-0 w-8 h-8 mr-2 rounded-lg flex items-center justify-center text-[#C4BEBC] hover:bg-[#F5F0EF] hover:text-[#57504E] transition-colors duration-150"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              {sidebarCollapsed
+                ? <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                : <path d="M9 3l-4 4 4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              }
+            </svg>
+          </button>
         </div>
 
-        {/* Navigation — active state with inset left border */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+        {/* Navigation */}
+        <nav className="flex-1 px-2 py-4 space-y-0.5 overflow-y-auto overflow-x-hidden">
           {NAV.map(item => (
             <button
               key={item.id}
               onClick={() => setActiveNav(item.id)}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-150 text-left ${
+              title={sidebarCollapsed ? item.label : undefined}
+              className={`w-full flex items-center rounded-xl text-[13px] font-medium transition-colors duration-150 ${
+                sidebarCollapsed ? 'justify-center py-2.5 px-2' : 'gap-3 py-2 px-3'
+              } ${
                 activeNav === item.id
                   ? 'text-[#7A1E2C] font-semibold'
                   : 'text-[#57504E] hover:bg-[#F5F0EF] hover:text-[#241014]'
               }`}
               style={activeNav === item.id ? {
                 background: 'rgba(122,30,44,0.07)',
-                boxShadow: 'inset 3px 0 0 #7A1E2C',
+                boxShadow: sidebarCollapsed ? undefined : 'inset 3px 0 0 #7A1E2C',
               } : undefined}
             >
               <span className="shrink-0">{item.icon}</span>
-              {item.label}
+              <span className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${sidebarCollapsed ? 'max-w-0 opacity-0' : 'max-w-[180px] opacity-100'}`}>
+                {item.label}
+              </span>
             </button>
           ))}
         </nav>
 
-        {/* Divider before bottom section */}
-        <div className="mx-4 h-px bg-[#EDE7E6] mb-3" />
+        {/* Divider */}
+        <div className={`h-px bg-[#EDE7E6] mb-3 transition-all duration-300 ${sidebarCollapsed ? 'mx-2' : 'mx-4'}`} />
 
-        {/* Plan Premium + Centro de ayuda — pinned to bottom */}
-        <div className="px-4 pb-6 space-y-2">
-          <div className="p-4 rounded-xl" style={{ background: 'rgba(139,35,50,0.06)', border: '1px solid rgba(139,35,50,0.10)' }}>
-            <div className="flex items-center gap-2 mb-1.5">
+        {/* Bottom — Plan Premium + Centro de ayuda */}
+        <div className={`pb-5 transition-all duration-300 ${sidebarCollapsed ? 'px-2 flex flex-col items-center gap-2' : 'px-4 space-y-2'}`}>
+
+          {/* Plan Premium */}
+          {!sidebarCollapsed ? (
+            <div className="p-3.5 rounded-xl" style={{ background: 'rgba(139,35,50,0.06)', border: '1px solid rgba(139,35,50,0.10)' }}>
+              <div className="flex items-center gap-2 mb-1">
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+                  <path d="M7 1L4.5 6H1l3.5 3-1.3 4.5L7 11l3.8 2.5L9.5 9 13 6H9.5L7 1z" fill="#57504E"/>
+                </svg>
+                <p className="text-[13px] font-semibold text-[#241014]">Plan Premium</p>
+              </div>
+              <p className="text-[11px] text-[#57504E] mb-2 leading-snug">Tienes acceso completo a todas las herramientas.</p>
+              <button onClick={() => flash('Beneficios próximamente')} className="text-[11px] font-semibold text-[#7A1E2C] hover:underline">
+                Ver beneficios →
+              </button>
+            </div>
+          ) : (
+            <button
+              title="Plan Premium"
+              onClick={() => flash('Beneficios próximamente')}
+              className="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-[#F5F0EF] transition-colors"
+              style={{ background: 'rgba(139,35,50,0.06)' }}
+            >
               <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
                 <path d="M7 1L4.5 6H1l3.5 3-1.3 4.5L7 11l3.8 2.5L9.5 9 13 6H9.5L7 1z" fill="#57504E"/>
               </svg>
-              <p className="text-sm font-semibold text-[#241014]">Plan Premium</p>
-            </div>
-            <p className="text-xs text-[#57504E] mb-2.5 leading-snug">Tienes acceso completo a todas las herramientas.</p>
-            <button onClick={() => flash('Beneficios próximamente')} className="text-xs font-semibold text-[#7A1E2C] hover:underline">
-              Ver beneficios →
             </button>
-          </div>
+          )}
+
+          {/* Centro de ayuda */}
           <button
+            title={sidebarCollapsed ? 'Centro de ayuda' : undefined}
             onClick={() => flash('Centro de ayuda próximamente')}
-            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[#57504E] hover:bg-[#F7F5F4] transition-colors"
+            className={`transition-colors text-[#57504E] hover:bg-[#F5F0EF] ${
+              sidebarCollapsed
+                ? 'w-10 h-10 rounded-xl flex items-center justify-center'
+                : 'w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px]'
+            }`}
           >
-            <div className="w-7 h-7 rounded-full border border-[#D4CCCA] flex items-center justify-center shrink-0">
-              <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+            <div className="w-6 h-6 rounded-full border border-[#D4CCCA] flex items-center justify-center shrink-0">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none">
                 <circle cx="8" cy="8" r="6.5" stroke="#9C9492" strokeWidth="1.3"/>
                 <path d="M6 6.5a2 2 0 1 1 2.5 1.9c-.3.1-.5.4-.5.6V10" stroke="#9C9492" strokeWidth="1.3" strokeLinecap="round"/>
                 <circle cx="8" cy="12" r=".7" fill="#9C9492"/>
               </svg>
             </div>
-            Centro de ayuda
+            <span className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${sidebarCollapsed ? 'max-w-0 opacity-0' : 'max-w-[180px] opacity-100'}`}>
+              Centro de ayuda
+            </span>
           </button>
         </div>
       </aside>
