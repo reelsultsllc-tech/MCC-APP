@@ -299,7 +299,7 @@ function FinancialScore({ title, description, initialScore }: FinancialScoreProp
 
 export function FinancialScoreCards() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-[820px]">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-[820px] mx-auto w-full">
       <CounterProvider>
         {data.map((card, i) => (
           <FinancialScore key={i} {...card} />

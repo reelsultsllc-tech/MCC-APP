@@ -216,8 +216,8 @@ export default function DashboardPage() {
           ══════════════════════════════════ */}
       <aside className="hidden lg:flex flex-col w-[260px] shrink-0 bg-white border-r border-[#E7E2E1] h-screen sticky top-0">
 
-        {/* Logo — more breathing room */}
-        <div className="px-6 py-6 border-b border-[#E7E2E1]">
+        {/* Logo — h-14 matches header height so the border-b lines are flush */}
+        <div className="px-6 h-14 flex items-center border-b border-[#E7E2E1]">
           <div className="flex items-center gap-3">
             <MccLogo size={36} />
             <span className="font-lora text-base font-medium text-[#241014] leading-tight">
