@@ -196,7 +196,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F7F5F4]">
+    <div className="flex min-h-screen bg-[#FAF7F4]">
 
       {/* ══════════════════════════════════
           ZONA 1 — LEFT ANCHOR (260px fixed)
@@ -213,24 +213,30 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Navigation — translucent active state */}
-        <nav className="flex-1 px-4 py-5 space-y-0.5 overflow-y-auto">
+        {/* Navigation — active state with inset left border */}
+        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
           {NAV.map(item => (
             <button
               key={item.id}
               onClick={() => setActiveNav(item.id)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 text-left ${
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-150 text-left ${
                 activeNav === item.id
                   ? 'text-[#7A1E2C] font-semibold'
-                  : 'text-[#57504E] hover:bg-[#F7F5F4] hover:text-[#241014]'
+                  : 'text-[#57504E] hover:bg-[#F5F0EF] hover:text-[#241014]'
               }`}
-              style={activeNav === item.id ? { background: 'rgba(122,30,44,0.10)' } : undefined}
+              style={activeNav === item.id ? {
+                background: 'rgba(122,30,44,0.07)',
+                boxShadow: 'inset 3px 0 0 #7A1E2C',
+              } : undefined}
             >
               <span className="shrink-0">{item.icon}</span>
               {item.label}
             </button>
           ))}
         </nav>
+
+        {/* Divider before bottom section */}
+        <div className="mx-4 h-px bg-[#EDE7E6] mb-3" />
 
         {/* Plan Premium + Centro de ayuda — pinned to bottom */}
         <div className="px-4 pb-6 space-y-2">
@@ -310,82 +316,96 @@ export default function DashboardPage() {
                 <div
                   className="rounded-2xl relative overflow-hidden"
                   style={{
-                    background: 'linear-gradient(135deg, #5C1520 0%, #7A1E2C 55%, #8B2535 100%)',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: 'linear-gradient(135deg, #3A0A12 0%, #5C1520 30%, #6F1020 60%, #7A1E2C 100%)',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                    boxShadow: 'var(--shadow-warm-lg)',
                   }}
                 >
                   {/* Dot-grid spotlight: white dots revealed by cursor on dark bg */}
                   <MccHoverBg
-                    dotColor="rgba(255,255,255,0.13)"
-                    radius={280}
-                    intensity={0.8}
-                    dotSize={1.5}
-                    dotSpacing={20}
+                    dotColor="rgba(255,255,255,0.10)"
+                    radius={300}
+                    intensity={0.7}
+                    dotSize={1.4}
+                    dotSpacing={22}
                   />
-                  <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.07) 0%, transparent 60%)' }} />
-                  <div className="absolute top-0 left-0 right-0 h-px pointer-events-none" style={{ background: 'linear-gradient(90deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)' }} />
+                  {/* Ambient light layers for depth */}
+                  <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 15% 55%, rgba(255,255,255,0.07) 0%, transparent 55%)' }} />
+                  <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 85% 25%, rgba(139,37,53,0.35) 0%, transparent 50%)' }} />
+                  <div className="absolute top-0 left-0 right-0 h-px pointer-events-none" style={{ background: 'linear-gradient(90deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 50%, transparent 100%)' }} />
 
-                  <div className="relative z-10 p-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+                  <div className="relative z-10 px-5 py-4 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
 
                     {/* LEFT — Score + label */}
                     <div className="text-white">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/50 mb-2">Tu score de crédito</p>
-                      <p className="text-6xl font-bold font-lora leading-none tracking-tight">{displayScore}</p>
-                      <div className="flex items-center gap-2 mt-2">
+                      <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/45 mb-3">Tu score de crédito</p>
+                      <p className="font-bold font-lora leading-none tracking-tight mb-3" style={{ fontSize: '4rem', textShadow: '0 2px 24px rgba(0,0,0,0.35)' }}>{displayScore}</p>
+                      <div className="flex items-center gap-2">
                         <span
-                          className="px-2 py-0.5 rounded-full text-[11px] font-semibold text-white/90"
-                          style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)' }}
+                          className="px-2.5 py-1 rounded-full text-[11px] font-semibold text-white"
+                          style={{ background: 'rgba(110,231,160,0.18)', border: '1px solid rgba(110,231,160,0.3)' }}
                         >
                           Bueno
                         </span>
-                        <p className="text-[11px] text-white/40">próx. 26 jun 2026</p>
+                        <p className="text-[10px] text-white/35">próx. 26 jun 2026</p>
                       </div>
                     </div>
 
-                    {/* CENTER — Arc gauge (visual bridge) */}
-                    <div>
-                      <svg width="150" height="88" viewBox="0 0 220 130">
-                        <path d="M20 110 A90 90 0 0 1 200 110" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="16" strokeLinecap="round"/>
+                    {/* CENTER — Refined arc gauge */}
+                    <div className="flex flex-col items-center">
+                      <svg width="154" height="92" viewBox="0 0 220 134">
+                        <defs>
+                          <filter id="arc-glow">
+                            <feGaussianBlur stdDeviation="2.5" result="blur"/>
+                            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                          </filter>
+                        </defs>
+                        {/* Track */}
+                        <path d="M22 112 A88 88 0 0 1 198 112" fill="none" stroke="rgba(255,255,255,0.10)" strokeWidth="9" strokeLinecap="round"/>
+                        {/* Fill */}
                         <motion.path
-                          d="M20 110 A90 90 0 0 1 200 110"
-                          fill="none" stroke="white" strokeWidth="16" strokeLinecap="round"
-                          strokeDasharray="283"
-                          initial={{ strokeDashoffset: 283 }}
-                          animate={{ strokeDashoffset: 283 - 283 * ((615 - 300) / 550) }}
+                          d="M22 112 A88 88 0 0 1 198 112"
+                          fill="none" stroke="rgba(255,255,255,0.90)" strokeWidth="9" strokeLinecap="round"
+                          strokeDasharray="276"
+                          initial={{ strokeDashoffset: 276 }}
+                          animate={{ strokeDashoffset: 276 - 276 * ((615 - 300) / 550) }}
                           transition={{ duration: 1.8, ease: [0.25, 1, 0.5, 1], delay: 0.3 }}
+                          filter="url(#arc-glow)"
                         />
-                        <text x="20"  y="127" fill="rgba(255,255,255,0.35)" fontSize="10" fontFamily="system-ui" textAnchor="start">300</text>
-                        <text x="200" y="127" fill="rgba(255,255,255,0.35)" fontSize="10" fontFamily="system-ui" textAnchor="end">850</text>
+                        {/* Milestone ticks */}
+                        {[300, 550, 700, 850].map((val, i) => {
+                          const pct = (val - 300) / 550
+                          const angle = -180 + pct * 180
+                          const rad = angle * Math.PI / 180
+                          const cx = 110 + 88 * Math.cos(rad)
+                          const cy = 112 + 88 * Math.sin(rad)
+                          return <circle key={i} cx={cx} cy={cy} r="2.5" fill="rgba(255,255,255,0.28)" />
+                        })}
+                        {/* Labels */}
+                        <text x="22"  y="130" fill="rgba(255,255,255,0.3)" fontSize="9" fontFamily="system-ui" textAnchor="start">300</text>
+                        <text x="198" y="130" fill="rgba(255,255,255,0.3)" fontSize="9" fontFamily="system-ui" textAnchor="end">850</text>
+                        <text x="110" y="108" fill="rgba(255,255,255,0.45)" fontSize="10" fontFamily="system-ui" textAnchor="middle" fontWeight="600">615 / 850</text>
                       </svg>
                     </div>
 
-                    {/* RIGHT — dark glass chip + mini grid */}
+                    {/* RIGHT — Airy stats, no heavy boxes */}
                     <div className="text-white">
-                      <div
-                        className="rounded-xl px-3 py-2.5 mb-2"
-                        style={{
-                          background: 'rgba(0,0,0,0.28)',
-                          border: '1px solid rgba(255,255,255,0.10)',
-                          backdropFilter: 'blur(8px)',
-                        }}
+                      <p className="text-[9px] font-semibold text-white/40 uppercase tracking-[0.18em] mb-1.5">Puntos ganados</p>
+                      <p
+                        className="font-extrabold leading-none tracking-tight mb-1"
+                        style={{ fontSize: '2.5rem', color: '#6EE7A0', textShadow: '0 0 28px rgba(110,231,160,0.50)' }}
                       >
-                        <p className="text-[9px] font-semibold text-white/40 uppercase tracking-[0.16em] mb-1.5">Puntos ganados</p>
-                        <p
-                          className="font-extrabold leading-none tracking-tighter"
-                          style={{ fontSize: '2.25rem', color: '#6EE7A0', textShadow: '0 0 20px rgba(110,231,160,0.45)' }}
-                        >
-                          +{displayDelta}
-                        </p>
-                        <p className="text-[10px] text-white/30 mt-1">pts desde que comenzamos</p>
-                      </div>
-                      <div className="grid grid-cols-2 gap-1.5">
+                        +{displayDelta}
+                      </p>
+                      <p className="text-[10px] text-white/35 mb-4">pts desde que comenzamos</p>
+                      <div className="grid grid-cols-2 gap-3">
                         {[
                           { value: String(disputes.length), label: 'Disputas' },
                           { value: '3',                     label: 'Meses' },
                         ].map(m => (
-                          <div key={m.label} className="rounded-lg px-2.5 py-2" style={{ background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.22)' }}>
-                            <p className="text-base font-bold font-lora text-white leading-none">{m.value}</p>
-                            <p className="text-[10px] text-white/50 mt-0.5">{m.label}</p>
+                          <div key={m.label}>
+                            <p className="text-lg font-bold font-lora text-white leading-none">{m.value}</p>
+                            <p className="text-[10px] text-white/40 mt-0.5">{m.label}</p>
                           </div>
                         ))}
                       </div>
@@ -395,11 +415,15 @@ export default function DashboardPage() {
                 </div>
 
                 {/* ── ROADMAP (directly below banner) ── */}
-                <MccBorderGlow className="rounded-2xl" glowRadius={36} coneSpread={20}>
-                <LiquidCard className="rounded-2xl py-0 gap-0">
+                <LiquidCard className="rounded-[20px] py-0 gap-0">
                   <CardContent className="p-4">
-                    <p className="text-[10px] font-semibold text-[#9C9492] uppercase tracking-widest mb-0.5">Tu plan de reparación</p>
-                    <p className="text-sm font-semibold font-lora text-[#241014] mb-5">4 pasos hacia un crédito excelente</p>
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <p className="text-[10px] font-semibold text-[#9C9492] uppercase tracking-widest mb-0.5">Tu plan de reparación</p>
+                        <p className="text-sm font-semibold font-lora text-[#241014]">4 pasos hacia un crédito excelente</p>
+                      </div>
+                      <span className="text-[10px] font-medium text-[#7A1E2C] bg-[#F8EDEF] px-2 py-0.5 rounded-full shrink-0">Paso 3 / 4</span>
+                    </div>
 
                     <div className="max-w-[400px] mx-auto relative">
                       <div className="absolute bg-[#E7E2E1] rounded-full" style={{ height: '2px', top: '15px', left: '32px', right: '32px' }} />
@@ -459,9 +483,20 @@ export default function DashboardPage() {
                         ))}
                       </div>
                     </div>
+
+                    {/* Mini summary */}
+                    <div className="mt-4 pt-3 border-t border-[#F0EEEC] flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <span className="flex items-center gap-1 text-[10px] text-[#4F9A5C] font-medium">
+                        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><circle cx="5.5" cy="5.5" r="5" fill="#E7EFDE"/><path d="M3.5 5.5l1.5 1.5L7.5 3.5" stroke="#4F9A5C" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        2 completados
+                      </span>
+                      <span className="text-[#D4CCCA] text-[10px]">·</span>
+                      <span className="text-[10px] text-[#7A1E2C] font-semibold">1 en progreso</span>
+                      <span className="text-[#D4CCCA] text-[10px]">·</span>
+                      <span className="text-[10px] text-[#9C9492]">próximo: Optimización</span>
+                    </div>
                   </CardContent>
                 </LiquidCard>
-                </MccBorderGlow>
 
                 {/* ── FINANCIAL SCORES — immediately after roadmap ── */}
                 <div>
@@ -477,7 +512,7 @@ export default function DashboardPage() {
                   <BureauSelector onSelect={(id) => flash(`Filtrando por ${id}`)} />
 
                   {/* ── DISPUTES TABLE ── */}
-                  <div className="bg-white rounded-2xl border border-[#E7E2E1] card-lift overflow-hidden">
+                  <div className="bg-white rounded-[20px] border border-[rgba(80,25,35,0.08)] card-lift overflow-hidden">
                     <div className="px-4 py-3 border-b border-[#E7E2E1] flex items-center justify-between">
                       <p className="text-xs font-semibold font-lora text-[#241014]">Tus disputas activas</p>
                       <button className="text-xs font-semibold text-[#7A1E2C] hover:underline" onClick={() => flash('Ver todas próximamente')}>Ver todas →</button>
@@ -516,7 +551,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* ── VAULT ── */}
-                <div className="bg-white rounded-2xl border border-[#E7E2E1] card-lift overflow-hidden">
+                <div className="bg-white rounded-[20px] border border-[rgba(80,25,35,0.08)] card-lift overflow-hidden">
                   <div className="px-4 py-3 border-b border-[#E7E2E1] flex items-center justify-between">
                     <p className="text-xs font-semibold font-lora text-[#241014]">Vault de documentos</p>
                     <button className="text-xs font-semibold text-[#7A1E2C] hover:underline" onClick={() => flash('Ver vault próximamente')}>Ver todos →</button>
@@ -560,7 +595,7 @@ export default function DashboardPage() {
 
                 {/* TOP: Step progress notification */}
                 <motion.div
-                  className="bg-white rounded-2xl border border-[#E7E2E1] p-3.5"
+                  className="bg-white rounded-[20px] border border-[rgba(80,25,35,0.08)] p-3.5 card-lift"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6, duration: 0.4 }}
@@ -613,7 +648,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* BOTTOM: Quick stats — vertical list, single-color SVG icons */}
-                <div className="bg-white rounded-2xl border border-[#E7E2E1] p-3.5">
+                <div className="bg-white rounded-[20px] border border-[rgba(80,25,35,0.08)] p-3.5 card-lift">
                   <p className="text-[10px] font-semibold text-[#9C9492] uppercase tracking-widest mb-2">Accesos rápidos</p>
                   <div className="space-y-0.5">
                     <QuickStatRow

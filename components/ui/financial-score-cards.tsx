@@ -95,9 +95,9 @@ function FinancialScoreCard({ children }: FinancialScoreCardProps) {
 
   return (
     <SpotlightCard
-      className="w-full bg-white rounded-2xl border border-[#E7E2E1] animate-in fade-in slide-in-from-bottom-6 duration-700"
-      style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(36,16,20,0.04)' }}
-      spotlightColor="rgba(184, 134, 46, 0.10)"
+      className="w-full bg-white rounded-[20px] border border-[rgba(80,25,35,0.08)] animate-in fade-in slide-in-from-bottom-6 duration-700"
+      style={{ boxShadow: '0 2px 8px rgba(64,20,28,0.05), 0 10px 30px rgba(64,20,28,0.07)' }}
+      spotlightColor="rgba(184, 134, 46, 0.12)"
       radius={200}
     >
       <div className="p-4">{children}</div>

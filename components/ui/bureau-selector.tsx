@@ -48,7 +48,7 @@ function BureauRow({ b, isSelected, onSelect }: { b: Bureau; isSelected: boolean
       className={cn(
         'relative flex items-center gap-3 rounded-xl p-3.5 cursor-pointer transition-all duration-150 overflow-hidden',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7A1E2C]',
-        isSelected ? 'text-white' : 'hover:bg-[#F7F5F4] hover:shadow-sm'
+        isSelected ? 'text-white' : 'hover:bg-[#F5F0EF] hover:shadow-sm'
       )}
     >
       {/* Spotlight glow for non-selected rows */}
@@ -144,9 +144,9 @@ export function BureauSelector({ className, onSelect }: BureauSelectorProps) {
   }
 
   return (
-    <div className={cn('bg-white rounded-2xl border border-[#E7E2E1] card-lift p-5', className)}>
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-sm font-semibold font-lora text-[#241014]">Disputas por buró</p>
+    <div className={cn('bg-white rounded-[20px] border border-[rgba(80,25,35,0.08)] card-lift p-4', className)}>
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-xs font-semibold font-lora text-[#241014]">Disputas por buró</p>
         <span className="text-[10px] text-[#9C9492] uppercase tracking-wide">Selecciona para ver detalle</span>
       </div>
 
@@ -170,7 +170,7 @@ export function BureauSelector({ className, onSelect }: BureauSelectorProps) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.22, ease: 'easeOut' }}
-          className="rounded-xl bg-[#F7F5F4] p-3.5"
+          className="rounded-xl bg-[#FAF7F4] p-3"
         >
           <div className="flex items-center justify-between mb-1">
             <p className="text-xs font-semibold text-[#241014]">{active.name}</p>

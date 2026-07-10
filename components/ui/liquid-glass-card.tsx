@@ -54,8 +54,8 @@ function LiquidCard({ className, ...props }: React.ComponentProps<"div">) {
         data-slot="card"
         style={{ backdropFilter: 'url("#card-glass")' }}
         className={cn(
-          "text-[#241014] bg-white/70 flex flex-col gap-6 rounded-xl border border-[#E7E2E1] py-6",
-          "shadow-[0_0_6px_rgba(0,0,0,0.03),0_2px_6px_rgba(0,0,0,0.08),inset_3px_3px_0.5px_-3px_rgba(0,0,0,0.06),inset_-3px_-3px_0.5px_-3px_rgba(0,0,0,0.04),inset_0_0_6px_6px_rgba(0,0,0,0.02),0_0_12px_rgba(122,30,44,0.06)]",
+          "text-[#241014] bg-white/70 flex flex-col gap-6 rounded-xl border border-[rgba(80,25,35,0.08)] py-6",
+          "shadow-[0_2px_6px_rgba(64,20,28,0.05),0_10px_30px_rgba(64,20,28,0.07),inset_3px_3px_0.5px_-3px_rgba(0,0,0,0.04),inset_-3px_-3px_0.5px_-3px_rgba(0,0,0,0.03),inset_0_0_6px_6px_rgba(0,0,0,0.015)]",
           "transition-all",
           className
         )}
