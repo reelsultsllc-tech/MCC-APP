@@ -11,10 +11,13 @@ import { FinancialScoreCards } from '@/components/ui/financial-score-cards'
 import { LiquidCard, CardContent } from '@/components/ui/liquid-glass-card'
 import { AdvisorRevealCard } from '@/components/ui/advisor-reveal-card'
 import { BureauSelector } from '@/components/ui/bureau-selector'
+import { MccHoverBg } from '@/components/ui/mcc-hover-bg'
+import { MccBorderGlow } from '@/components/ui/mcc-border-glow'
+import { ActivityEchoStack, type ActivityItem } from '@/components/ui/activity-echo-stack'
 import { disputes, CLIENT } from '@/lib/data'
 import { daysAgo } from '@/lib/utils'
 
-const ACTIVITY = [
+const ACTIVITY: ActivityItem[] = [
   { id: 1, type: 'new',     text: 'Identificamos un nuevo ítem en tu reporte: una deuda ya pagada reportada por LVNV Funding', date: '2026-06-30' },
   { id: 2, type: 'success', text: '¡Buenas noticias! Portfolio Recovery Associates eliminó tu cuenta de cobranza', date: '2026-06-28' },
   { id: 3, type: 'sent',    text: 'Enviamos tu carta de disputa a TransUnion sobre tu cuenta con Midland Credit Management', date: '2026-06-18' },
@@ -123,7 +126,29 @@ function useCountUp(target: number, duration: number, delay = 0) {
   return value
 }
 
-function QuickStatRow({ icon, value, label, action }: { icon: ReactNode; value: string; label: string; action: () => void }) {
+function Sparkline({ data, color = '#4F9A5C' }: { data: number[]; color?: string }) {
+  if (data.length < 2) return null
+  const W = 38, H = 14
+  const min = Math.min(...data), max = Math.max(...data)
+  const range = max - min || 1
+  const pts = data.map((v, i) => [
+    (i / (data.length - 1)) * W,
+    H - ((v - min) / range) * (H - 2) - 1,
+  ])
+  const polyline = pts.map(([x, y]) => `${x},${y}`).join(' ')
+  const area = `${pts[0][0]},${H} ${polyline} ${pts[pts.length - 1][0]},${H}`
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} fill="none" className="shrink-0">
+      <polygon points={area} fill={color} opacity={0.12} />
+      <polyline points={polyline} stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function QuickStatRow({ icon, value, label, action, sparkData, sparkColor }: {
+  icon: ReactNode; value: string; label: string; action: () => void
+  sparkData?: number[]; sparkColor?: string
+}) {
   const ref = useRef<HTMLButtonElement>(null)
   const [pos, setPos] = useState({ x: 0, y: 0 })
   const [hovered, setHovered] = useState(false)
@@ -155,6 +180,11 @@ function QuickStatRow({ icon, value, label, action }: { icon: ReactNode; value: 
         <p className="text-sm font-bold font-lora text-[#241014] leading-tight">{value}</p>
         <p className="text-[10px] text-[#9C9492] leading-tight">{label}</p>
       </div>
+      {sparkData && (
+        <div className="relative z-10">
+          <Sparkline data={sparkData} color={sparkColor ?? '#4F9A5C'} />
+        </div>
+      )}
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="relative z-10 text-[#9C9492] shrink-0">
         <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
       </svg>
@@ -284,6 +314,14 @@ export default function DashboardPage() {
                     border: '1px solid rgba(255,255,255,0.08)',
                   }}
                 >
+                  {/* Dot-grid spotlight: white dots revealed by cursor on dark bg */}
+                  <MccHoverBg
+                    dotColor="rgba(255,255,255,0.13)"
+                    radius={280}
+                    intensity={0.8}
+                    dotSize={1.5}
+                    dotSpacing={20}
+                  />
                   <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.07) 0%, transparent 60%)' }} />
                   <div className="absolute top-0 left-0 right-0 h-px pointer-events-none" style={{ background: 'linear-gradient(90deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)' }} />
 
@@ -357,6 +395,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* ── ROADMAP (directly below banner) ── */}
+                <MccBorderGlow className="rounded-2xl" glowRadius={36} coneSpread={20}>
                 <LiquidCard className="rounded-2xl py-0 gap-0">
                   <CardContent className="p-6">
                     <p className="text-xs font-semibold text-[#9C9492] uppercase tracking-widest mb-1">Tu plan de reparación</p>
@@ -422,6 +461,7 @@ export default function DashboardPage() {
                     </div>
                   </CardContent>
                 </LiquidCard>
+                </MccBorderGlow>
 
                 {/* ── BUREAU SELECTOR ── */}
                 <BureauSelector onSelect={(id) => flash(`Filtrando por ${id}`)} />
@@ -583,6 +623,12 @@ export default function DashboardPage() {
                   onAction={() => flash('Solicitud enviada. Andrea te contactará pronto.')}
                 />
 
+                {/* Activity echo stack — looping card preview of recent activity */}
+                <div>
+                  <p className="text-[10px] font-semibold text-[#9C9492] uppercase tracking-widest mb-2">Actividad reciente</p>
+                  <ActivityEchoStack items={ACTIVITY} />
+                </div>
+
                 {/* BOTTOM: Quick stats — vertical list, single-color SVG icons */}
                 <div className="bg-white rounded-2xl border border-[#E7E2E1] p-4">
                   <p className="text-[10px] font-semibold text-[#9C9492] uppercase tracking-widest mb-2">Accesos rápidos</p>
@@ -591,21 +637,29 @@ export default function DashboardPage() {
                       icon={<svg width="15" height="15" viewBox="0 0 18 18" fill="none"><path d="M9 1.5L2 5v4c0 4 3.1 7.4 7 8 3.9-.6 7-4 7-8V5L9 1.5z" stroke="#7A1E2C" strokeWidth="1.5" strokeLinejoin="round"/></svg>}
                       value={`${disputes.length}`} label="Disputas activas"
                       action={() => flash('Disputas próximamente')}
+                      sparkData={[4, 5, 4, 3, 4, 4, disputes.length]}
+                      sparkColor="#7A1E2C"
                     />
                     <QuickStatRow
                       icon={<svg width="15" height="15" viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="11" height="14" rx="1.5" stroke="#7A1E2C" strokeWidth="1.4"/><path d="M6 6h6M6 9h6M6 12h4" stroke="#7A1E2C" strokeWidth="1.2" strokeLinecap="round"/></svg>}
                       value="4" label="Documentos guardados"
                       action={() => flash('Vault próximamente')}
+                      sparkData={[1, 2, 2, 3, 4, 4, 4]}
+                      sparkColor="#4F9A5C"
                     />
                     <QuickStatRow
                       icon={<svg width="15" height="15" viewBox="0 0 18 18" fill="none"><polyline points="2,14 6,8 9,11 13,5 16,8" stroke="#7A1E2C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M13 5h3v3" stroke="#7A1E2C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
                       value="+77 pts" label="Ganados en total"
                       action={() => flash('Historial próximamente')}
+                      sparkData={[30, 45, 53, 60, 68, 74, 77]}
+                      sparkColor="#4F9A5C"
                     />
                     <QuickStatRow
                       icon={<svg width="15" height="15" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="13" rx="1.5" stroke="#7A1E2C" strokeWidth="1.4"/><path d="M2 7h14M6 3V1M12 3V1" stroke="#7A1E2C" strokeWidth="1.4" strokeLinecap="round"/></svg>}
                       value="8 días" label="Última actualización"
                       action={() => flash('Calendario próximamente')}
+                      sparkData={[14, 12, 10, 10, 9, 8, 8]}
+                      sparkColor="#B8862E"
                     />
                   </div>
                 </div>
