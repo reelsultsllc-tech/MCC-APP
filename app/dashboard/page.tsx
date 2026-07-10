@@ -168,7 +168,7 @@ export default function DashboardPage() {
                   ? 'text-[#7A1E2C] font-semibold'
                   : 'text-[#57504E] hover:bg-[#F7F5F4] hover:text-[#241014]'
               }`}
-              style={activeNav === item.id ? { background: 'rgba(139,35,50,0.08)' } : undefined}
+              style={activeNav === item.id ? { background: 'rgba(36,16,20,0.06)' } : undefined}
             >
               <span className="shrink-0">{item.icon}</span>
               {item.label}
@@ -248,7 +248,7 @@ export default function DashboardPage() {
                   <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.07) 0%, transparent 60%)' }} />
                   <div className="absolute top-0 left-0 right-0 h-px pointer-events-none" style={{ background: 'linear-gradient(90deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)' }} />
 
-                  <div className="relative z-10 p-6 grid grid-cols-[1fr_auto_1fr] items-center gap-6">
+                  <div className="relative z-10 p-6 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
 
                     {/* LEFT — Score + label */}
                     <div className="text-white">
