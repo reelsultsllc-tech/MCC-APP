@@ -103,7 +103,7 @@ function BrandInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
     <input
       {...props}
       className={cn(
-        'w-full py-3 rounded-xl border border-neutral-200 bg-neutral-50',
+        'w-full py-2.5 rounded-xl border border-neutral-200 bg-neutral-50',
         'text-[#241014] placeholder:text-neutral-400 font-medium text-sm',
         'focus:outline-none focus:border-[#7A1E2C] focus:ring-2 focus:ring-[rgba(122,30,44,0.15)]',
         'transition-all',
@@ -185,7 +185,7 @@ export default function LoginPage() {
 
   return (
     <div
-      className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-14 gap-8 relative overflow-hidden"
+      className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-6 gap-4 relative overflow-hidden"
       style={{ background: 'linear-gradient(135deg, #ffffff 0%, #fff0f0 50%, #ffd9d9 100%)' }}
     >
       {/* Background blobs */}
@@ -199,14 +199,20 @@ export default function LoginPage() {
       <motion.div
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-3 select-none"
+        className="flex items-center gap-2.5 select-none"
       >
-        <MccShield />
-        <div className="leading-tight">
-          <span className="font-lora font-bold text-xl text-[#241014]">
-            My Credit <span style={{ color: '#7A1E2C' }}>Café</span>
-          </span>
+        <div
+          className="w-8 h-8 rounded-lg flex items-center justify-center shadow-md"
+          style={{ background: 'linear-gradient(135deg, #7A1E2C 0%, #5C1520 100%)', boxShadow: '0 6px 16px rgba(122,30,44,0.35)' }}
+        >
+          <svg viewBox="0 0 24 24" className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z" />
+            <path d="m9 12 2 2 4-4" />
+          </svg>
         </div>
+        <span className="font-lora font-bold text-[17px] text-[#241014] leading-none">
+          My Credit <span style={{ color: '#7A1E2C' }}>Café</span>
+        </span>
       </motion.div>
 
       {/* Main dual-panel card */}
@@ -214,13 +220,13 @@ export default function LoginPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.5 }}
-        className="w-full max-w-5xl grid md:grid-cols-2 rounded-[28px] overflow-hidden border border-red-100"
+        className="w-full max-w-[820px] grid md:grid-cols-2 rounded-[20px] overflow-hidden border border-red-100"
         style={{ boxShadow: '0 40px 80px -20px rgba(155,44,44,0.25)' }}
       >
         {/* ── LEFT: Dark brand panel ─────────────────────────────────── */}
         <div
           ref={leftRef}
-          className="relative hidden md:flex flex-col justify-between p-10 overflow-hidden"
+          className="relative hidden md:flex flex-col justify-between p-7 overflow-hidden"
           style={{ background: 'linear-gradient(135deg, #7A1E2C 0%, #5C1520 50%, #241014 100%)' }}
           onMouseMove={handleSpotMove}
           onMouseLeave={() => setSpot(s => ({ ...s, on: false }))}
@@ -266,23 +272,23 @@ export default function LoginPage() {
 
           {/* Top content */}
           <div className="relative z-10">
-            <span className="inline-flex items-center gap-2 text-[11px] font-bold tracking-widest uppercase text-rose-200/80 bg-white/10 border border-white/15 rounded-full px-3 py-1 mb-8">
+            <span className="inline-flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase text-rose-200/80 bg-white/10 border border-white/15 rounded-full px-3 py-1 mb-5">
               <span className="w-1.5 h-1.5 rounded-full bg-rose-300 animate-pulse" />
               Portal de Miembros
             </span>
 
-            <h1 className="font-lora text-[2.25rem] leading-[1.1] font-bold text-white mb-4">
+            <h1 className="font-lora text-[1.75rem] leading-[1.1] font-bold text-white mb-3">
               Tu score de crédito,<br />reimaginado.
             </h1>
-            <p className="text-rose-100/80 text-sm leading-relaxed max-w-sm">
+            <p className="text-rose-100/80 text-xs leading-relaxed max-w-sm">
               Disputas automatizadas, revisión experta y un asesor dedicado — diseñado para personas que exigen resultados.
             </p>
 
-            <ul className="mt-8 space-y-3">
+            <ul className="mt-5 space-y-2">
               {FEATURES.map(f => (
-                <li key={f} className="flex items-center gap-3 text-sm text-rose-50/90">
-                  <span className="w-5 h-5 rounded-full bg-white/15 flex items-center justify-center shrink-0">
-                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+                <li key={f} className="flex items-center gap-2.5 text-xs text-rose-50/90">
+                  <span className="w-4 h-4 rounded-full bg-white/15 flex items-center justify-center shrink-0">
+                    <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
                       <path d="M5 13l4 4L19 7" />
                     </svg>
                   </span>
@@ -293,17 +299,17 @@ export default function LoginPage() {
           </div>
 
           {/* Bottom: floating score card + testimonial */}
-          <div className="relative z-10 mt-10">
+          <div className="relative z-10 mt-6">
             {/* Floating score card */}
             <motion.div
-              className="absolute -top-24 right-0 w-44 bg-white/95 backdrop-blur rounded-2xl shadow-2xl p-4 border border-white/60"
+              className="absolute -top-20 right-0 w-36 bg-white/95 backdrop-blur rounded-xl shadow-2xl p-3 border border-white/60"
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
             >
-              <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 mb-1">Score de Crédito</p>
-              <div className="flex items-end gap-2">
-                <span className="font-lora text-3xl font-extrabold text-[#241014]">{score}</span>
-                <span className="text-xs font-bold mb-1" style={{ color: '#7A1E2C' }}>+161</span>
+              <p className="text-[9px] font-bold uppercase tracking-wider text-neutral-400 mb-1">Score de Crédito</p>
+              <div className="flex items-end gap-1.5">
+                <span className="font-lora text-2xl font-extrabold text-[#241014]">{score}</span>
+                <span className="text-[11px] font-bold mb-0.5" style={{ color: '#7A1E2C' }}>+161</span>
               </div>
               <div className="w-full h-1.5 rounded-full bg-neutral-100 mt-2 overflow-hidden">
                 <motion.div
@@ -317,7 +323,7 @@ export default function LoginPage() {
             </motion.div>
 
             {/* Testimonial */}
-            <div className="border-t border-white/15 pt-5">
+            <div className="border-t border-white/15 pt-4">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={testiIdx}
@@ -326,11 +332,11 @@ export default function LoginPage() {
                   exit={{ opacity: 0, y: -6 }}
                   transition={{ duration: 0.28 }}
                 >
-                  <div className="flex gap-1 mb-2">
+                  <div className="flex gap-0.5 mb-1.5">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <svg
                         key={i}
-                        className={cn('w-3.5 h-3.5', i < testi.rating ? 'text-rose-300' : 'text-white/20')}
+                        className={cn('w-3 h-3', i < testi.rating ? 'text-rose-300' : 'text-white/20')}
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -338,21 +344,21 @@ export default function LoginPage() {
                       </svg>
                     ))}
                   </div>
-                  <p className="text-sm text-rose-50/90 leading-relaxed mb-4">"{testi.text}"</p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-white/15 border border-white/20 flex items-center justify-center text-white font-bold text-xs">
+                  <p className="text-xs text-rose-50/90 leading-relaxed mb-3">"{testi.text}"</p>
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-full bg-white/15 border border-white/20 flex items-center justify-center text-white font-bold text-[10px]">
                       {testi.avatar}
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-white">{testi.name}</div>
-                      <div className="text-xs text-rose-200/70">{testi.role}</div>
+                      <div className="text-xs font-bold text-white">{testi.name}</div>
+                      <div className="text-[10px] text-rose-200/70">{testi.role}</div>
                     </div>
                   </div>
                 </motion.div>
               </AnimatePresence>
 
               {/* Dots */}
-              <div className="flex gap-1.5 mt-4">
+              <div className="flex gap-1.5 mt-3">
                 {TESTIMONIALS.map((_, i) => (
                   <button
                     key={i}
@@ -370,13 +376,13 @@ export default function LoginPage() {
         </div>
 
         {/* ── RIGHT: Auth form ───────────────────────────────────────── */}
-        <div className="relative flex flex-col justify-center p-8 sm:p-12 bg-white">
+        <div className="relative flex flex-col justify-center p-6 sm:p-8 bg-white">
           {/* Corner glows */}
           <div className="absolute -top-24 -right-24 w-64 h-64 rounded-full pointer-events-none" style={{ background: 'rgba(155,44,44,0.07)', filter: 'blur(40px)' }} />
           <div className="absolute -bottom-24 -left-24 w-64 h-64 rounded-full pointer-events-none" style={{ background: 'rgba(155,44,44,0.07)', filter: 'blur(40px)' }} />
 
           {/* Tab switcher */}
-          <div className="flex items-center gap-1 rounded-full p-1 mb-8 max-w-[280px] border border-red-100 bg-red-50">
+          <div className="flex items-center gap-1 rounded-full p-1 mb-5 max-w-[260px] border border-red-100 bg-red-50">
             {(['signin', 'signup'] as const).map(m => (
               <button
                 key={m}
@@ -388,12 +394,13 @@ export default function LoginPage() {
               >
                 {m === 'signin' ? 'Iniciar sesión' : 'Crear cuenta'}
               </button>
+
             ))}
           </div>
 
           {/* Title */}
-          <div className="mb-7">
-            <h2 className="font-lora text-3xl font-bold text-[#241014] mb-1.5 tracking-tight">
+          <div className="mb-5">
+            <h2 className="font-lora text-2xl font-bold text-[#241014] mb-1 tracking-tight">
               {mode === 'signin' ? 'Bienvenido de vuelta' : 'Empieza tu reparación'}
             </h2>
             <p className="text-neutral-500 text-sm">
@@ -403,7 +410,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
             {/* Full name — signup only */}
             <AnimatePresence initial={false}>
               {mode === 'signup' && (
@@ -532,7 +539,7 @@ export default function LoginPage() {
               disabled={loading}
               whileHover={{ y: -2 }}
               whileTap={{ y: 0 }}
-              className="w-full py-3.5 mt-2 text-white rounded-xl font-black text-[15px] tracking-tight transition-shadow disabled:opacity-60 disabled:pointer-events-none"
+              className="w-full py-3 mt-1 text-white rounded-xl font-black text-sm tracking-tight transition-shadow disabled:opacity-60 disabled:pointer-events-none"
               style={{
                 background: 'linear-gradient(180deg, #9b3545 0%, #7A1E2C 55%, #5C1520 100%)',
                 boxShadow: '0 10px 30px -8px rgba(122,30,44,0.55)',
@@ -550,7 +557,7 @@ export default function LoginPage() {
           </form>
 
           {/* Divider */}
-          <div className="flex items-center gap-3 my-6">
+          <div className="flex items-center gap-3 my-4">
             <span className="h-px flex-1 bg-neutral-200" />
             <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">o continúa con</span>
             <span className="h-px flex-1 bg-neutral-200" />
@@ -579,7 +586,7 @@ export default function LoginPage() {
               <button
                 key={label}
                 type="button"
-                className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-neutral-200 hover:border-red-200 hover:bg-red-50/40 transition-all text-sm font-bold text-neutral-700"
+                className="flex items-center justify-center gap-2 py-2 rounded-xl border border-neutral-200 hover:border-red-200 hover:bg-red-50/40 transition-all text-sm font-bold text-neutral-700"
               >
                 {icon}
                 {label}
@@ -588,7 +595,7 @@ export default function LoginPage() {
           </div>
 
           {/* Switch */}
-          <p className="text-center text-sm font-medium text-neutral-500 mt-7">
+          <p className="text-center text-sm font-medium text-neutral-500 mt-5">
             {mode === 'signin' ? '¿No tienes cuenta?' : '¿Ya eres miembro?'}{' '}
             <button
               type="button"
@@ -601,7 +608,7 @@ export default function LoginPage() {
           </p>
 
           {/* Trust footer */}
-          <div className="mt-8 pt-6 border-t border-neutral-100 flex items-center justify-between text-xs font-semibold text-neutral-400">
+          <div className="mt-5 pt-4 border-t border-neutral-100 flex items-center justify-between text-xs font-semibold text-neutral-400">
             <span className="flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
               Encriptación bancaria
@@ -610,7 +617,7 @@ export default function LoginPage() {
           </div>
 
           {/* Team link */}
-          <p className="text-center text-xs text-neutral-400 mt-4">
+          <p className="text-center text-xs text-neutral-400 mt-3">
             ¿Eres del equipo?{' '}
             <Link href="/team/login" className="font-bold hover:underline" style={{ color: '#7A1E2C' }}>
               Ingresa aquí
@@ -624,7 +631,7 @@ export default function LoginPage() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35 }}
-        className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-[11px] font-bold uppercase tracking-wider text-neutral-400"
+        className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[10px] font-bold uppercase tracking-wider text-neutral-400"
       >
         {[
           { icon: <Lock className="w-3.5 h-3.5" style={{ color: '#7A1E2C' }} />, label: '256-bit Encryption' },
