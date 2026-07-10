@@ -100,7 +100,7 @@ function FinancialScoreCard({ children }: FinancialScoreCardProps) {
       spotlightColor="rgba(184, 134, 46, 0.10)"
       radius={200}
     >
-      <div className="p-5">{children}</div>
+      <div className="p-4">{children}</div>
     </SpotlightCard>
   )
 }
@@ -112,7 +112,7 @@ function FinancialScoreDisplay({ value, max }: FinancialScoreDisplayProps) {
 
   return (
     <div className="absolute bottom-0 w-full text-center">
-      <div className="font-lora font-extrabold tracking-tighter h-14 overflow-hidden relative" style={{ fontSize: '3rem', color: '#241014' }}>
+      <div className="font-lora font-extrabold tracking-tighter h-10 overflow-hidden relative" style={{ fontSize: '2.25rem', color: '#241014' }}>
         <div className="absolute inset-0">
           {hasValue
             ? digits.map((digit, i) => (
@@ -160,7 +160,7 @@ function FinancialScoreHalfCircle({ value, max }: FinancialScoreHalfCircleProps)
   }, [value, max, strokeDashoffset])
 
   return (
-    <svg className="block mx-auto w-auto max-w-full h-28" viewBox="0 0 100 50" aria-hidden="true">
+    <svg className="block mx-auto w-auto max-w-full h-20" viewBox="0 0 100 50" aria-hidden="true">
       <defs>
         <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="0">
           {colorStops.map((stop, i) => (
@@ -278,11 +278,11 @@ function FinancialScore({ title, description, initialScore }: FinancialScoreProp
   return (
     <FinancialScoreCard>
       <FinancialScoreHeader title={title} strength={strength} />
-      <div className="relative mb-5 animate-in fade-in duration-500">
+      <div className="relative mb-3 animate-in fade-in duration-500">
         <FinancialScoreHalfCircle value={score} max={max} />
         <FinancialScoreDisplay value={score} max={max} />
       </div>
-      <p className="text-[#9C9492] text-center mb-4 min-h-[3.5rem] text-xs leading-relaxed animate-in fade-in duration-500">
+      <p className="text-[#9C9492] text-center mb-3 min-h-[2.75rem] text-[11px] leading-relaxed animate-in fade-in duration-500">
         {description}
       </p>
       <LiquidButton

@@ -62,7 +62,7 @@ function ActivityIcon({ type }: { type: string }) {
   }
   const { bg, icon } = icons[type as keyof typeof icons] ?? icons.wait
   return (
-    <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: bg }}>
+    <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: bg }}>
       {icon}
     </div>
   )
@@ -270,7 +270,7 @@ export default function DashboardPage() {
         {/* Header — constrained to match content max-width */}
         <header className="bg-white border-b border-[#E7E2E1] shrink-0 sticky top-0 z-20">
           <div className="max-w-[1240px] mx-auto px-6 h-14 flex items-center justify-between">
-            <h1 className="font-lora text-lg font-medium text-[#241014]">
+            <h1 className="font-lora text-base font-medium text-[#241014]">
               Hola, {CLIENT.name}
             </h1>
             <div className="flex items-center gap-3">
@@ -325,26 +325,26 @@ export default function DashboardPage() {
                   <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.07) 0%, transparent 60%)' }} />
                   <div className="absolute top-0 left-0 right-0 h-px pointer-events-none" style={{ background: 'linear-gradient(90deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)' }} />
 
-                  <div className="relative z-10 p-6 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+                  <div className="relative z-10 p-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
 
                     {/* LEFT — Score + label */}
                     <div className="text-white">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/50 mb-3">Tu score de crédito</p>
-                      <p className="text-8xl font-bold font-lora leading-none tracking-tight">{displayScore}</p>
-                      <div className="flex items-center gap-2 mt-3">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/50 mb-2">Tu score de crédito</p>
+                      <p className="text-6xl font-bold font-lora leading-none tracking-tight">{displayScore}</p>
+                      <div className="flex items-center gap-2 mt-2">
                         <span
-                          className="px-2.5 py-0.5 rounded-full text-xs font-semibold text-white/90"
+                          className="px-2 py-0.5 rounded-full text-[11px] font-semibold text-white/90"
                           style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)' }}
                         >
                           Bueno
                         </span>
-                        <p className="text-xs text-white/40">próx. 26 jun 2026</p>
+                        <p className="text-[11px] text-white/40">próx. 26 jun 2026</p>
                       </div>
                     </div>
 
                     {/* CENTER — Arc gauge (visual bridge) */}
                     <div>
-                      <svg width="190" height="110" viewBox="0 0 220 130">
+                      <svg width="150" height="88" viewBox="0 0 220 130">
                         <path d="M20 110 A90 90 0 0 1 200 110" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="16" strokeLinecap="round"/>
                         <motion.path
                           d="M20 110 A90 90 0 0 1 200 110"
@@ -362,29 +362,29 @@ export default function DashboardPage() {
                     {/* RIGHT — dark glass chip + mini grid */}
                     <div className="text-white">
                       <div
-                        className="rounded-2xl px-4 py-3.5 mb-3"
+                        className="rounded-xl px-3 py-2.5 mb-2"
                         style={{
                           background: 'rgba(0,0,0,0.28)',
                           border: '1px solid rgba(255,255,255,0.10)',
                           backdropFilter: 'blur(8px)',
                         }}
                       >
-                        <p className="text-[9px] font-semibold text-white/40 uppercase tracking-[0.16em] mb-2">Puntos ganados</p>
+                        <p className="text-[9px] font-semibold text-white/40 uppercase tracking-[0.16em] mb-1.5">Puntos ganados</p>
                         <p
                           className="font-extrabold leading-none tracking-tighter"
-                          style={{ fontSize: '3.25rem', color: '#6EE7A0', textShadow: '0 0 28px rgba(110,231,160,0.45)' }}
+                          style={{ fontSize: '2.25rem', color: '#6EE7A0', textShadow: '0 0 20px rgba(110,231,160,0.45)' }}
                         >
                           +{displayDelta}
                         </p>
-                        <p className="text-[10px] text-white/30 mt-1.5">pts desde que comenzamos</p>
+                        <p className="text-[10px] text-white/30 mt-1">pts desde que comenzamos</p>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-2 gap-1.5">
                         {[
                           { value: String(disputes.length), label: 'Disputas' },
                           { value: '3',                     label: 'Meses' },
                         ].map(m => (
-                          <div key={m.label} className="rounded-xl px-3 py-2.5" style={{ background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.22)' }}>
-                            <p className="text-xl font-bold font-lora text-white leading-none">{m.value}</p>
+                          <div key={m.label} className="rounded-lg px-2.5 py-2" style={{ background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.22)' }}>
+                            <p className="text-base font-bold font-lora text-white leading-none">{m.value}</p>
                             <p className="text-[10px] text-white/50 mt-0.5">{m.label}</p>
                           </div>
                         ))}
@@ -397,15 +397,15 @@ export default function DashboardPage() {
                 {/* ── ROADMAP (directly below banner) ── */}
                 <MccBorderGlow className="rounded-2xl" glowRadius={36} coneSpread={20}>
                 <LiquidCard className="rounded-2xl py-0 gap-0">
-                  <CardContent className="p-6">
-                    <p className="text-xs font-semibold text-[#9C9492] uppercase tracking-widest mb-1">Tu plan de reparación</p>
-                    <p className="text-base font-semibold font-lora text-[#241014] mb-8">4 pasos hacia un crédito excelente</p>
+                  <CardContent className="p-4">
+                    <p className="text-[10px] font-semibold text-[#9C9492] uppercase tracking-widest mb-0.5">Tu plan de reparación</p>
+                    <p className="text-sm font-semibold font-lora text-[#241014] mb-5">4 pasos hacia un crédito excelente</p>
 
-                    <div className="max-w-[440px] mx-auto relative">
-                      <div className="absolute bg-[#E7E2E1] rounded-full" style={{ height: '3px', top: '19px', left: '40px', right: '40px' }} />
+                    <div className="max-w-[400px] mx-auto relative">
+                      <div className="absolute bg-[#E7E2E1] rounded-full" style={{ height: '2px', top: '15px', left: '32px', right: '32px' }} />
                       <motion.div
                         className="absolute bg-[#4F9A5C] rounded-full origin-left"
-                        style={{ height: '3px', top: '19px', left: '40px', right: '40px', filter: 'drop-shadow(0 0 4px rgba(79,154,92,0.6))' }}
+                        style={{ height: '2px', top: '15px', left: '32px', right: '32px', filter: 'drop-shadow(0 0 3px rgba(79,154,92,0.6))' }}
                         initial={{ scaleX: 0 }}
                         animate={{ scaleX: 0.67 }}
                         transition={{ duration: 1.0, delay: 0.4, ease: 'easeOut' }}
@@ -419,23 +419,23 @@ export default function DashboardPage() {
                         ] as const).map((step, i) => (
                           <motion.div
                             key={i}
-                            className="flex flex-col items-center text-center w-[80px]"
+                            className="flex flex-col items-center text-center w-[70px]"
                             initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.08 + i * 0.1, duration: 0.4, ease: 'easeOut' }}
                           >
-                            <div className="relative mb-2">
+                            <div className="relative mb-1.5">
                               {step.status === 'active' && (
                                 <div className="absolute inset-0 rounded-full animate-ping" style={{ background: 'rgba(122,30,44,0.25)' }} />
                               )}
                               <motion.div
-                                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                                className={`w-8 h-8 rounded-full flex items-center justify-center ${
                                   step.status === 'done'    ? 'bg-[#4F9A5C] border-2 border-[#4F9A5C]' :
                                   step.status === 'active'  ? 'bg-[#7A1E2C] border-4 border-white' :
                                   'bg-white border-2 border-[#D4CCCA] opacity-50'
                                 }`}
                                 style={
-                                  step.status === 'active'  ? { boxShadow: '0 0 15px rgba(122,30,44,0.4)' } :
+                                  step.status === 'active'  ? { boxShadow: '0 0 12px rgba(122,30,44,0.4)' } :
                                   step.status === 'pending' ? { boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.06)' } : undefined
                                 }
                                 initial={{ scale: 0.5 }}
@@ -443,16 +443,16 @@ export default function DashboardPage() {
                                 transition={{ delay: 0.15 + i * 0.1, type: 'spring', stiffness: 500, damping: 18 }}
                                 whileHover={step.status === 'done' ? { scale: 1.1 } : undefined}
                               >
-                                {step.status === 'done'    && <CheckCircle2 size={16} className="text-white" />}
-                                {step.status === 'active'  && <div className="w-3 h-3 rounded-full bg-white" />}
-                                {step.status === 'pending' && <span className="text-xs font-bold text-[#B8ABA9]">{i + 1}</span>}
+                                {step.status === 'done'    && <CheckCircle2 size={13} className="text-white" />}
+                                {step.status === 'active'  && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
+                                {step.status === 'pending' && <span className="text-[10px] font-bold text-[#B8ABA9]">{i + 1}</span>}
                               </motion.div>
                             </div>
-                            <p className={`text-[11px] font-semibold leading-tight ${
+                            <p className={`text-[10px] font-semibold leading-tight ${
                               step.status === 'done'    ? 'text-[#4F9A5C]' :
                               step.status === 'active'  ? 'text-[#241014]' : 'text-[#B0A4A2]'
                             }`}>{step.label}</p>
-                            <p className={`text-[10px] mt-0.5 leading-tight ${
+                            <p className={`text-[9px] mt-0.5 leading-tight ${
                               step.status === 'pending' ? 'text-[#C4BEBC]' : 'text-[#9C9492]'
                             }`}>{step.desc}</p>
                           </motion.div>
@@ -466,7 +466,7 @@ export default function DashboardPage() {
                 {/* ── FINANCIAL SCORES — immediately after roadmap ── */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-sm font-semibold font-lora text-[#241014]">Tus scores financieros</p>
+                    <p className="text-xs font-semibold font-lora text-[#241014]">Tus scores financieros</p>
                     <span className="text-xs text-[#9C9492]">Actualizado hoy</span>
                   </div>
                   <FinancialScoreCards />
@@ -478,8 +478,8 @@ export default function DashboardPage() {
 
                   {/* ── DISPUTES TABLE ── */}
                   <div className="bg-white rounded-2xl border border-[#E7E2E1] card-lift overflow-hidden">
-                    <div className="px-5 py-4 border-b border-[#E7E2E1] flex items-center justify-between">
-                      <p className="text-sm font-semibold font-lora text-[#241014]">Tus disputas activas</p>
+                    <div className="px-4 py-3 border-b border-[#E7E2E1] flex items-center justify-between">
+                      <p className="text-xs font-semibold font-lora text-[#241014]">Tus disputas activas</p>
                       <button className="text-xs font-semibold text-[#7A1E2C] hover:underline" onClick={() => flash('Ver todas próximamente')}>Ver todas →</button>
                     </div>
                     <div className="divide-y divide-[#F7F5F4]">
@@ -489,9 +489,9 @@ export default function DashboardPage() {
                           <button
                             key={d.id}
                             onClick={() => router.push(`/disputes/${d.id}`)}
-                            className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[#F7F5F4] transition-colors text-left"
+                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F7F5F4] transition-colors text-left"
                           >
-                            <div className="w-9 h-9 rounded-full bg-[#241014] flex items-center justify-center text-white text-sm font-bold shrink-0">
+                            <div className="w-7 h-7 rounded-full bg-[#241014] flex items-center justify-center text-white text-[11px] font-bold shrink-0">
                               {d.creditor.charAt(0).toUpperCase()}
                             </div>
                             <div className="flex-1 min-w-0">
@@ -518,11 +518,11 @@ export default function DashboardPage() {
                 {/* ── ACTIVITY + VAULT — side by side ── */}
                 <div className="grid grid-cols-2 gap-5 items-start">
                   {/* ── ACTIVITY FEED ── */}
-                  <div className="bg-white rounded-2xl border border-[#E7E2E1] card-lift p-5">
-                    <p className="text-sm font-semibold font-lora text-[#241014] mb-4">Actividad reciente</p>
-                    <div className="space-y-3.5">
+                  <div className="bg-white rounded-2xl border border-[#E7E2E1] card-lift p-4">
+                    <p className="text-xs font-semibold font-lora text-[#241014] mb-3">Actividad reciente</p>
+                    <div className="space-y-2.5">
                       {ACTIVITY.map(a => (
-                        <div key={a.id} className="flex items-start gap-3">
+                        <div key={a.id} className="flex items-start gap-2.5">
                           <ActivityIcon type={a.type} />
                           <div className="flex-1">
                             <p className="text-xs text-[#241014] leading-snug">{a.text}</p>
@@ -538,14 +538,14 @@ export default function DashboardPage() {
 
                   {/* ── VAULT ── */}
                   <div className="bg-white rounded-2xl border border-[#E7E2E1] card-lift overflow-hidden">
-                    <div className="px-5 py-4 border-b border-[#E7E2E1] flex items-center justify-between">
-                      <p className="text-sm font-semibold font-lora text-[#241014]">Vault de documentos</p>
+                    <div className="px-4 py-3 border-b border-[#E7E2E1] flex items-center justify-between">
+                      <p className="text-xs font-semibold font-lora text-[#241014]">Vault de documentos</p>
                       <button className="text-xs font-semibold text-[#7A1E2C] hover:underline" onClick={() => flash('Ver vault próximamente')}>Ver todos →</button>
                     </div>
                     <div className="divide-y divide-[#F7F5F4]">
                       {DOCS.map(doc => (
-                        <div key={doc.id} className="flex items-center gap-3 px-4 py-3.5">
-                          <div className="w-9 h-9 rounded-lg bg-[#F5E4E6] flex items-center justify-center shrink-0">
+                        <div key={doc.id} className="flex items-center gap-3 px-4 py-2.5">
+                          <div className="w-7 h-7 rounded-lg bg-[#F5E4E6] flex items-center justify-center shrink-0">
                             <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><rect x="3" y="1" width="11" height="15" rx="1.5" stroke="#7A1E2C" strokeWidth="1.3"/><path d="M6 6h6M6 9h6M6 12h4" stroke="#7A1E2C" strokeWidth="1.2" strokeLinecap="round"/></svg>
                           </div>
                           <div className="flex-1 min-w-0">
@@ -582,21 +582,21 @@ export default function DashboardPage() {
 
                 {/* TOP: Step progress notification */}
                 <motion.div
-                  className="bg-white rounded-2xl border border-[#E7E2E1] p-4"
+                  className="bg-white rounded-2xl border border-[#E7E2E1] p-3.5"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6, duration: 0.4 }}
                 >
-                  <div className="flex items-start gap-3 mb-3">
-                    <div className="w-9 h-9 rounded-xl bg-[#F5E4E6] flex items-center justify-center shrink-0">
-                      <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                  <div className="flex items-start gap-2.5 mb-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-[#F5E4E6] flex items-center justify-center shrink-0">
+                      <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
                         <path d="M9 1.5L2.5 8.5H7L7 14.5L13.5 7.5H9L9 1.5Z" fill="#7A1E2C" strokeLinejoin="round"/>
                       </svg>
                     </div>
                     <div>
                       <p className="text-[10px] font-semibold text-[#9C9492] uppercase tracking-widest">Progreso actual</p>
-                      <p className="text-sm font-semibold text-[#241014] mt-0.5">Estás en el Paso 3 de 4</p>
-                      <p className="text-xs text-[#57504E] leading-snug mt-1">Próxima acción: seguimiento a Capital One con Equifax.</p>
+                      <p className="text-xs font-semibold text-[#241014] mt-0.5">Estás en el Paso 3 de 4</p>
+                      <p className="text-[11px] text-[#57504E] leading-snug mt-0.5">Próxima acción: seguimiento a Capital One con Equifax.</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -653,7 +653,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* BOTTOM: Quick stats — vertical list, single-color SVG icons */}
-                <div className="bg-white rounded-2xl border border-[#E7E2E1] p-4">
+                <div className="bg-white rounded-2xl border border-[#E7E2E1] p-3.5">
                   <p className="text-[10px] font-semibold text-[#9C9492] uppercase tracking-widest mb-2">Accesos rápidos</p>
                   <div className="space-y-0.5">
                     <QuickStatRow
