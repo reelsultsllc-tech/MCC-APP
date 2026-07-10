@@ -282,14 +282,24 @@ export default function DashboardPage() {
                       </svg>
                     </div>
 
-                    {/* RIGHT — +77 top, 2-col mini grid below */}
+                    {/* RIGHT — dark glass chip + mini grid */}
                     <div className="text-white">
-                      <p className="text-[10px] font-semibold text-white/40 uppercase tracking-[0.18em] mb-1.5">Puntos ganados</p>
-                      <div className="flex items-baseline gap-1 mb-4">
-                        <span className="font-extrabold leading-none tracking-tighter" style={{ fontSize: '3rem', color: '#6EE7A0' }}>
+                      <div
+                        className="rounded-2xl px-4 py-3.5 mb-3"
+                        style={{
+                          background: 'rgba(0,0,0,0.28)',
+                          border: '1px solid rgba(255,255,255,0.10)',
+                          backdropFilter: 'blur(8px)',
+                        }}
+                      >
+                        <p className="text-[9px] font-semibold text-white/40 uppercase tracking-[0.16em] mb-2">Puntos ganados</p>
+                        <p
+                          className="font-extrabold leading-none tracking-tighter"
+                          style={{ fontSize: '3.25rem', color: '#6EE7A0', textShadow: '0 0 28px rgba(110,231,160,0.45)' }}
+                        >
                           +{displayDelta}
-                        </span>
-                        <span className="text-base font-bold ml-0.5" style={{ color: '#6EE7A0' }}>pts</span>
+                        </p>
+                        <p className="text-[10px] text-white/30 mt-1.5">pts desde que comenzamos</p>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         {[
