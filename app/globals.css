@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Libre+Baskerville:wght@400;700&family=Lora:wght@500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&family=Libre+Baskerville:wght@400;700&family=Lora:wght@500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -213,3 +213,136 @@ input[type=number]::-webkit-outer-spin-button {
 html {
   scroll-behavior: smooth;
 }
+
+/* ── scrollbar ───────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #150a0d; }
+::-webkit-scrollbar-thumb { background: #4a1e27; border-radius: 2px; }
+
+/* ── card-shimmer ─────────────────────────────────── */
+.card-shimmer {
+  background: linear-gradient(
+    105deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.08) 45%,
+    rgba(255,255,255,0.15) 50%,
+    rgba(255,255,255,0.08) 55%,
+    rgba(255,255,255,0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+
+/* ── skeleton shimmer ────────────────────────────── */
+.skeleton-line {
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+.skeleton-line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.07) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* ── shimmer keyframe ────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* ── border beam ─────────────────────────────────── */
+@property --beam-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes borderBeamSpin {
+  to { --beam-angle: 360deg; }
+}
+.glow-card {
+  position: relative;
+}
+.glow-card .beam {
+  --beam-angle: 0deg;
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--beam-angle),
+    transparent 0%,
+    transparent 72%,
+    rgba(171, 28, 66, 0.85) 84%,
+    rgba(255, 180, 200, 1)  90%,
+    rgba(171, 28, 66, 0.85) 96%,
+    transparent 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: borderBeamSpin 2.8s linear infinite;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+.glow-card:hover .beam {
+  opacity: 1;
+}
+.glow-card:hover {
+  box-shadow: 0 0 0 1px rgba(171,28,66,0.3), 0 8px 40px rgba(74,8,32,0.5);
+  transform: translateY(-1px);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+/* ── nav item ────────────────────────────────────── */
+.nav-item {
+  transition: all 0.2s ease;
+}
+.nav-item:hover {
+  background: rgba(74,30,39,0.5);
+  transform: translateX(3px);
+}
+.nav-item.active {
+  background: rgba(74,30,39,0.7);
+  border-left: 2px solid #ab1c42;
+}
+
+/* ── range slider thumb ──────────────────────────── */
+input[type='range'].slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+}
+input[type='range'].slider-thumb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e04a6e, #ab1c42);
+  cursor: pointer;
+  box-shadow: 0 0 0 3px rgba(171,28,66,0.3), 0 2px 8px rgba(0,0,0,0.4);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+input[type='range'].slider-thumb::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+  box-shadow: 0 0 0 5px rgba(171,28,66,0.35), 0 0 20px rgba(224,74,110,0.6);
+}
+input[type='range'].slider-thumb::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e04a6e, #ab1c42);
+  cursor: pointer;
+  box-shadow: 0 0 0 3px rgba(171,28,66,0.3);
+}
+
+/* ── glow red ────────────────────────────────────── */
+.glow-red    { box-shadow: 0 0 30px rgba(171,28,66,0.35), 0 0 60px rgba(171,28,66,0.15); }
+.glow-red-sm { box-shadow: 0 0 15px rgba(171,28,66,0.3); }

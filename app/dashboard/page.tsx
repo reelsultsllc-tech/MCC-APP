@@ -1,739 +1,783 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useRef, type ReactNode } from 'react'
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { CheckCircle2 } from 'lucide-react'
-import MccLogo from '@/components/MccLogo'
-import Toast from '@/components/Toast'
-import { FinancialScoreCards } from '@/components/ui/financial-score-cards'
-import { LiquidCard, CardContent } from '@/components/ui/liquid-glass-card'
-import { AdvisorRevealCard } from '@/components/ui/advisor-reveal-card'
-import { BureauSelector } from '@/components/ui/bureau-selector'
-import { MccHoverBg } from '@/components/ui/mcc-hover-bg'
-import { MccBorderGlow } from '@/components/ui/mcc-border-glow'
-import { ActivityEchoStack, type ActivityItem } from '@/components/ui/activity-echo-stack'
-import { disputes, CLIENT } from '@/lib/data'
-import { daysAgo } from '@/lib/utils'
+import { useState, useEffect, useRef } from 'react';
+import {
+  LayoutDashboard, FileText, BarChart3, Wallet, BookOpen,
+  PhoneCall, Settings, Bell, Search, ChevronRight,
+  TrendingUp, TrendingDown, AlertCircle, CheckCircle,
+  Clock, Zap, Target, ChevronDown, X,
+  ArrowUpRight, ArrowDownRight, RefreshCw, Eye, Lock,
+  Menu, Sun, Moon, ChevronLeft, Activity,
+} from 'lucide-react';
+import { CreditCard3D } from '@/components/demo/credit-card-3d';
+import { WhatIfSimulator } from '@/components/demo/what-if-simulator';
+import { AIInsights } from '@/components/demo/ai-insights';
 
-const ACTIVITY: ActivityItem[] = [
-  { id: 1, type: 'new',     text: 'Identificamos un nuevo ítem en tu reporte: una deuda ya pagada reportada por LVNV Funding', date: '2026-06-30' },
-  { id: 2, type: 'success', text: '¡Buenas noticias! Portfolio Recovery Associates eliminó tu cuenta de cobranza', date: '2026-06-28' },
-  { id: 3, type: 'sent',    text: 'Enviamos tu carta de disputa a TransUnion sobre tu cuenta con Midland Credit Management', date: '2026-06-18' },
-  { id: 4, type: 'wait',    text: 'Tu disputa con Capital One entró en espera de respuesta de Equifax', date: '2026-06-15' },
-]
+type Theme = 'dark' | 'light';
 
-const DOCS = [
-  { id: 1, name: 'Respuesta de Experian',  sub: 'Portfolio Recovery Associates · 28 jun', isNew: true },
-  { id: 2, name: 'Carta de disputa',       sub: 'Midland Credit Management · 18 jun',     isNew: false },
-  { id: 3, name: 'Carta de disputa',       sub: 'Capital One · 19 may',                   isNew: false },
-  { id: 4, name: 'Carta de disputa',       sub: 'Portfolio Recovery Associates · 6 may',  isNew: false },
-]
+const BASE_SCORE = 742;
+const NAV_ITEMS = [
+  { icon: LayoutDashboard, label: 'Overview',         id: 'overview' },
+  { icon: FileText,         label: 'Disputes',         id: 'disputes', badge: 3 },
+  { icon: BarChart3,        label: 'Reports',          id: 'reports' },
+  { icon: Wallet,           label: 'Wallet & Billing', id: 'wallet' },
+];
+const SUPPORT_ITEMS = [
+  { icon: BookOpen,  label: 'Documents',     id: 'documents' },
+  { icon: PhoneCall, label: 'Advance Calls', id: 'calls' },
+  { icon: Settings,  label: 'Settings',      id: 'settings' },
+];
+const DISPUTES = [
+  { id: 1, title: 'New Dispute Resolved',  desc: 'Medic atten - Signarer appointe signatee decline - 1TT pe signing',  time: '2h ago',  status: 'success', pts: '+62' },
+  { id: 2, title: 'Medical/rolputee',      desc: 'Medical econore - S1C - Sectinc. Signing signing users 3 ago',       time: '8h ago',  status: 'error',   pts: '-12' },
+  { id: 3, title: 'Udtilmute aliee',       desc: 'Create oester.bowl: 329 - You Fin credit monitor...',                 time: '1d ago',  status: 'warning', pts: '+18' },
+];
+const SCORE_HISTORY = [
+  { month: 'Jan', score: 680 }, { month: 'Feb', score: 695 },
+  { month: 'Mar', score: 701 }, { month: 'Apr', score: 718 },
+  { month: 'May', score: 725 }, { month: 'Jun', score: 742 },
+];
+const FACTORS = [
+  { label: 'Payment History',    value: 98, color: '#22c55e', trend: 'up' },
+  { label: 'Credit Utilization', value: 24, color: '#ef4444', trend: 'down' },
+  { label: 'Account Age',        value: 72, color: '#f59e0b', trend: 'up' },
+  { label: 'Credit Mix',         value: 85, color: '#3b82f6', trend: 'up' },
+  { label: 'New Inquiries',      value: 60, color: '#a855f7', trend: 'neutral' },
+];
 
-const NAV = [
-  { id: 'resumen',         label: 'Resumen',             icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="1" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/><rect x="10" y="1" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/><rect x="1" y="10" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/><rect x="10" y="10" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/></svg> },
-  { id: 'disputas',        label: 'Disputas activas',    icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5L2 5v4c0 4 3.1 7.4 7 8 3.9-.6 7-4 7-8V5L9 1.5z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/></svg> },
-  { id: 'vault',           label: 'Vault de documentos', icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.5"/><path d="M2 7h14" stroke="currentColor" strokeWidth="1.5"/><path d="M6 11h.5M9 11h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
-  { id: 'actividad',       label: 'Actividad',           icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><polyline points="1,13 5,7 8,10 12,5 17,9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  { id: 'reportes',        label: 'Reportes',            icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="10" width="3" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="7.5" y="6" width="3" height="10" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="13" y="2" width="3" height="14" rx="1" stroke="currentColor" strokeWidth="1.5"/></svg> },
-  { id: 'recomendaciones', label: 'Recomendaciones',     icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v2M9 15v2M1 9h2M15 9h2M3.2 3.2l1.4 1.4M13.4 13.4l1.4 1.4M3.2 14.8l1.4-1.4M13.4 4.6l1.4-1.4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><circle cx="9" cy="9" r="3" stroke="currentColor" strokeWidth="1.5"/></svg> },
-]
+const T = {
+  dark: {
+    bg: '#0d0507',
+    card: 'linear-gradient(135deg, #1e0e12 0%, #150a0d 100%)',
+    cardBorder: 'rgba(74,8,32,0.45)',
+    skeletonBg: '#2a1218',
+    text: 'text-white',
+    sub: 'text-wine-200/50',
+    inputBg: '#1e0e12', inputBorder: 'rgba(74,8,32,0.55)',
+    rowBg: '#150a0d',   rowBorder: 'rgba(74,8,32,0.3)',
+    trackBg: '#2a1218',
+  },
+  light: {
+    bg: '#faf4f5',
+    card: '#ffffff',
+    cardBorder: '#f0d8dd',
+    skeletonBg: '#f0d8dd',
+    text: 'text-gray-900',
+    sub: 'text-wine-800/50',
+    inputBg: '#fff0f3', inputBorder: '#f0d0d8',
+    rowBg: '#fff8f9',   rowBorder: '#f0d8dd',
+    trackBg: '#f5e0e4',
+  },
+} as const;
 
-const PILL: Record<string, { bg: string; color: string; label: string }> = {
-  eliminado:  { bg: '#E7EFDE', color: '#3E6B2E', label: 'Eliminado' },
-  verificado: { bg: '#F6EFDF', color: '#8A5F1E', label: 'Verificado' },
-  stage0:     { bg: '#EDE7E6', color: '#57504E', label: 'Item identificado' },
-  stage1:     { bg: '#F5E4E6', color: '#6B1A26', label: 'Carta enviada' },
-  stage2:     { bg: '#FFF3E0', color: '#B8500A', label: 'En espera' },
-  stage3:     { bg: '#E7EFDE', color: '#3E6B2E', label: 'Resultado' },
-}
-
-function getPill(d: typeof disputes[0]) {
-  if (d.stageIdx === 3 && d.result) return PILL[d.result]
-  return PILL[`stage${d.stageIdx}`]
-}
-
-function ActivityIcon({ type }: { type: string }) {
-  const icons = {
-    new:     { bg: '#F5E4E6', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="#7A1E2C" strokeWidth="1.4"/><path d="M8 5v3M8 9.5v.5" stroke="#7A1E2C" strokeWidth="1.4" strokeLinecap="round"/></svg> },
-    success: { bg: '#E7EFDE', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="#4F9A5C" strokeWidth="1.4"/><path d="M5.5 8l2 2 3-3" stroke="#4F9A5C" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-    sent:    { bg: '#F6EFDF', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="8.5" rx="1.2" stroke="#B8862E" strokeWidth="1.3"/><path d="M2 5.5l6 4 6-4" stroke="#B8862E" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-    wait:    { bg: '#EDE7E6', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="#57504E" strokeWidth="1.4"/><path d="M8 5.5v2.8l2 1.2" stroke="#57504E" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  }
-  const { bg, icon } = icons[type as keyof typeof icons] ?? icons.wait
+// ── SkeletonCard ──────────────────────────────────────────────────────────────
+function SkeletonCard({ theme, lines = 4 }: { theme: Theme; lines?: number }) {
+  const bg = T[theme].skeletonBg;
   return (
-    <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: bg }}>
-      {icon}
+    <div className="p-5 space-y-3">
+      <div className="skeleton-line h-4 w-1/3 rounded" style={{ background: bg }} />
+      {Array.from({ length: lines }).map((_, i) => (
+        <div key={i} className="skeleton-line rounded" style={{ background: bg, height: '10px', width: `${65 + (i % 3) * 15}%` }} />
+      ))}
+      <div className="skeleton-line h-8 w-full rounded-xl" style={{ background: bg }} />
     </div>
-  )
+  );
 }
 
-function DisputeProgress({ stageIdx, result }: { stageIdx: number; result: string | null }) {
-  const steps = ['Enviado', 'En revisión', 'Resuelta']
-  return (
-    <div className="flex items-center gap-1">
-      {steps.map((label, i) => {
-        const stepStage = i + 1
-        const done = stageIdx > stepStage
-        const resolved = stageIdx === 3 && i === 2
-        let dotBg = '#E7E2E1'; let dotBorder = '#E7E2E1'
-        if (done || resolved) { dotBg = '#4F9A5C'; dotBorder = '#4F9A5C' }
-        else if (stageIdx === stepStage) { dotBg = '#7A1E2C'; dotBorder = '#7A1E2C' }
-        return (
-          <div key={i} className="flex items-center gap-1">
-            {i > 0 && <div className="w-5 h-px" style={{ background: done ? '#4F9A5C' : '#E7E2E1' }} />}
-            <div className="flex flex-col items-center gap-0.5">
-              <div className="w-3 h-3 rounded-full flex items-center justify-center" style={{ background: dotBg, border: `2px solid ${dotBorder}` }}>
-                {(done || resolved) && <svg width="6" height="6" viewBox="0 0 6 6"><path d="M1 3l1.5 1.5L5 1.5" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-              </div>
-              <span className="text-[9px] text-[#9C9492] whitespace-nowrap">{label}</span>
-            </div>
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
-
-function useCountUp(target: number, duration: number, delay = 0) {
-  const [value, setValue] = useState(0)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const start = Date.now()
-      const tick = () => {
-        const elapsed = Date.now() - start
-        const progress = Math.min(elapsed / duration, 1)
-        setValue(Math.round((1 - Math.pow(1 - progress, 3)) * target))
-        if (progress < 1) requestAnimationFrame(tick)
-      }
-      requestAnimationFrame(tick)
-    }, delay)
-    return () => clearTimeout(timer)
-  }, [target, duration, delay])
-  return value
-}
-
-function Sparkline({ data, color = '#4F9A5C' }: { data: number[]; color?: string }) {
-  if (data.length < 2) return null
-  const W = 38, H = 14
-  const min = Math.min(...data), max = Math.max(...data)
-  const range = max - min || 1
-  const pts = data.map((v, i) => [
-    (i / (data.length - 1)) * W,
-    H - ((v - min) / range) * (H - 2) - 1,
-  ])
-  const polyline = pts.map(([x, y]) => `${x},${y}`).join(' ')
-  const area = `${pts[0][0]},${H} ${polyline} ${pts[pts.length - 1][0]},${H}`
-  return (
-    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} fill="none" className="shrink-0">
-      <polygon points={area} fill={color} opacity={0.12} />
-      <polyline points={polyline} stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function QuickStatRow({ icon, value, label, action, sparkData, sparkColor }: {
-  icon: ReactNode; value: string; label: string; action: () => void
-  sparkData?: number[]; sparkColor?: string
+// ── GlowCard ──────────────────────────────────────────────────────────────────
+function GlowCard({ children, theme, className = '', delay = 0, loaded }: {
+  children: React.ReactNode; theme: Theme; className?: string; delay?: number; loaded: boolean;
 }) {
-  const ref = useRef<HTMLButtonElement>(null)
-  const [pos, setPos] = useState({ x: 0, y: 0 })
-  const [hovered, setHovered] = useState(false)
+  const t = T[theme];
+  return (
+    <div
+      className={`glow-card rounded-2xl border transition-all duration-700 overflow-hidden ${className} ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+      style={{ background: t.card, borderColor: t.cardBorder, transitionDelay: `${delay}ms` }}
+    >
+      <div className="beam" />
+      <div className="relative z-10">{children}</div>
+    </div>
+  );
+}
+
+// ── AnimatedCounter ───────────────────────────────────────────────────────────
+function AnimatedCounter({ target, duration = 1800 }: { target: number; duration?: number }) {
+  const [count, setCount] = useState(target);
+  const prevTarget = useRef(target);
+
+  useEffect(() => {
+    const from = prevTarget.current;
+    prevTarget.current = target;
+    const t0 = Date.now();
+    const tick = () => {
+      const p = Math.min((Date.now() - t0) / duration, 1);
+      const e = 1 - Math.pow(1 - p, 3);
+      setCount(Math.round(from + (target - from) * e));
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [target, duration]);
+
+  return <span>{count}</span>;
+}
+
+// ── CreditGauge ───────────────────────────────────────────────────────────────
+function CreditGauge({ score, theme }: { score: number; theme: Theme }) {
+  const [mounted, setMounted] = useState(false);
+  const r = 80; const cx = 100; const cy = 105;
+  const startA = -210; const endA = 30; const totalA = endA - startA;
+  const circ = (Math.PI * r * totalA) / 180;
+  const pct  = (score - 300) / (850 - 300);
+  const offset = circ - pct * circ;
+  const toXY = (a: number, rad = r) => {
+    const rd = ((a - 90) * Math.PI) / 180;
+    return { x: cx + rad * Math.cos(rd), y: cy + rad * Math.sin(rd) };
+  };
+  const s = toXY(startA); const e = toXY(endA);
+  const arc = `M ${s.x} ${s.y} A ${r} ${r} 0 1 1 ${e.x} ${e.y}`;
+  const needleA = startA + totalA * pct;
+  const nRad = ((needleA - 90) * Math.PI) / 180;
+  const nx = cx + (r - 12) * Math.cos(nRad);
+  const ny = cy + (r - 12) * Math.sin(nRad);
+  const trackColor = theme === 'dark' ? '#2a1218' : '#f0d8dd';
+
+  useEffect(() => { const t = setTimeout(() => setMounted(true), 400); return () => clearTimeout(t); }, []);
 
   return (
-    <button
-      ref={ref}
-      onClick={action}
-      onMouseMove={e => {
-        if (!ref.current) return
-        const rect = ref.current.getBoundingClientRect()
-        setPos({ x: e.clientX - rect.left, y: e.clientY - rect.top })
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="relative w-full flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-[#F7F5F4] transition-colors text-left overflow-hidden"
-    >
-      <div
-        className="pointer-events-none absolute inset-0 transition-opacity duration-500 ease-in-out"
-        style={{
-          opacity: hovered ? 1 : 0,
-          background: `radial-gradient(circle 100px at ${pos.x}px ${pos.y}px, rgba(122,30,44,0.07), transparent)`,
-        }}
+    <svg width="200" height="145" viewBox="0 0 200 145">
+      <defs>
+        <linearGradient id="gG" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stopColor="#dc2626" />
+          <stop offset="30%"  stopColor="#f97316" />
+          <stop offset="60%"  stopColor="#facc15" />
+          <stop offset="100%" stopColor="#22c55e" />
+        </linearGradient>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="4" result="b" />
+          <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+        <filter id="glowSm">
+          <feGaussianBlur stdDeviation="2.5" result="b" />
+          <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+      </defs>
+      <path d={arc} fill="none" stroke="url(#gG)" strokeWidth="18" strokeLinecap="round"
+        opacity="0.1"
+        strokeDasharray={`${circ}`}
+        strokeDashoffset={mounted ? offset : circ}
+        style={{ transition: 'stroke-dashoffset 1.8s cubic-bezier(0.34,1.4,0.64,1)' }}
       />
-      <div className="relative z-10 w-8 h-8 rounded-lg bg-[#F5E4E6] flex items-center justify-center shrink-0">
-        {icon}
+      <path d={arc} fill="none" stroke={trackColor} strokeWidth="13" strokeLinecap="round" />
+      <path d={arc} fill="none" stroke="url(#gG)" strokeWidth="13" strokeLinecap="round"
+        strokeDasharray={`${circ}`}
+        strokeDashoffset={mounted ? offset : circ}
+        style={{ transition: 'stroke-dashoffset 1.8s cubic-bezier(0.34,1.4,0.64,1)', filter: 'url(#glow)' }}
+      />
+      {[0, 0.25, 0.5, 0.75, 1].map(p => {
+        const a = startA + totalA * p;
+        const i = toXY(a, r - 20); const o = toXY(a, r - 9);
+        return <line key={p} x1={i.x} y1={i.y} x2={o.x} y2={o.y} stroke={trackColor} strokeWidth="1.5" />;
+      })}
+      <line x1={cx} y1={cy} x2={mounted ? nx : cx} y2={mounted ? ny : cy}
+        stroke={theme === 'dark' ? '#fce7eb' : '#7a1838'} strokeWidth="2.5" strokeLinecap="round"
+        style={{ transition: 'x2 1.8s cubic-bezier(0.34,1.4,0.64,1), y2 1.8s cubic-bezier(0.34,1.4,0.64,1)', filter: 'url(#glowSm)' }}
+      />
+      <circle cx={cx} cy={cy} r="5" fill="#ab1c42" style={{ filter: 'url(#glowSm)' }} />
+      <circle cx={cx} cy={cy} r="2.5" fill={theme === 'dark' ? '#fce7eb' : '#fff'} />
+      {mounted && (
+        <circle cx={nx + Math.cos(nRad) * 12} cy={ny + Math.sin(nRad) * 12}
+          r="4" fill="#22c55e"
+          style={{ transition: 'cx 1.8s cubic-bezier(0.34,1.4,0.64,1), cy 1.8s cubic-bezier(0.34,1.4,0.64,1)', filter: 'url(#glowSm)' }}
+        />
+      )}
+      <text x="18" y="130" fill={theme === 'dark' ? '#7a1838' : '#f87171'} fontSize="8.5" fontFamily="Inter">300</text>
+      <text x="168" y="130" fill="#22c55e" fontSize="8.5" fontFamily="Inter">850</text>
+    </svg>
+  );
+}
+
+// ── FactorBar ─────────────────────────────────────────────────────────────────
+function FactorBar({ label, value, color, trend, delay, theme }: {
+  label: string; value: number; color: string; trend: string; delay: number; theme: Theme;
+}) {
+  const [w, setW] = useState(0);
+  useEffect(() => { const t = setTimeout(() => setW(value), 300 + delay); return () => clearTimeout(t); }, [value, delay]);
+  const t = T[theme];
+  return (
+    <div className="mb-3">
+      <div className="flex justify-between items-center mb-1.5">
+        <span className={`text-xs ${t.sub}`}>{label}</span>
+        <div className="flex items-center gap-1.5">
+          <span className={`text-xs font-bold ${t.text}`}>{value}%</span>
+          {trend === 'up'   && <TrendingUp   size={10} color="#22c55e" />}
+          {trend === 'down' && <TrendingDown  size={10} color="#ef4444" />}
+        </div>
       </div>
-      <div className="relative z-10 flex-1 min-w-0">
-        <p className="text-sm font-bold font-lora text-[#241014] leading-tight">{value}</p>
-        <p className="text-[10px] text-[#9C9492] leading-tight">{label}</p>
+      <div className="h-2 rounded-full overflow-hidden" style={{ background: t.trackBg }}>
+        <div className="h-full rounded-full relative overflow-hidden"
+          style={{ width: `${w}%`, background: color, transition: 'width 1.1s cubic-bezier(0.34,1.2,0.64,1)', boxShadow: `0 0 8px ${color}88` }}>
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.38),transparent)', backgroundSize: '200% 100%', animation: `shimmer 2.3s infinite ${delay}ms` }} />
+        </div>
       </div>
-      {sparkData && (
-        <div className="relative z-10">
-          <Sparkline data={sparkData} color={sparkColor ?? '#4F9A5C'} />
+    </div>
+  );
+}
+
+// ── CompactLevelProgress ─────────────────────────────────────────────────────
+const TIERS_COMPACT = [
+  { label: 'Poor',      min: 300, max: 579,  color: '#dc2626' },
+  { label: 'Fair',      min: 580, max: 669,  color: '#f97316' },
+  { label: 'Good',      min: 670, max: 739,  color: '#facc15' },
+  { label: 'Very Good', min: 740, max: 799,  color: '#84cc16' },
+  { label: 'Excellent', min: 800, max: 850,  color: '#22c55e' },
+];
+function CompactLevelProgress({ score, theme, loaded }: { score: number; theme: Theme; loaded: boolean }) {
+  const [barW, setBarW] = useState(0);
+  const current = TIERS_COMPACT.find(t => score >= t.min && score <= t.max) ?? TIERS_COMPACT[0];
+  const next    = TIERS_COMPACT[TIERS_COMPACT.findIndex(t => t.label === current.label) + 1] ?? null;
+  const pct     = Math.min(100, ((score - current.min) / (current.max - current.min + 1)) * 100);
+  useEffect(() => { if (loaded) { const t = setTimeout(() => setBarW(pct), 500); return () => clearTimeout(t); } }, [pct, loaded]);
+  const dark = theme === 'dark';
+  const trackBg = dark ? '#2a1218' : '#f5e0e4';
+  return (
+    <div className="mt-2 px-1">
+      <div className="flex justify-between items-center mb-1">
+        <span className="text-xs font-medium" style={{ color: current.color }}>{current.label}</span>
+        {next && (
+          <span className="text-xs font-semibold" style={{ color: next.color }}>
+            {next.min - score} pts → {next.label}
+          </span>
+        )}
+      </div>
+      <div className="h-1.5 rounded-full overflow-hidden relative" style={{ background: trackBg }}>
+        <div className="h-full rounded-full relative overflow-hidden transition-all duration-1000 ease-out"
+          style={{ width: `${barW}%`, background: `linear-gradient(90deg, ${current.color}99, ${current.color})`, boxShadow: `0 0 8px ${current.color}55` }}>
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.38),transparent)', backgroundSize: '200% 100%', animation: 'shimmer 2.3s infinite' }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── MiniChart ─────────────────────────────────────────────────────────────────
+function MiniChart({ theme }: { theme: Theme }) {
+  const [hovered, setHovered] = useState<number | null>(null);
+  const [anim, setAnim]       = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => { const t = setTimeout(() => setAnim(true), 600); return () => clearTimeout(t); }, []);
+
+  const W = 200; const H = 55;
+  const max = Math.max(...SCORE_HISTORY.map(d => d.score));
+  const min = Math.min(...SCORE_HISTORY.map(d => d.score)) - 15;
+  const pts = SCORE_HISTORY.map((d, i) => ({
+    x: (i / (SCORE_HISTORY.length - 1)) * W,
+    y: H - ((d.score - min) / (max - min)) * H * 0.85 - 4,
+    ...d,
+  }));
+  const line = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+  const area = `${line} L ${W} ${H} L 0 ${H} Z`;
+
+  const dark = theme === 'dark';
+  const hpt  = hovered !== null ? pts[hovered] : null;
+
+  return (
+    <div ref={containerRef} className="relative">
+      <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none"
+        className="overflow-visible" style={{ height: '58px' }}
+        onMouseLeave={() => setHovered(null)}
+      >
+        <defs>
+          <linearGradient id="aG" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="#e04a6e" stopOpacity={dark ? '0.6' : '0.35'} />
+            <stop offset="70%"  stopColor="#ab1c42" stopOpacity={dark ? '0.2' : '0.08'} />
+            <stop offset="100%" stopColor="#ab1c42" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="lineG" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"   stopColor="#ab1c42" />
+            <stop offset="100%" stopColor="#e04a6e" />
+          </linearGradient>
+          <filter id="lGlow">
+            <feGaussianBlur stdDeviation="2.5" result="b" />
+            <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+        </defs>
+        {anim && <path d={area} fill="url(#aG)" />}
+        <path d={line} fill="none" stroke="url(#lineG)" strokeWidth="2.5"
+          strokeLinecap="round" strokeLinejoin="round" style={{ filter: 'url(#lGlow)' }} />
+        {hovered !== null && hpt && (
+          <line x1={hpt.x} y1={0} x2={hpt.x} y2={H}
+            stroke={dark ? 'rgba(249,208,216,0.2)' : 'rgba(122,24,56,0.15)'}
+            strokeWidth="1" strokeDasharray="3 3" />
+        )}
+        {pts.map((p, i) => (
+          <circle key={i} cx={p.x} cy={p.y}
+            r={hovered === i ? 5 : (i === pts.length - 1 ? 4 : 3)}
+            fill={i === pts.length - 1 || hovered === i ? '#e04a6e' : '#ab1c42'}
+            style={{ filter: (i === pts.length - 1 || hovered === i) ? 'url(#lGlow)' : undefined, cursor: 'pointer', transition: 'r 0.15s ease' }}
+            onMouseEnter={() => setHovered(i)}
+          />
+        ))}
+      </svg>
+
+      {hovered !== null && hpt && containerRef.current && (() => {
+        const rect = containerRef.current!.getBoundingClientRect();
+        const svgW = rect.width;
+        const xPx = (hpt.x / W) * svgW;
+        const yPx = (hpt.y / H) * 58;
+        const flip = xPx > svgW * 0.65;
+        return (
+          <div
+            className="absolute pointer-events-none z-20 px-2.5 py-1.5 rounded-lg border text-xs font-semibold shadow-lg"
+            style={{
+              left: flip ? xPx - 70 : xPx + 10,
+              top:  Math.max(0, yPx - 28),
+              background: dark ? '#2a1218' : '#fff',
+              borderColor: dark ? 'rgba(171,28,66,0.5)' : '#f0d8dd',
+              color: dark ? '#fff' : '#1a0a0e',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <span style={{ color: '#e04a6e' }}>{hpt.month}</span>
+            &nbsp;·&nbsp;{hpt.score}
+            <span style={{ color: '#22c55e', marginLeft: 4 }}>
+              {hovered > 0 ? `+${hpt.score - pts[hovered - 1].score}` : ''}
+            </span>
+          </div>
+        );
+      })()}
+    </div>
+  );
+}
+
+// ── Brand Logo ────────────────────────────────────────────────────────────────
+function CoffeeCreditIcon({ size = 32, color = '#dc2626' }: { size?: number; color?: string }) {
+  const h = Math.round(size * 0.84);
+  return (
+    <svg width={size} height={h} viewBox="0 0 60 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="1.5" y="30" width="51" height="18" rx="3" stroke={color} strokeWidth="2.2"/>
+      <rect x="6.5" y="35.5" width="10" height="7.5" rx="1.5" stroke={color} strokeWidth="1.9"/>
+      <line x1="22" y1="38" x2="38" y2="38" stroke={color} strokeWidth="1.4" strokeLinecap="round"/>
+      <line x1="22" y1="42" x2="32" y2="42" stroke={color} strokeWidth="1.4" strokeLinecap="round"/>
+      <path d="M9 10 L45 10 L40 30 L14 30 Z" stroke={color} strokeWidth="2.2" strokeLinejoin="round"/>
+      <path d="M40 17 Q52 17 52 23 Q52 29 40 29" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M21 7 Q23 4 21 1" stroke={color} strokeWidth="1.6" strokeLinecap="round"/>
+      <path d="M31 7 Q33 4 31 1" stroke={color} strokeWidth="1.6" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+function BrandText() {
+  return (
+    <div className="min-w-0">
+      <div className="text-sm font-bold leading-tight tracking-tight">
+        <span className="text-white">My Credit </span>
+        <span style={{ color: '#e03050' }}>Café</span>
+      </div>
+      <div className="text-xs tracking-wide" style={{ color: 'rgba(220,150,150,0.45)' }}>
+        Better Credit, Better Life.
+      </div>
+    </div>
+  );
+}
+
+// ── Sidebar ───────────────────────────────────────────────────────────────────
+function Sidebar({ active, setActive, collapsed, setCollapsed, mobileOpen, setMobileOpen }: {
+  active: string; setActive: (id: string) => void;
+  collapsed: boolean; setCollapsed: (v: boolean) => void;
+  mobileOpen: boolean; setMobileOpen: (v: boolean) => void;
+}) {
+  const sidebarBg = 'linear-gradient(180deg, #2a1218 0%, #150a0d 60%, #0d0507 100%)';
+
+  const NavBtn = ({ item, showLabel }: { item: (typeof NAV_ITEMS)[0]; showLabel: boolean }) => (
+    <button
+      onClick={() => { setActive(item.id); setMobileOpen(false); }}
+      title={collapsed ? item.label : undefined}
+      className={`nav-item group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium ${active === item.id ? 'active text-white' : 'text-wine-200/50 hover:text-white'}`}
+      style={active === item.id ? { background: 'rgba(74,30,39,0.7)', borderLeft: '2px solid #ab1c42' } : undefined}
+    >
+      <item.icon size={16} className="flex-shrink-0" />
+      {showLabel && <span className="flex-1 text-left truncate">{item.label}</span>}
+      {showLabel && 'badge' in item && item.badge != null && (
+        <span className="text-xs px-1.5 py-0.5 rounded-full font-bold text-white" style={{ background: '#ab1c42' }}>{item.badge}</span>
+      )}
+      {!showLabel && 'badge' in item && item.badge != null && (
+        <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-wine-600" />
+      )}
+    </button>
+  );
+
+  const Inner = ({ showLabel }: { showLabel: boolean }) => (
+    <div className="flex flex-col h-full">
+      <div className="px-4 py-3.5 border-b border-wine-950/50 flex items-center justify-between gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 min-w-0">
+          <CoffeeCreditIcon size={24} color="white" />
+          {showLabel && <BrandText />}
+        </div>
+        {showLabel && (
+          <button onClick={() => setCollapsed(true)} className="text-wine-400/40 hover:text-wine-200/70 transition-colors flex-shrink-0">
+            <ChevronLeft size={15} />
+          </button>
+        )}
+      </div>
+      <nav className="flex-1 px-2 pt-4 space-y-0.5 overflow-y-auto">
+        {NAV_ITEMS.map(item => <NavBtn key={item.id} item={item} showLabel={showLabel} />)}
+        {showLabel && <div className="pt-4 pb-1.5"><span className="text-xs font-semibold uppercase tracking-widest text-wine-800/70 px-3">Support</span></div>}
+        {!showLabel && <div className="py-2 border-t border-wine-950/40 my-1" />}
+        {SUPPORT_ITEMS.map(item => <NavBtn key={item.id} item={item} showLabel={showLabel} />)}
+      </nav>
+      {showLabel && (
+        <div className="mx-2 mb-3 rounded-xl p-3.5 border border-wine-900/50" style={{ background: 'linear-gradient(135deg,#38171f,#1e0e12)' }}>
+          <div className="text-xs text-wine-400/55 uppercase tracking-widest mb-0.5">Membership Tier</div>
+          <div className="text-sm font-bold text-white mb-0.5">Concierge Tier</div>
+          <div className="text-xs text-wine-300/45 mb-2.5">2 executive overload</div>
+          <button className="w-full py-1.5 rounded-lg text-xs font-semibold text-white hover:brightness-110 transition-all"
+            style={{ background: 'linear-gradient(135deg,#ab1c42,#7a1838)' }}>Manage Tier</button>
         </div>
       )}
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="relative z-10 text-[#9C9492] shrink-0">
-        <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-      </svg>
-    </button>
-  )
-}
-
-export default function DashboardPage() {
-  const router = useRouter()
-  const [activeNav, setActiveNav] = useState('resumen')
-  const [toastMsg, setToastMsg] = useState('')
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-
-  const displayScore = useCountUp(615, 1600, 200)
-  const displayDelta = useCountUp(77,  1400, 500)
-
-  useEffect(() => { sessionStorage.setItem('mcc_disclosure_done', 'true') }, [])
-
-  function flash(msg: string) {
-    setToastMsg(msg)
-    setTimeout(() => setToastMsg(''), 2200)
-  }
+      {!showLabel && (
+        <div className="px-2 pb-2">
+          <button onClick={() => setCollapsed(false)} className="w-full flex items-center justify-center py-2 rounded-lg text-wine-400/50 hover:text-white transition-colors"
+            style={{ background: 'rgba(74,8,32,0.2)' }}><ChevronRight size={15} /></button>
+        </div>
+      )}
+      <div className="px-3 py-3 border-t border-wine-950/50 flex items-center gap-2.5">
+        <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
+          style={{ background: 'linear-gradient(135deg,#ab1c42,#4a0820)' }}>EM</div>
+        {showLabel && (
+          <>
+            <div className="flex-1 min-w-0">
+              <div className="text-xs font-semibold text-white truncate">Elara Manchehi</div>
+              <div className="text-xs text-wine-400/45">4 months selected</div>
+            </div>
+            <ChevronDown size={13} className="text-wine-400/35 flex-shrink-0" />
+          </>
+        )}
+      </div>
+    </div>
+  );
 
   return (
-    <div className="flex min-h-screen bg-[#FAF7F4]">
-
-      {/* ══════════════════════════════════
-          ZONA 1 — LEFT ANCHOR (collapsible)
-          ══════════════════════════════════ */}
-      <aside className={`hidden lg:flex flex-col shrink-0 bg-white border-r border-[#E7E2E1] h-screen sticky top-0 overflow-hidden transition-[width] duration-300 ease-in-out ${sidebarCollapsed ? 'w-[64px]' : 'w-[260px]'}`}>
-
-        {/* Logo row — h-14 aligns with header border-b */}
-        <div className="h-14 flex items-center border-b border-[#E7E2E1] shrink-0">
-          <div className="flex items-center gap-3 flex-1 min-w-0 pl-4">
-            <MccLogo size={30} />
-            <span className={`font-lora text-sm font-medium text-[#241014] leading-tight whitespace-nowrap overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'max-w-0 opacity-0' : 'max-w-[160px] opacity-100'}`}>
-              My Credit<br/><span className="text-[#7A1E2C]">Café</span>
-            </span>
-          </div>
-          {/* Toggle button */}
-          <button
-            onClick={() => setSidebarCollapsed(c => !c)}
-            aria-label={sidebarCollapsed ? 'Expandir sidebar' : 'Colapsar sidebar'}
-            className="shrink-0 w-8 h-8 mr-2 rounded-lg flex items-center justify-center text-[#C4BEBC] hover:bg-[#F5F0EF] hover:text-[#57504E] transition-colors duration-150"
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              {sidebarCollapsed
-                ? <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                : <path d="M9 3l-4 4 4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              }
-            </svg>
-          </button>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 px-2 py-4 space-y-0.5 overflow-y-auto overflow-x-hidden">
-          {NAV.map(item => (
-            <button
-              key={item.id}
-              onClick={() => setActiveNav(item.id)}
-              title={sidebarCollapsed ? item.label : undefined}
-              className={`w-full flex items-center rounded-xl text-[13px] font-medium transition-colors duration-150 ${
-                sidebarCollapsed ? 'justify-center py-2.5 px-2' : 'gap-3 py-2 px-3'
-              } ${
-                activeNav === item.id
-                  ? 'text-[#7A1E2C] font-semibold'
-                  : 'text-[#57504E] hover:bg-[#F5F0EF] hover:text-[#241014]'
-              }`}
-              style={activeNav === item.id ? {
-                background: 'rgba(122,30,44,0.07)',
-                boxShadow: sidebarCollapsed ? undefined : 'inset 3px 0 0 #7A1E2C',
-              } : undefined}
-            >
-              <span className="shrink-0">{item.icon}</span>
-              <span className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${sidebarCollapsed ? 'max-w-0 opacity-0' : 'max-w-[180px] opacity-100'}`}>
-                {item.label}
-              </span>
-            </button>
-          ))}
-        </nav>
-
-        {/* Divider */}
-        <div className={`h-px bg-[#EDE7E6] mb-3 transition-all duration-300 ${sidebarCollapsed ? 'mx-2' : 'mx-4'}`} />
-
-        {/* Bottom — Plan Premium + Centro de ayuda */}
-        <div className={`pb-5 transition-all duration-300 ${sidebarCollapsed ? 'px-2 flex flex-col items-center gap-2' : 'px-4 space-y-2'}`}>
-
-          {/* Plan Premium */}
-          {!sidebarCollapsed ? (
-            <div className="p-3.5 rounded-xl" style={{ background: 'rgba(139,35,50,0.06)', border: '1px solid rgba(139,35,50,0.10)' }}>
-              <div className="flex items-center gap-2 mb-1">
-                <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-                  <path d="M7 1L4.5 6H1l3.5 3-1.3 4.5L7 11l3.8 2.5L9.5 9 13 6H9.5L7 1z" fill="#57504E"/>
-                </svg>
-                <p className="text-[13px] font-semibold text-[#241014]">Plan Premium</p>
-              </div>
-              <p className="text-[11px] text-[#57504E] mb-2 leading-snug">Tienes acceso completo a todas las herramientas.</p>
-              <button onClick={() => flash('Beneficios próximamente')} className="text-[11px] font-semibold text-[#7A1E2C] hover:underline">
-                Ver beneficios →
-              </button>
-            </div>
-          ) : (
-            <button
-              title="Plan Premium"
-              onClick={() => flash('Beneficios próximamente')}
-              className="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-[#F5F0EF] transition-colors"
-              style={{ background: 'rgba(139,35,50,0.06)' }}
-            >
-              <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-                <path d="M7 1L4.5 6H1l3.5 3-1.3 4.5L7 11l3.8 2.5L9.5 9 13 6H9.5L7 1z" fill="#57504E"/>
-              </svg>
-            </button>
-          )}
-
-          {/* Centro de ayuda */}
-          <button
-            title={sidebarCollapsed ? 'Centro de ayuda' : undefined}
-            onClick={() => flash('Centro de ayuda próximamente')}
-            className={`transition-colors text-[#57504E] hover:bg-[#F5F0EF] ${
-              sidebarCollapsed
-                ? 'w-10 h-10 rounded-xl flex items-center justify-center'
-                : 'w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px]'
-            }`}
-          >
-            <div className="w-6 h-6 rounded-full border border-[#D4CCCA] flex items-center justify-center shrink-0">
-              <svg width="11" height="11" viewBox="0 0 16 16" fill="none">
-                <circle cx="8" cy="8" r="6.5" stroke="#9C9492" strokeWidth="1.3"/>
-                <path d="M6 6.5a2 2 0 1 1 2.5 1.9c-.3.1-.5.4-.5.6V10" stroke="#9C9492" strokeWidth="1.3" strokeLinecap="round"/>
-                <circle cx="8" cy="12" r=".7" fill="#9C9492"/>
-              </svg>
-            </div>
-            <span className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${sidebarCollapsed ? 'max-w-0 opacity-0' : 'max-w-[180px] opacity-100'}`}>
-              Centro de ayuda
-            </span>
-          </button>
-        </div>
+    <>
+      <aside
+        className={`hidden lg:flex flex-col flex-shrink-0 border-r border-wine-950/50 transition-all duration-300 ease-in-out overflow-hidden ${collapsed ? 'w-16' : 'w-60'}`}
+        style={{ background: sidebarBg }}
+      >
+        <Inner showLabel={!collapsed} />
       </aside>
+      {mobileOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 flex">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setMobileOpen(false)} />
+          <aside className="relative w-60 h-full flex flex-col border-r border-wine-950/50 animate-slide-in-left" style={{ background: sidebarBg }}>
+            <Inner showLabel />
+          </aside>
+        </div>
+      )}
+    </>
+  );
+}
 
-      {/* ══════════════════════════════════
-          ZONAS 2+3 — content right of sidebar
-          ══════════════════════════════════ */}
+// ── Page ──────────────────────────────────────────────────────────────────────
+export default function DashboardPage() {
+  const [activeNav, setActiveNav]       = useState('overview');
+  const [collapsed, setCollapsed]       = useState(false);
+  const [mobileOpen, setMobileOpen]     = useState(false);
+  const [theme, setTheme]               = useState<Theme>('dark');
+  const [themeLoading, setThemeLoading] = useState(false);
+  const [loaded, setLoaded]             = useState(false);
+  const [showNotif, setShowNotif]       = useState(false);
+  const [searchVal, setSearchVal]       = useState('');
+  const [whatIfDelta, setWhatIfDelta]   = useState(0);
+
+  const displayScore = Math.min(850, Math.max(300, BASE_SCORE + whatIfDelta));
+  const t = T[theme];
+
+  useEffect(() => { const tid = setTimeout(() => setLoaded(true), 100); return () => clearTimeout(tid); }, []);
+
+  const handleThemeToggle = () => {
+    setThemeLoading(true);
+    setTimeout(() => { setTheme(prev => prev === 'dark' ? 'light' : 'dark'); setThemeLoading(false); }, 300);
+  };
+
+  return (
+    <div className="min-h-screen flex" style={{ background: t.bg, fontFamily: 'Inter, system-ui, sans-serif' }}>
+      <Sidebar
+        active={activeNav} setActive={setActiveNav}
+        collapsed={collapsed} setCollapsed={setCollapsed}
+        mobileOpen={mobileOpen} setMobileOpen={setMobileOpen}
+      />
+
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-
-        {/* Header — constrained to match content max-width */}
-        <header className="bg-white border-b border-[#E7E2E1] shrink-0 sticky top-0 z-20">
-          <div className="max-w-[1240px] mx-auto px-6 h-14 flex items-center justify-between">
-            <h1 className="font-lora text-base font-medium text-[#241014]">
-              Hola, {CLIENT.name}
-            </h1>
-            <div className="flex items-center gap-3">
-              <button
-                className="relative p-2 text-[#57504E] hover:text-[#241014] hover:bg-[#F7F5F4] rounded-lg transition-colors"
-                onClick={() => flash('2 notificaciones')}
-              >
-                <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
-                  <path d="M11 2C7.69 2 5 4.69 5 8v5l-2 2v1h16v-1l-2-2V8c0-3.31-2.69-6-6-6z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-                  <path d="M9 18a2 2 0 0 0 4 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                </svg>
-                <span className="absolute -top-0.5 -right-0.5 w-[18px] h-[18px] bg-[#7A1E2C] rounded-full text-white text-[9px] font-bold grid place-items-center leading-none">2</span>
-              </button>
-              <button
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#E7E2E1] hover:bg-[#F7F5F4] transition-colors"
-                onClick={() => flash('Configuración próximamente')}
-              >
-                <div className="w-6 h-6 rounded-full bg-[#7A1E2C] flex items-center justify-center text-white text-xs font-bold">MV</div>
-                <span className="text-sm text-[#241014] font-medium hidden sm:block">Mi cuenta</span>
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="#57504E" strokeWidth="1.5" strokeLinecap="round"/></svg>
-              </button>
-            </div>
+        {/* topbar */}
+        <header
+          className={`flex items-center gap-3 px-4 sm:px-6 py-3.5 border-b flex-shrink-0 transition-all duration-700 delay-100 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
+          style={{ background: 'linear-gradient(90deg,#2a1218 0%,#1e0e12 100%)', borderColor: 'rgba(74,8,32,0.5)' }}
+        >
+          <button className="lg:hidden text-wine-300/70 hover:text-white transition-colors" onClick={() => setMobileOpen(true)}><Menu size={20} /></button>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-base sm:text-lg font-bold text-white leading-tight truncate" style={{ fontFamily: 'inherit' }}>Good afternoon, Elena.</h1>
+            <p className="text-xs text-wine-300/50 hidden sm:block">Your credit health is looking strong today</p>
           </div>
+          <div className="relative hidden md:flex items-center">
+            <Search size={13} className="absolute left-3 text-wine-400/40" />
+            <input
+              value={searchVal} onChange={e => setSearchVal(e.target.value)}
+              placeholder="Search disputes, chats..."
+              className="text-xs pl-8 pr-3 py-2 rounded-lg outline-none w-44 xl:w-52 text-wine-200/60 placeholder-wine-400/30 border transition-all"
+              style={{ background: 'rgba(74,8,32,0.3)', borderColor: 'rgba(74,8,32,0.5)' }}
+            />
+          </div>
+          <button
+            onClick={handleThemeToggle}
+            className="w-8 h-8 rounded-lg flex items-center justify-center border transition-all hover:scale-105"
+            style={{ background: 'rgba(74,8,32,0.4)', borderColor: 'rgba(74,8,32,0.6)' }}
+          >
+            {theme === 'dark' ? <Sun size={14} className="text-yellow-300" /> : <Moon size={14} className="text-blue-300" />}
+          </button>
+          <div className="relative">
+            <button
+              onClick={() => setShowNotif(!showNotif)}
+              className="w-8 h-8 rounded-lg flex items-center justify-center border transition-all hover:scale-105"
+              style={{ background: 'rgba(74,8,32,0.4)', borderColor: 'rgba(74,8,32,0.6)' }}
+            >
+              <Bell size={14} className="text-wine-300/70" />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-wine-500 animate-ping" />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-wine-400" />
+            </button>
+            {showNotif && (
+              <div
+                className="absolute right-0 top-11 w-64 rounded-xl border shadow-2xl z-50 p-4 animate-slide-in-up"
+                style={{ background: theme === 'dark' ? '#150a0d' : '#fff', borderColor: t.cardBorder }}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <span className={`text-sm font-semibold ${t.text}`}>Notifications</span>
+                  <button onClick={() => setShowNotif(false)}><X size={13} className="text-wine-400/50" /></button>
+                </div>
+                {[
+                  { text: 'Dispute #3812 resolved', time: '2h ago',  icon: CheckCircle, c: '#22c55e' },
+                  { text: 'Score increased +62 pts', time: '1d ago', icon: TrendingUp,  c: '#ab1c42' },
+                  { text: 'New report available',    time: '2d ago', icon: FileText,    c: '#f59e0b' },
+                ].map((n, i) => (
+                  <div key={i} className="flex items-start gap-3 py-2 border-t" style={{ borderColor: t.cardBorder }}>
+                    <n.icon size={13} color={n.c} className="mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className={`text-xs ${t.text}`}>{n.text}</p>
+                      <p className={`text-xs ${t.sub}`}>{n.time}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
+            style={{ background: 'linear-gradient(135deg,#ab1c42,#4a0820)' }}>EM</div>
         </header>
 
-        {/* Scrollable content */}
-        <div className="flex-1 overflow-auto">
-          <div className="max-w-[1240px] mx-auto p-5 xl:p-6">
-            <div className="flex gap-5 items-start">
+        {/* main content */}
+        <main className="flex-1 overflow-auto p-4 sm:p-5 xl:p-7 2xl:p-9">
+          {themeLoading ? (
+            <div className="grid grid-cols-12 gap-4 max-w-screen-2xl mx-auto">
+              {[5, 7, 7, 5, 6, 6, 12].map((span, i) => (
+                <div key={i} className={`col-span-12 lg:col-span-${span} rounded-2xl border`}
+                  style={{ borderColor: t.cardBorder, background: t.card }}>
+                  <SkeletonCard theme={theme} lines={3 + (i % 3)} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-12 gap-4 xl:gap-5 2xl:gap-6 max-w-screen-2xl mx-auto">
 
-              {/* ══════════════════════════════════
-                  ZONA 2 — CENTER STAGE (flex-1)
-                  ══════════════════════════════════ */}
-              <div className="flex-1 min-w-0 space-y-5">
-
-                {/* ── HERO BANNER: 3-column grid ── */}
-                <div
-                  className="rounded-2xl relative overflow-hidden"
-                  style={{
-                    background: 'linear-gradient(135deg, #3A0A12 0%, #5C1520 30%, #6F1020 60%, #7A1E2C 100%)',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                    boxShadow: 'var(--shadow-warm-lg)',
-                  }}
-                >
-                  {/* Dot-grid spotlight: white dots revealed by cursor on dark bg */}
-                  <MccHoverBg
-                    dotColor="rgba(255,255,255,0.10)"
-                    radius={300}
-                    intensity={0.7}
-                    dotSize={1.4}
-                    dotSpacing={22}
-                  />
-                  {/* Ambient light layers for depth */}
-                  <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 15% 55%, rgba(255,255,255,0.07) 0%, transparent 55%)' }} />
-                  <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 85% 25%, rgba(139,37,53,0.35) 0%, transparent 50%)' }} />
-                  <div className="absolute top-0 left-0 right-0 h-px pointer-events-none" style={{ background: 'linear-gradient(90deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 50%, transparent 100%)' }} />
-
-                  <div className="relative z-10 px-5 py-4 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
-
-                    {/* LEFT — Score + label */}
-                    <div className="text-white">
-                      <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/45 mb-3">Tu score de crédito</p>
-                      <p className="font-bold font-lora leading-none tracking-tight mb-3" style={{ fontSize: '4rem', textShadow: '0 2px 24px rgba(0,0,0,0.35)' }}>{displayScore}</p>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className="px-2.5 py-1 rounded-full text-[11px] font-semibold text-white"
-                          style={{ background: 'rgba(110,231,160,0.18)', border: '1px solid rgba(110,231,160,0.3)' }}
-                        >
-                          Bueno
-                        </span>
-                        <p className="text-[10px] text-white/35">próx. 26 jun 2026</p>
-                      </div>
+              {/* Credit Health Score */}
+              <GlowCard theme={theme} className="col-span-12 lg:col-span-5" delay={200} loaded={loaded}>
+                <div className="p-4 sm:p-5 flex flex-col">
+                  <div className="text-center">
+                    <div className={`text-xs uppercase tracking-widest mb-1 ${t.sub}`}>Credit Health Score</div>
+                    <div className="flex justify-center" style={{ transform: 'scale(0.82)', transformOrigin: 'top center', marginBottom: '-26px' }}>
+                      <CreditGauge score={displayScore} theme={theme} />
                     </div>
-
-                    {/* CENTER — Refined arc gauge */}
-                    <div className="flex flex-col items-center">
-                      <svg width="154" height="92" viewBox="0 0 220 134">
-                        <defs>
-                          <filter id="arc-glow">
-                            <feGaussianBlur stdDeviation="2.5" result="blur"/>
-                            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                          </filter>
-                        </defs>
-                        {/* Track */}
-                        <path d="M22 112 A88 88 0 0 1 198 112" fill="none" stroke="rgba(255,255,255,0.10)" strokeWidth="9" strokeLinecap="round"/>
-                        {/* Fill */}
-                        <motion.path
-                          d="M22 112 A88 88 0 0 1 198 112"
-                          fill="none" stroke="rgba(255,255,255,0.90)" strokeWidth="9" strokeLinecap="round"
-                          strokeDasharray="276"
-                          initial={{ strokeDashoffset: 276 }}
-                          animate={{ strokeDashoffset: 276 - 276 * ((615 - 300) / 550) }}
-                          transition={{ duration: 1.8, ease: [0.25, 1, 0.5, 1], delay: 0.3 }}
-                          filter="url(#arc-glow)"
-                        />
-                        {/* Milestone ticks */}
-                        {[300, 550, 700, 850].map((val, i) => {
-                          const pct = (val - 300) / 550
-                          const angle = -180 + pct * 180
-                          const rad = angle * Math.PI / 180
-                          const cx = 110 + 88 * Math.cos(rad)
-                          const cy = 112 + 88 * Math.sin(rad)
-                          return <circle key={i} cx={cx} cy={cy} r="2.5" fill="rgba(255,255,255,0.28)" />
-                        })}
-                        {/* Labels */}
-                        <text x="22"  y="130" fill="rgba(255,255,255,0.3)" fontSize="9" fontFamily="system-ui" textAnchor="start">300</text>
-                        <text x="198" y="130" fill="rgba(255,255,255,0.3)" fontSize="9" fontFamily="system-ui" textAnchor="end">850</text>
-                        <text x="110" y="108" fill="rgba(255,255,255,0.45)" fontSize="10" fontFamily="system-ui" textAnchor="middle" fontWeight="600">615 / 850</text>
-                      </svg>
+                    <div className={`text-5xl xl:text-6xl font-bold mt-0 mb-0.5 ${t.text}`}>
+                      <AnimatedCounter target={displayScore} />
                     </div>
-
-                    {/* RIGHT — Airy stats, no heavy boxes */}
-                    <div className="text-white">
-                      <p className="text-[9px] font-semibold text-white/40 uppercase tracking-[0.18em] mb-1.5">Puntos ganados</p>
-                      <p
-                        className="font-extrabold leading-none tracking-tight mb-1"
-                        style={{ fontSize: '2.5rem', color: '#6EE7A0', textShadow: '0 0 28px rgba(110,231,160,0.50)' }}
-                      >
-                        +{displayDelta}
-                      </p>
-                      <p className="text-[10px] text-white/35 mb-4">pts desde que comenzamos</p>
-                      <div className="grid grid-cols-2 gap-3">
-                        {[
-                          { value: String(disputes.length), label: 'Disputas' },
-                          { value: '3',                     label: 'Meses' },
-                        ].map(m => (
-                          <div key={m.label}>
-                            <p className="text-lg font-bold font-lora text-white leading-none">{m.value}</p>
-                            <p className="text-[10px] text-white/40 mt-0.5">{m.label}</p>
-                          </div>
-                        ))}
-                      </div>
+                    <div className="flex items-center justify-center gap-1.5 mb-1">
+                      {whatIfDelta >= 0
+                        ? <><ArrowUpRight size={13} color="#22c55e" /><span className="text-sm font-semibold text-green-500">+62 pts since January</span></>
+                        : <><ArrowDownRight size={13} color="#ef4444" /><span className="text-sm font-semibold text-red-400">What-if simulation active</span></>
+                      }
                     </div>
-
+                    <CompactLevelProgress score={displayScore} theme={theme} loaded={loaded} />
+                  </div>
+                  <div className="flex justify-center mt-4">
+                    <CreditCard3D />
                   </div>
                 </div>
+              </GlowCard>
 
-                {/* ── ROADMAP (directly below banner) ── */}
-                <LiquidCard className="rounded-[20px] py-0 gap-0">
-                  <CardContent className="p-4">
+              {/* Right column */}
+              <div className="col-span-12 lg:col-span-7 flex flex-col gap-4 xl:gap-5">
+                {/* Quick Action Center */}
+                <GlowCard theme={theme} delay={300} loaded={loaded}>
+                  <div className="p-5">
                     <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <p className="text-[10px] font-semibold text-[#9C9492] uppercase tracking-widest mb-0.5">Tu plan de reparación</p>
-                        <p className="text-sm font-semibold font-lora text-[#241014]">4 pasos hacia un crédito excelente</p>
-                      </div>
-                      <span className="text-[10px] font-medium text-[#7A1E2C] bg-[#F8EDEF] px-2 py-0.5 rounded-full shrink-0">Paso 3 / 4</span>
+                      <span className={`text-sm font-semibold ${t.text}`}>Quick Action Center</span>
+                      <button className={`text-xs flex items-center gap-1 transition-colors hover:text-wine-500 ${t.sub}`}>View all <ChevronRight size={11} /></button>
                     </div>
-
-                    <div className="max-w-[400px] mx-auto relative">
-                      <div className="absolute bg-[#E7E2E1] rounded-full" style={{ height: '2px', top: '15px', left: '32px', right: '32px' }} />
-                      <motion.div
-                        className="absolute bg-[#4F9A5C] rounded-full origin-left"
-                        style={{ height: '2px', top: '15px', left: '32px', right: '32px', filter: 'drop-shadow(0 0 3px rgba(79,154,92,0.6))' }}
-                        initial={{ scaleX: 0 }}
-                        animate={{ scaleX: 0.67 }}
-                        transition={{ duration: 1.0, delay: 0.4, ease: 'easeOut' }}
-                      />
-                      <div className="flex justify-between">
-                        {([
-                          { label: 'Verificación', desc: 'Identidad verificada', status: 'done' },
-                          { label: 'Análisis',     desc: 'Reporte revisado',    status: 'done' },
-                          { label: 'Disputas',     desc: '4 en proceso',        status: 'active' },
-                          { label: 'Optimización', desc: 'Score 750+',          status: 'pending' },
-                        ] as const).map((step, i) => (
-                          <motion.div
-                            key={i}
-                            className="flex flex-col items-center text-center w-[70px]"
-                            initial={{ opacity: 0, y: 8 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.08 + i * 0.1, duration: 0.4, ease: 'easeOut' }}
-                          >
-                            <div className="relative mb-1.5">
-                              {step.status === 'active' && (
-                                <div className="absolute inset-0 rounded-full animate-ping" style={{ background: 'rgba(122,30,44,0.25)' }} />
-                              )}
-                              <motion.div
-                                className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                                  step.status === 'done'    ? 'bg-[#4F9A5C] border-2 border-[#4F9A5C]' :
-                                  step.status === 'active'  ? 'bg-[#7A1E2C] border-4 border-white' :
-                                  'bg-white border-2 border-[#D4CCCA] opacity-50'
-                                }`}
-                                style={
-                                  step.status === 'active'  ? { boxShadow: '0 0 12px rgba(122,30,44,0.4)' } :
-                                  step.status === 'pending' ? { boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.06)' } : undefined
-                                }
-                                initial={{ scale: 0.5 }}
-                                animate={{ scale: 1 }}
-                                transition={{ delay: 0.15 + i * 0.1, type: 'spring', stiffness: 500, damping: 18 }}
-                                whileHover={step.status === 'done' ? { scale: 1.1 } : undefined}
-                              >
-                                {step.status === 'done'    && <CheckCircle2 size={13} className="text-white" />}
-                                {step.status === 'active'  && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
-                                {step.status === 'pending' && <span className="text-[10px] font-bold text-[#B8ABA9]">{i + 1}</span>}
-                              </motion.div>
+                    <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+                      {[
+                        { icon: Zap,        label: 'Disputes',     value: '3',   sub: '2 sponsored',   delta: '+62',     color: '#ab1c42', pct: undefined },
+                        { icon: TrendingUp, label: 'Pts Improved', value: '+62', sub: 'Pts this month', delta: undefined, color: '#22c55e', pct: 78 },
+                        { icon: Target,     label: 'Active',       value: '78%', sub: 'Achieved',       delta: undefined, color: '#f59e0b', pct: 78 },
+                      ].map((item, i) => (
+                        <div key={i} className="rounded-xl p-3 sm:p-4 border cursor-pointer transition-all duration-200 hover:scale-[1.03]"
+                          style={{ background: t.rowBg, borderColor: t.rowBorder }}>
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: `${item.color}22` }}>
+                              <item.icon size={14} color={item.color} />
                             </div>
-                            <p className={`text-[10px] font-semibold leading-tight ${
-                              step.status === 'done'    ? 'text-[#4F9A5C]' :
-                              step.status === 'active'  ? 'text-[#241014]' : 'text-[#B0A4A2]'
-                            }`}>{step.label}</p>
-                            <p className={`text-[9px] mt-0.5 leading-tight ${
-                              step.status === 'pending' ? 'text-[#C4BEBC]' : 'text-[#9C9492]'
-                            }`}>{step.desc}</p>
-                          </motion.div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Mini summary */}
-                    <div className="mt-4 pt-3 border-t border-[#F0EEEC] flex flex-wrap items-center gap-x-2 gap-y-1">
-                      <span className="flex items-center gap-1 text-[10px] text-[#4F9A5C] font-medium">
-                        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><circle cx="5.5" cy="5.5" r="5" fill="#E7EFDE"/><path d="M3.5 5.5l1.5 1.5L7.5 3.5" stroke="#4F9A5C" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                        2 completados
-                      </span>
-                      <span className="text-[#D4CCCA] text-[10px]">·</span>
-                      <span className="text-[10px] text-[#7A1E2C] font-semibold">1 en progreso</span>
-                      <span className="text-[#D4CCCA] text-[10px]">·</span>
-                      <span className="text-[10px] text-[#9C9492]">próximo: Optimización</span>
-                    </div>
-                  </CardContent>
-                </LiquidCard>
-
-                {/* ── FINANCIAL SCORES — immediately after roadmap ── */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <p className="text-xs font-semibold font-lora text-[#241014]">Tus scores financieros</p>
-                    <span className="text-xs text-[#9C9492]">Actualizado hoy</span>
-                  </div>
-                  <FinancialScoreCards />
-                </div>
-
-                {/* ── BUREAU + DISPUTES — side by side ── */}
-                <div className="grid grid-cols-2 gap-5 items-start">
-                  <BureauSelector onSelect={(id) => flash(`Filtrando por ${id}`)} />
-
-                  {/* ── DISPUTES TABLE ── */}
-                  <div className="bg-white rounded-[20px] border border-[rgba(80,25,35,0.08)] card-lift overflow-hidden">
-                    <div className="px-4 py-3 border-b border-[#E7E2E1] flex items-center justify-between">
-                      <p className="text-xs font-semibold font-lora text-[#241014]">Tus disputas activas</p>
-                      <button className="text-xs font-semibold text-[#7A1E2C] hover:underline" onClick={() => flash('Ver todas próximamente')}>Ver todas →</button>
-                    </div>
-                    <div className="divide-y divide-[#F7F5F4]">
-                      {disputes.map(d => {
-                        const pill = getPill(d)
-                        return (
-                          <button
-                            key={d.id}
-                            onClick={() => router.push(`/disputes/${d.id}`)}
-                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F7F5F4] transition-colors text-left"
-                          >
-                            <div className="w-7 h-7 rounded-full bg-[#241014] flex items-center justify-center text-white text-[11px] font-bold shrink-0">
-                              {d.creditor.charAt(0).toUpperCase()}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs font-semibold text-[#241014] truncate">{d.creditor}</p>
-                              <p className="text-xs text-[#9C9492] truncate">{d.item}</p>
-                              <span className="inline-flex items-center mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold" style={{ background: pill.bg, color: pill.color }}>
-                                {pill.label}
-                              </span>
-                            </div>
-                            <div className="shrink-0 text-right">
-                              <DisputeProgress stageIdx={d.stageIdx} result={d.result} />
-                              <p className="text-[10px] text-[#9C9492] mt-1">Actualizado {daysAgo(d.lastActivity)}</p>
-                            </div>
-                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0 text-[#9C9492]">
-                              <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                            </svg>
-                          </button>
-                        )
-                      })}
-                    </div>
-                  </div>
-                </div>
-
-                {/* ── VAULT ── */}
-                <div className="bg-white rounded-[20px] border border-[rgba(80,25,35,0.08)] card-lift overflow-hidden">
-                  <div className="px-4 py-3 border-b border-[#E7E2E1] flex items-center justify-between">
-                    <p className="text-xs font-semibold font-lora text-[#241014]">Vault de documentos</p>
-                    <button className="text-xs font-semibold text-[#7A1E2C] hover:underline" onClick={() => flash('Ver vault próximamente')}>Ver todos →</button>
-                  </div>
-                  <div className="divide-y divide-[#F7F5F4]">
-                    {DOCS.map(doc => (
-                      <div key={doc.id} className="flex items-center gap-3 px-4 py-2.5">
-                        <div className="w-7 h-7 rounded-lg bg-[#F5E4E6] flex items-center justify-center shrink-0">
-                          <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><rect x="3" y="1" width="11" height="15" rx="1.5" stroke="#7A1E2C" strokeWidth="1.3"/><path d="M6 6h6M6 9h6M6 12h4" stroke="#7A1E2C" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5">
-                            <p className="text-xs font-semibold text-[#241014] truncate">{doc.name}</p>
-                            {doc.isNew && <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#E7EFDE] text-[#3E6B2E]">Nuevo</span>}
+                            {item.delta && <span className="text-xs font-bold" style={{ color: item.color }}>{item.delta}</span>}
                           </div>
-                          <p className="text-xs text-[#9C9492] truncate">{doc.sub}</p>
+                          <div className={`text-lg sm:text-xl font-bold mb-0.5 ${t.text}`}>{item.value}</div>
+                          <div className={`text-xs leading-tight ${t.sub}`}>{item.sub}</div>
+                          {item.pct !== undefined && (
+                            <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: t.trackBg }}>
+                              <div className="h-full rounded-full relative overflow-hidden"
+                                style={{ width: loaded ? `${item.pct}%` : '0%', background: item.color,
+                                  transition: `width 1.1s cubic-bezier(0.34,1.2,0.64,1) ${800 + i * 150}ms`,
+                                  boxShadow: `0 0 6px ${item.color}88` }}>
+                                <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent)', backgroundSize: '200% 100%', animation: 'shimmer 2s infinite' }} />
+                              </div>
+                            </div>
+                          )}
                         </div>
-                        <div className="flex items-center gap-1 shrink-0">
-                          <button onClick={() => flash('Previsualizar próximamente')} className="p-1.5 text-[#9C9492] hover:text-[#241014] transition-colors">
-                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.4"/></svg>
-                          </button>
-                          <button onClick={() => flash('Descarga próximamente')} className="p-1.5 text-[#9C9492] hover:text-[#241014] transition-colors">
-                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v9M5 8l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 13h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                          </button>
+                      ))}
+                    </div>
+                  </div>
+                </GlowCard>
+
+                {/* Score Trend + Factors */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 xl:gap-5">
+                  <GlowCard theme={theme} delay={400} loaded={loaded}>
+                    <div className="p-5">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className={`text-sm font-semibold ${t.text}`}>Score Trend</span>
+                        <span className="text-xs px-2 py-0.5 rounded-full font-semibold text-green-500" style={{ background: '#22c55e22' }}>+9.1%</span>
+                      </div>
+                      <div className="flex items-end gap-2 mb-3">
+                        <span className={`text-2xl font-bold ${t.text}`}>{displayScore}</span>
+                        <span className="text-xs text-green-500 mb-1 flex items-center gap-0.5 font-medium"><ArrowUpRight size={10} /> 62 pts</span>
+                      </div>
+                      <MiniChart theme={theme} />
+                      <div className="flex justify-between mt-1">
+                        {SCORE_HISTORY.map(d => <span key={d.month} className={`text-xs ${t.sub}`}>{d.month}</span>)}
+                      </div>
+                    </div>
+                  </GlowCard>
+                  <GlowCard theme={theme} delay={500} loaded={loaded}>
+                    <div className="p-5">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className={`text-sm font-semibold ${t.text}`}>Score Factors</span>
+                        <Activity size={14} className="text-wine-500/60" />
+                      </div>
+                      {FACTORS.map((f, i) => <FactorBar key={f.label} {...f} delay={i * 120} theme={theme} />)}
+                    </div>
+                  </GlowCard>
+                </div>
+              </div>
+
+              {/* What-If Simulator */}
+              <GlowCard theme={theme} className="col-span-12 lg:col-span-6" delay={550} loaded={loaded}>
+                <WhatIfSimulator baseScore={BASE_SCORE} onDeltaChange={setWhatIfDelta} theme={theme} />
+              </GlowCard>
+
+              {/* AI Insights */}
+              <GlowCard theme={theme} className="col-span-12 lg:col-span-6" delay={600} loaded={loaded}>
+                <AIInsights theme={theme} />
+              </GlowCard>
+
+              {/* Recent Disputes */}
+              <GlowCard theme={theme} className="col-span-12 lg:col-span-7" delay={650} loaded={loaded}>
+                <div className="p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className={`text-sm font-semibold ${t.text}`}>Recent Disputes</span>
+                    <button className={`text-xs flex items-center gap-1 transition-colors hover:text-wine-500 ${t.sub}`}>More <ChevronRight size={11} /></button>
+                  </div>
+                  <div className="space-y-2.5">
+                    {DISPUTES.map((d, i) => {
+                      const Icon = d.status === 'success' ? CheckCircle : d.status === 'error' ? AlertCircle : Clock;
+                      const c = d.status === 'success' ? '#22c55e' : d.status === 'error' ? '#ef4444' : '#f59e0b';
+                      return (
+                        <div key={d.id} className="flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all duration-200 hover:scale-[1.01]"
+                          style={{ background: t.rowBg, borderColor: t.rowBorder, animationDelay: `${i * 80}ms` }}>
+                          <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: `${c}22` }}>
+                            <Icon size={13} color={c} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-2">
+                              <span className={`text-xs font-semibold truncate ${t.text}`}>{d.title}</span>
+                              <span className="text-xs font-bold flex-shrink-0" style={{ color: c }}>{d.pts}</span>
+                            </div>
+                            <p className={`text-xs mt-0.5 leading-relaxed line-clamp-2 ${t.sub}`}>{d.desc}</p>
+                            <span className={`text-xs mt-1 block ${t.sub}`}>{d.time}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <button className={`mt-4 w-full py-2.5 rounded-xl border text-xs font-semibold transition-all hover:border-wine-600/50 flex items-center justify-center gap-2 ${t.sub}`}
+                    style={{ background: t.rowBg, borderColor: t.rowBorder }}>+ Open new item</button>
+                </div>
+              </GlowCard>
+
+              {/* Account Summary */}
+              <GlowCard theme={theme} className="col-span-12 lg:col-span-5" delay={700} loaded={loaded}>
+                <div className="p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className={`text-sm font-semibold ${t.text}`}>Account Summary</span>
+                    <div className="flex items-center gap-2">
+                      {[RefreshCw, Eye].map((Icon, i) => (
+                        <button key={i} className="w-7 h-7 rounded-lg flex items-center justify-center border transition-all hover:scale-105"
+                          style={{ background: t.rowBg, borderColor: t.rowBorder }}>
+                          <Icon size={11} className="text-wine-500/60" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="space-y-2.5">
+                    {[
+                      { label: 'Total Credit Limit', value: '$48,200', delta: '+$2,500', up: true  },
+                      { label: 'Current Balance',    value: '$11,568', delta: '-$820',   up: false },
+                      { label: 'Available Credit',   value: '$36,632', delta: '+$3,320', up: true  },
+                      { label: 'Utilization Rate',   value: '24.0%',   delta: '-1.7%',   up: true  },
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-center justify-between p-3 rounded-xl border transition-all"
+                        style={{ background: t.rowBg, borderColor: t.rowBorder }}>
+                        <div>
+                          <div className={`text-xs ${t.sub}`}>{item.label}</div>
+                          <div className={`text-base font-bold mt-0.5 ${t.text}`}>{item.value}</div>
+                        </div>
+                        <div className={`flex items-center gap-1 text-xs font-semibold ${item.up ? 'text-green-500' : 'text-red-500'}`}>
+                          {item.up ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}{item.delta}
                         </div>
                       </div>
                     ))}
                   </div>
-                  <div className="px-4 py-3 bg-[#F7F5F4] flex items-center gap-2">
-                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#9C9492" strokeWidth="1.2"/><path d="M7 5v2M7 9v.5" stroke="#9C9492" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                    <p className="text-xs text-[#9C9492]">Tu información está segura y encriptada.</p>
-                  </div>
-                </div>
-
-              </div>{/* end Zone 2 */}
-
-              {/* ══════════════════════════════════
-                  ZONA 3 — RIGHT INTELLIGENCE (340px)
-                  ══════════════════════════════════ */}
-              <div className="hidden xl:flex flex-col gap-4 w-[340px] shrink-0 sticky top-6">
-
-                {/* TOP: Step progress notification */}
-                <motion.div
-                  className="bg-white rounded-[20px] border border-[rgba(80,25,35,0.08)] p-3.5 card-lift"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6, duration: 0.4 }}
-                >
-                  <div className="flex items-start gap-2.5 mb-2.5">
-                    <div className="w-8 h-8 rounded-xl bg-[#F5E4E6] flex items-center justify-center shrink-0">
-                      <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
-                        <path d="M9 1.5L2.5 8.5H7L7 14.5L13.5 7.5H9L9 1.5Z" fill="#7A1E2C" strokeLinejoin="round"/>
-                      </svg>
+                  <div className="mt-3 p-3 rounded-xl flex items-center gap-3 border"
+                    style={{ background: theme === 'dark' ? 'linear-gradient(135deg,#2a1218,#1e0e12)' : '#fff5f6', borderColor: t.cardBorder }}>
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#ab1c4222' }}>
+                      <Lock size={13} color="#ab1c42" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-semibold text-[#9C9492] uppercase tracking-widest">Progreso actual</p>
-                      <p className="text-xs font-semibold text-[#241014] mt-0.5">Estás en el Paso 3 de 4</p>
-                      <p className="text-[11px] text-[#57504E] leading-snug mt-0.5">Próxima acción: seguimiento a Capital One con Equifax.</p>
+                      <div className={`text-xs font-semibold ${t.text}`}>Identity Protection Active</div>
+                      <div className={`text-xs ${t.sub}`}>Monitoring 3 bureaus 24/7</div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 h-1.5 rounded-full bg-[#E7E2E1] overflow-hidden">
-                      <motion.div
-                        className="h-full bg-[#7A1E2C] rounded-full"
-                        initial={{ width: 0 }}
-                        animate={{ width: '75%' }}
-                        transition={{ duration: 1.2, delay: 0.8, ease: 'easeOut' }}
-                      />
-                    </div>
-                    <span className="text-[10px] font-semibold text-[#7A1E2C] shrink-0">75%</span>
-                  </div>
-                </motion.div>
-
-                {/* MIDDLE: Advisor card */}
-                <AdvisorRevealCard
-                  name="Andrea Ruiz"
-                  role="Especialista en crédito"
-                  rating={4.9}
-                  reviewCount={320}
-                  initials="AR"
-                  suggestion="Podemos dar seguimiento proactivo a tu disputa con Capital One para acelerar la respuesta de Equifax."
-                  benefits={[
-                    'Aumenta la probabilidad de respuesta rápida',
-                    'Demuestra seguimiento y perseverancia',
-                    'Te mantiene en movimiento hacia tu meta',
-                  ]}
-                  onAction={() => flash('Solicitud enviada. Andrea te contactará pronto.')}
-                />
-
-                {/* Animated activity echo stack */}
-                <div>
-                  <p className="text-[10px] font-semibold text-[#9C9492] uppercase tracking-widest mb-2">Actividad reciente</p>
-                  <ActivityEchoStack items={ACTIVITY} interval={4200} />
-                </div>
-
-                {/* BOTTOM: Quick stats — vertical list, single-color SVG icons */}
-                <div className="bg-white rounded-[20px] border border-[rgba(80,25,35,0.08)] p-3.5 card-lift">
-                  <p className="text-[10px] font-semibold text-[#9C9492] uppercase tracking-widest mb-2">Accesos rápidos</p>
-                  <div className="space-y-0.5">
-                    <QuickStatRow
-                      icon={<svg width="15" height="15" viewBox="0 0 18 18" fill="none"><path d="M9 1.5L2 5v4c0 4 3.1 7.4 7 8 3.9-.6 7-4 7-8V5L9 1.5z" stroke="#7A1E2C" strokeWidth="1.5" strokeLinejoin="round"/></svg>}
-                      value={`${disputes.length}`} label="Disputas activas"
-                      action={() => flash('Disputas próximamente')}
-                      sparkData={[4, 5, 4, 3, 4, 4, disputes.length]}
-                      sparkColor="#7A1E2C"
-                    />
-                    <QuickStatRow
-                      icon={<svg width="15" height="15" viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="11" height="14" rx="1.5" stroke="#7A1E2C" strokeWidth="1.4"/><path d="M6 6h6M6 9h6M6 12h4" stroke="#7A1E2C" strokeWidth="1.2" strokeLinecap="round"/></svg>}
-                      value="4" label="Documentos guardados"
-                      action={() => flash('Vault próximamente')}
-                      sparkData={[1, 2, 2, 3, 4, 4, 4]}
-                      sparkColor="#4F9A5C"
-                    />
-                    <QuickStatRow
-                      icon={<svg width="15" height="15" viewBox="0 0 18 18" fill="none"><polyline points="2,14 6,8 9,11 13,5 16,8" stroke="#7A1E2C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M13 5h3v3" stroke="#7A1E2C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-                      value="+77 pts" label="Ganados en total"
-                      action={() => flash('Historial próximamente')}
-                      sparkData={[30, 45, 53, 60, 68, 74, 77]}
-                      sparkColor="#4F9A5C"
-                    />
-                    <QuickStatRow
-                      icon={<svg width="15" height="15" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="13" rx="1.5" stroke="#7A1E2C" strokeWidth="1.4"/><path d="M2 7h14M6 3V1M12 3V1" stroke="#7A1E2C" strokeWidth="1.4" strokeLinecap="round"/></svg>}
-                      value="8 días" label="Última actualización"
-                      action={() => flash('Calendario próximamente')}
-                      sparkData={[14, 12, 10, 10, 9, 8, 8]}
-                      sparkColor="#B8862E"
-                    />
+                    <div className="ml-auto w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                   </div>
                 </div>
-
-
-              </div>{/* end Zone 3 */}
+              </GlowCard>
 
             </div>
-          </div>
-        </div>
+          )}
+        </main>
       </div>
-
-      {toastMsg && <Toast message={toastMsg} onDismiss={() => setToastMsg('')} />}
     </div>
-  )
+  );
 }
