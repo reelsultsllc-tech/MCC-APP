@@ -149,8 +149,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Display headings use Lora (existing components) */
-h1, h2, h3 {
+/* Display headings use Lora — scoped away from the dashboard */
+:not([data-dashboard]) h1,
+:not([data-dashboard]) h2,
+:not([data-dashboard]) h3 {
   font-family: 'Lora', var(--font-serif);
   font-weight: 500;
 }

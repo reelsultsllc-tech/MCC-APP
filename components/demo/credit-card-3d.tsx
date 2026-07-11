@@ -81,15 +81,13 @@ export function CreditCard3D() {
         </div>
         {/* Brand logo top-right */}
         <div className="absolute top-3 right-3 flex items-center gap-1.5">
-          <svg width="26" height="22" viewBox="0 0 60 50" fill="none" xmlns="http://www.w3.org/2000/svg" opacity="0.85">
-            <rect x="1.5" y="30" width="51" height="18" rx="3" stroke="white" strokeWidth="2.4"/>
-            <rect x="6.5" y="35.5" width="10" height="7.5" rx="1.5" stroke="white" strokeWidth="1.9"/>
-            <line x1="22" y1="38" x2="38" y2="38" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
-            <line x1="22" y1="42" x2="32" y2="42" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
-            <path d="M9 10 L45 10 L40 30 L14 30 Z" stroke="white" strokeWidth="2.4" strokeLinejoin="round"/>
-            <path d="M40 17 Q52 17 52 23 Q52 29 40 29" stroke="white" strokeWidth="2.4" strokeLinecap="round"/>
-            <path d="M21 7 Q23 4 21 1" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
-            <path d="M31 7 Q33 4 31 1" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
+          <svg width="26" height="21" viewBox="0 0 65 52" fill="none" xmlns="http://www.w3.org/2000/svg" opacity="0.85">
+            <path d="M8 6 L53 6 L47 26 L14 26 Z" stroke="white" strokeWidth="2.3" strokeLinejoin="round"/>
+            <path d="M47 14 Q62 14 62 20 Q62 26 47 26" stroke="white" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"/>
+            <rect x="1" y="26" width="58" height="23" rx="3.5" stroke="white" strokeWidth="2.3"/>
+            <rect x="7" y="33" width="11" height="8" rx="1.5" stroke="white" strokeWidth="1.8"/>
+            <line x1="23" y1="37" x2="44" y2="37" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
+            <line x1="23" y1="43" x2="38" y2="43" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
           </svg>
           <div className="leading-none">
             <div className="text-white font-bold text-xs leading-tight">My Credit</div>

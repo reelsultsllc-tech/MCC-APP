@@ -176,7 +176,7 @@ function CreditGauge({ score, theme }: { score: number; theme: Theme }) {
       {[0, 0.25, 0.5, 0.75, 1].map(p => {
         const a = startA + totalA * p;
         const i = toXY(a, r - 20); const o = toXY(a, r - 9);
-        return <line key={p} x1={i.x} y1={i.y} x2={o.x} y2={o.y} stroke={trackColor} strokeWidth="1.5" />;
+        return <line key={p} x1={i.x} y1={i.y} x2={o.x} y2={o.y} stroke={theme === 'dark' ? 'rgba(249,208,216,0.25)' : 'rgba(122,24,56,0.3)'} strokeWidth="1.5" />;
       })}
       <line x1={cx} y1={cy} x2={mounted ? nx : cx} y2={mounted ? ny : cy}
         stroke={theme === 'dark' ? '#fce7eb' : '#7a1838'} strokeWidth="2.5" strokeLinecap="round"
@@ -190,8 +190,8 @@ function CreditGauge({ score, theme }: { score: number; theme: Theme }) {
           style={{ transition: 'cx 1.8s cubic-bezier(0.34,1.4,0.64,1), cy 1.8s cubic-bezier(0.34,1.4,0.64,1)', filter: 'url(#glowSm)' }}
         />
       )}
-      <text x="18" y="130" fill={theme === 'dark' ? '#7a1838' : '#f87171'} fontSize="8.5" fontFamily="Inter">300</text>
-      <text x="168" y="130" fill="#22c55e" fontSize="8.5" fontFamily="Inter">850</text>
+      <text x="18" y="130" fill={theme === 'dark' ? 'rgba(249,208,216,0.55)' : '#9a3060'} fontSize="8.5" fontFamily="Inter">300</text>
+      <text x="168" y="130" fill={theme === 'dark' ? '#4ade80' : '#16a34a'} fontSize="8.5" fontFamily="Inter">850</text>
     </svg>
   );
 }
@@ -350,19 +350,22 @@ function MiniChart({ theme }: { theme: Theme }) {
   );
 }
 
-// ── Brand Logo ────────────────────────────────────────────────────────────────
+// ── Brand Logo — matches real MCC logo (cup on credit card) ──────────────────
 function CoffeeCreditIcon({ size = 32, color = '#dc2626' }: { size?: number; color?: string }) {
-  const h = Math.round(size * 0.84);
+  const h = Math.round(size * 0.8);
   return (
-    <svg width={size} height={h} viewBox="0 0 60 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="1.5" y="30" width="51" height="18" rx="3" stroke={color} strokeWidth="2.2"/>
-      <rect x="6.5" y="35.5" width="10" height="7.5" rx="1.5" stroke={color} strokeWidth="1.9"/>
-      <line x1="22" y1="38" x2="38" y2="38" stroke={color} strokeWidth="1.4" strokeLinecap="round"/>
-      <line x1="22" y1="42" x2="32" y2="42" stroke={color} strokeWidth="1.4" strokeLinecap="round"/>
-      <path d="M9 10 L45 10 L40 30 L14 30 Z" stroke={color} strokeWidth="2.2" strokeLinejoin="round"/>
-      <path d="M40 17 Q52 17 52 23 Q52 29 40 29" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M21 7 Q23 4 21 1" stroke={color} strokeWidth="1.6" strokeLinecap="round"/>
-      <path d="M31 7 Q33 4 31 1" stroke={color} strokeWidth="1.6" strokeLinecap="round"/>
+    <svg width={size} height={h} viewBox="0 0 65 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Cup body — trapezoid */}
+      <path d="M8 6 L53 6 L47 26 L14 26 Z" stroke={color} strokeWidth="2.3" strokeLinejoin="round"/>
+      {/* Cup handle — D-curve on right */}
+      <path d="M47 14 Q62 14 62 20 Q62 26 47 26" stroke={color} strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"/>
+      {/* Credit card body */}
+      <rect x="1" y="26" width="58" height="23" rx="3.5" stroke={color} strokeWidth="2.3"/>
+      {/* Chip */}
+      <rect x="7" y="33" width="11" height="8" rx="1.5" stroke={color} strokeWidth="1.8"/>
+      {/* Card lines */}
+      <line x1="23" y1="37" x2="44" y2="37" stroke={color} strokeWidth="1.6" strokeLinecap="round"/>
+      <line x1="23" y1="43" x2="38" y2="43" stroke={color} strokeWidth="1.6" strokeLinecap="round"/>
     </svg>
   );
 }
@@ -515,7 +518,7 @@ export default function DashboardPage() {
         >
           <button className="lg:hidden text-wine-300/70 hover:text-white transition-colors" onClick={() => setMobileOpen(true)}><Menu size={20} /></button>
           <div className="flex-1 min-w-0">
-            <h1 className="text-base sm:text-lg font-bold text-white leading-tight truncate" style={{ fontFamily: 'inherit' }}>Good afternoon, Elena.</h1>
+            <div className="text-base sm:text-lg font-bold text-white leading-tight truncate">Good afternoon, Elena.</div>
             <p className="text-xs text-wine-300/50 hidden sm:block">Your credit health is looking strong today</p>
           </div>
           <div className="relative hidden md:flex items-center">
