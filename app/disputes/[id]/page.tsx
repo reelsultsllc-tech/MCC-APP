@@ -4,6 +4,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { disputes, bureauAbbr, STAGE_LABELS_FULL } from '@/lib/data'
 import { daysAgo, formatDate } from '@/lib/utils'
 import Toast from '@/components/Toast'
+import EstimatedResolutionBadge from '@/components/ui/estimated-arrival'
 import { useState } from 'react'
 
 function BureauBadge({ bureau }: { bureau: string }) {
@@ -161,6 +162,16 @@ export default function DisputeDetailPage() {
     )
   }
 
+  // Estimated resolution: 30 business days from opened date
+  const openedMs = new Date(dispute.opened).getTime();
+  const estimatedMs = openedMs + 30 * 24 * 60 * 60 * 1000;
+  const estimatedDate = new Date(estimatedMs).toLocaleDateString('es-MX', { day: 'numeric', month: 'long' });
+  const bureauMap: Record<string, string> = { EX: 'Buró Experian', EQ: 'Buró Equifax', TU: 'Buró TransUnion' };
+  const { bureauAbbr: bAbbr } = { bureauAbbr: { Experian: 'EX', Equifax: 'EQ', TransUnion: 'TU' } as const };
+  const bureauKey = (bAbbr as Record<string, string>)[dispute.bureau] ?? 'EX';
+  const bureauLabel = bureauMap[bureauKey] ?? dispute.bureau;
+  const statusLabel = dispute.result === 'eliminado' ? 'Eliminado' : dispute.result === 'verificado' ? 'Verificado' : 'Activo';
+
   // Mock timeline
   const timeline = [
     { date: dispute.opened, event: 'Disputa abierta. Item identificado en reporte.' },
@@ -208,6 +219,15 @@ export default function DisputeDetailPage() {
       <div className="px-4 py-5 space-y-5">
         {/* Status explainer */}
         <StatusExplainer stageIdx={dispute.stageIdx} result={dispute.result} />
+
+        {/* Estimated resolution badge — only while dispute is in progress */}
+        {!dispute.result && (
+          <EstimatedResolutionBadge
+            estimatedDate={estimatedDate}
+            bureau={bureauLabel}
+            status={statusLabel}
+          />
+        )}
 
         {/* Progress steps */}
         <div className="bg-white rounded-2xl border border-[#E7E2E1] p-4 shadow-sm">
