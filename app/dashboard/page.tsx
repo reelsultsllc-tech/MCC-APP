@@ -623,7 +623,7 @@ export default function DashboardPage() {
 
               {/* Estado de tu cuenta */}
               <GlowCard theme={theme} className="col-span-12 lg:col-span-5 lg:self-start" delay={200} loaded={loaded}>
-                <div className="p-4 sm:p-5 flex flex-col">
+                <div className="pt-4 sm:pt-5 px-4 sm:px-5 pb-3 flex flex-col">
                   <div className="text-center">
                     <div className={`text-xs uppercase tracking-widest mb-1 ${t.sub}`}>Estado de tu cuenta</div>
                     {/* overflow-hidden clips the SVG's empty bottom (below cy=105) */}
@@ -639,7 +639,7 @@ export default function DashboardPage() {
                   <div className="flex justify-center mt-1">
                     <CreditCard3D />
                   </div>
-                  <button className="mt-3 flex items-center gap-1 text-xs font-semibold mx-auto hover:opacity-80 transition-opacity"
+                  <button className="mt-1.5 flex items-center gap-1 text-xs font-semibold mx-auto hover:opacity-80 transition-opacity"
                     style={{ color: '#e04a6e' }}>
                     View Credit Report <ChevronRight size={13} />
                   </button>
