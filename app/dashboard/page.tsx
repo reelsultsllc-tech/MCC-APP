@@ -12,6 +12,7 @@ import {
 import { CreditCard3D } from '@/components/demo/credit-card-3d';
 import { WhatIfSimulator } from '@/components/demo/what-if-simulator';
 import { AIInsights } from '@/components/demo/ai-insights';
+import { ProgressMetricCard } from '@/components/ui/progress-metric-card';
 
 type Theme = 'dark' | 'light';
 
@@ -37,6 +38,17 @@ const SCORE_HISTORY = [
   { month: 'Mar', score: 701 }, { month: 'Apr', score: 718 },
   { month: 'May', score: 725 }, { month: 'Jun', score: 742 },
 ];
+const SCORE_SERIES = [{
+  name: 'Score',
+  accent: 'rose' as const,
+  data: [
+    { value: 652, date: '01 Oct, 2025' }, { value: 661, date: '01 Nov, 2025' },
+    { value: 668, date: '01 Dic, 2025' }, { value: 680, date: '01 Ene, 2026' },
+    { value: 695, date: '01 Feb, 2026' }, { value: 701, date: '01 Mar, 2026' },
+    { value: 718, date: '01 Abr, 2026' }, { value: 725, date: '01 May, 2026' },
+    { value: 742, date: '01 Jun, 2026' },
+  ],
+}];
 const FACTORS = [
   { label: 'Payment History',    value: 98, color: '#22c55e', trend: 'up' },
   { label: 'Credit Utilization', value: 24, color: '#ef4444', trend: 'down' },
@@ -659,19 +671,29 @@ export default function DashboardPage() {
                 {/* Score Trend + Factors */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 xl:gap-5">
                   <GlowCard theme={theme} delay={400} loaded={loaded}>
-                    <div className="p-5">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className={`text-sm font-semibold ${t.text}`}>Score Trend</span>
-                        <span className="text-xs px-2 py-0.5 rounded-full font-semibold text-green-500" style={{ background: '#22c55e22' }}>+9.1%</span>
-                      </div>
-                      <div className="flex items-end gap-2 mb-3">
-                        <span className={`text-2xl font-bold ${t.text}`}>{displayScore}</span>
-                        <span className="text-xs text-green-500 mb-1 flex items-center gap-0.5 font-medium"><ArrowUpRight size={10} /> 62 pts</span>
-                      </div>
-                      <MiniChart theme={theme} />
-                      <div className="flex justify-between mt-1">
-                        {SCORE_HISTORY.map(d => <span key={d.month} className={`text-xs ${t.sub}`}>{d.month}</span>)}
-                      </div>
+                    <div
+                      style={{
+                        '--card':             theme === 'dark' ? '#1e0e12' : '#fff',
+                        '--border':           theme === 'dark' ? 'rgba(74,8,32,0.45)' : '#f0d8dd',
+                        '--foreground':       theme === 'dark' ? '#fff' : '#241014',
+                        '--muted-foreground': theme === 'dark' ? 'rgba(249,208,216,0.5)' : '#9a7080',
+                        '--muted':            theme === 'dark' ? 'rgba(74,8,32,0.25)' : 'rgba(122,30,44,0.08)',
+                        height: '100%',
+                      } as React.CSSProperties}
+                    >
+                      <ProgressMetricCard
+                        title="Score Trend"
+                        subtitle="Historial de crédito"
+                        series={SCORE_SERIES}
+                        accent="rose"
+                        periods={[
+                          { label: '3M', points: 3 },
+                          { label: '6M', points: 6 },
+                          { label: '9M', points: 9 },
+                        ]}
+                        valueFormatter={(v) => String(Math.round(v))}
+                        dateFormatter={(d) => d}
+                      />
                     </div>
                   </GlowCard>
                   <GlowCard theme={theme} delay={500} loaded={loaded}>
