@@ -512,11 +512,13 @@ export default function DashboardPage() {
   const [loaded, setLoaded]             = useState(false);
   const [showNotif, setShowNotif]       = useState(false);
   const [searchVal, setSearchVal]       = useState('');
+  const [showDemo,  setShowDemo]        = useState(false);
 
   const displayScore = BASE_SCORE;
   const t = T[theme];
 
   useEffect(() => { const tid = setTimeout(() => setLoaded(true), 100); return () => clearTimeout(tid); }, []);
+  useEffect(() => { const tid = setTimeout(() => setShowDemo(true), 10000); return () => clearTimeout(tid); }, []);
 
   const handleThemeToggle = () => {
     setThemeLoading(true);
@@ -890,6 +892,58 @@ export default function DashboardPage() {
           )}
         </main>
       </div>
+
+      {/* Demo banner — fixed bottom-right, appears after 10 s */}
+      {showDemo && (
+        <div
+          className="fixed bottom-6 right-6 z-50 max-w-xs w-full rounded-2xl border shadow-2xl p-4 animate-slide-in-up"
+          style={{
+            background:  'linear-gradient(135deg, #1e0e12 0%, #150a0d 100%)',
+            borderColor: 'rgba(224,74,110,0.35)',
+            boxShadow:   '0 8px 40px rgba(171,28,66,0.25), 0 2px 8px rgba(0,0,0,0.6)',
+          }}
+        >
+          {/* Top row */}
+          <div className="flex items-start justify-between gap-3 mb-2">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse flex-shrink-0" />
+              <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#f59e0b' }}>
+                Demo
+              </span>
+            </div>
+            <button
+              onClick={() => setShowDemo(false)}
+              className="text-wine-400/40 hover:text-wine-200/70 transition-colors flex-shrink-0 -mt-0.5"
+              aria-label="Cerrar"
+            >
+              <X size={14} />
+            </button>
+          </div>
+
+          {/* Message */}
+          <p className="text-sm font-semibold text-white leading-snug mb-1">
+            Esto es un demo
+          </p>
+          <p className="text-xs leading-relaxed" style={{ color: 'rgba(249,208,216,0.55)' }}>
+            Se está revisando qué data puede ser conectada. Se les avisará pronto.
+          </p>
+
+          {/* Divider + brand */}
+          <div className="mt-3 pt-3 flex items-center justify-between border-t" style={{ borderColor: 'rgba(74,8,32,0.5)' }}>
+            <div className="flex items-center gap-1.5">
+              <CoffeeCreditIcon size={16} color="#e04a6e" />
+              <span className="text-[10px] font-semibold" style={{ color: 'rgba(249,208,216,0.35)' }}>My Credit Café</span>
+            </div>
+            <button
+              onClick={() => setShowDemo(false)}
+              className="text-[10px] font-semibold px-2.5 py-1 rounded-lg transition-all hover:brightness-110"
+              style={{ background: 'rgba(171,28,66,0.25)', color: '#e04a6e' }}
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
