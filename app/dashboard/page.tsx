@@ -626,14 +626,14 @@ export default function DashboardPage() {
                 <div className="p-4 sm:p-5 flex flex-col">
                   <div className="text-center">
                     <div className={`text-xs uppercase tracking-widest mb-1 ${t.sub}`}>Estado de tu cuenta</div>
-                    <div className="flex justify-center" style={{ transform: 'scale(0.82)', transformOrigin: 'top center', marginBottom: '-26px' }}>
+                    <div className="flex justify-center" style={{ transform: 'scale(0.82)', transformOrigin: 'top center', marginBottom: '-54px' }}>
                       <CreditGauge pct={tier.pct} theme={theme} />
                     </div>
-                    <div className="text-3xl font-bold mt-0 mb-3" style={{ color: tier.color }}>
+                    <div className="text-3xl font-bold mt-0 mb-2" style={{ color: tier.color }}>
                       {tier.label}
                     </div>
                   </div>
-                  <div className="flex justify-center mt-2">
+                  <div className="flex justify-center mt-1">
                     <CreditCard3D />
                   </div>
                   <button className="mt-3 flex items-center gap-1 text-xs font-semibold mx-auto hover:opacity-80 transition-opacity"
