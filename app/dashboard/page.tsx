@@ -8,7 +8,7 @@ import {
   ArrowUpRight, ArrowDownRight, RefreshCw, Eye, Lock,
   Menu, Sun, Moon, ChevronLeft, Activity,
   Gem, Sparkles, Users, BookOpen, Cpu, BellRing,
-  CreditCard, FolderOpen, Timer,
+  CreditCard, FolderOpen, Timer, ExternalLink,
 } from 'lucide-react';
 import { CreditCard3D } from '@/components/demo/credit-card-3d';
 import { ProgressCard } from '@/components/demo/progress-card';
@@ -47,9 +47,9 @@ const DISPUTES = [
   { id: 3, title: 'Account Information',        desc: 'TransUnion • Under review',    time: 'Updated 5d ago', status: 'warning', documentUrl: null },
 ];
 
-// Mock — replace with API data contract: { activeDisputes, responseClockDays, responseClockActive, newDocuments30d, nextPayment: { amount, date } }
+// Mock — replace with API data contract: { cdmPortalUrl, responseClockDays, responseClockActive, newDocuments30d, nextPayment: { amount, date } }
 const QA_DATA = {
-  activeDisputes:      3,
+  cdmPortalUrl:        'https://portal.clientdisputemanager.com/client-login',
   responseClockDays:   16,
   responseClockActive: true,
   newDocuments30d:     2,
@@ -655,27 +655,25 @@ export default function DashboardPage() {
                       <span className={`text-sm font-semibold ${t.text}`}>Quick Actions</span>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
-                      {/* Card 1 — Disputas activas */}
-                      {(() => {
-                        const active = QA_DATA.activeDisputes;
-                        return (
-                          <div className="rounded-xl p-3 sm:p-4 border flex flex-col gap-2 transition-all duration-200 hover:scale-[1.02]"
-                            style={{ background: t.rowBg, borderColor: t.rowBorder }}>
-                            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#ab1c4222' }}>
-                              <AlertCircle size={16} color="#ab1c42" />
-                            </div>
-                            <div className={`text-xl font-bold ${t.text}`}>{active}</div>
-                            <div className="min-h-0 flex-1">
-                              <div className={`text-xs font-semibold ${t.text}`}>Disputas activas</div>
-                              <div className={`text-xs mt-0.5 ${t.sub}`}>{active > 1 ? `${active} en proceso` : '1 en proceso'}</div>
-                            </div>
-                            <button className="mt-auto w-full py-1.5 rounded-lg text-xs font-semibold text-white hover:brightness-110 transition-all"
-                              style={{ background: 'linear-gradient(135deg,#ab1c42,#7a1838)' }}>
-                              Ver disputas
-                            </button>
-                          </div>
-                        );
-                      })()}
+                      {/* Card 1 — Detalle de disputas (link-out to CDM portal) */}
+                      <div className="rounded-xl p-3 sm:p-4 border flex flex-col gap-2 transition-all duration-200 hover:scale-[1.02]"
+                        style={{ background: t.rowBg, borderColor: t.rowBorder }}>
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#ab1c4222' }}>
+                          <ExternalLink size={16} color="#ab1c42" />
+                        </div>
+                        <div className="min-h-0 flex-1 mt-1">
+                          <div className={`text-xs font-semibold ${t.text}`}>Detalle de disputas</div>
+                          <div className={`text-xs mt-0.5 ${t.sub}`}>Status por item y bureau</div>
+                        </div>
+                        <a
+                          href={QA_DATA.cdmPortalUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-auto w-full py-1.5 rounded-lg text-xs font-semibold text-white hover:brightness-110 transition-all text-center block"
+                          style={{ background: 'linear-gradient(135deg,#ab1c42,#7a1838)' }}>
+                          Abrir portal →
+                        </a>
+                      </div>
                       {/* Card 2 — Reloj de respuesta FCRA */}
                       {(() => {
                         const { responseClockDays: days, responseClockActive: clockOn } = QA_DATA;
