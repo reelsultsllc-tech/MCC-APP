@@ -17,7 +17,18 @@ import { ProgressMetricCard } from '@/components/ui/progress-metric-card';
 
 type Theme = 'dark' | 'light';
 
-const BASE_SCORE = 742;
+// Mock — replace with API data contract: { accountTier, tierLabel, tierReasons }
+const TIER_DATA = {
+  accountTier:  'on_track' as 'on_track' | 'in_progress' | 'needs_attention',
+  tierLabel:    'Al día',
+  tierReasons:  ['active', 'billing_current', 'monitoring_active'],
+};
+const TIER_CONFIG = {
+  on_track:        { pct: 0.88, label: 'Al día',            color: '#22c55e' },
+  in_progress:     { pct: 0.50, label: 'En progreso',       color: '#facc15' },
+  needs_attention: { pct: 0.15, label: 'Necesita atención', color: '#ef4444' },
+} as const;
+
 const NAV_ITEMS = [
   { icon: LayoutDashboard, label: 'Dashboard',       id: 'overview' },
   { icon: BarChart3,        label: 'Credit Report',   id: 'reports' },
@@ -145,12 +156,11 @@ function AnimatedCounter({ target, duration = 1800 }: { target: number; duration
 }
 
 // ── CreditGauge ───────────────────────────────────────────────────────────────
-function CreditGauge({ score, theme }: { score: number; theme: Theme }) {
+function CreditGauge({ pct, theme }: { pct: number; theme: Theme }) {
   const [mounted, setMounted] = useState(false);
   const r = 80; const cx = 100; const cy = 105;
   const startA = -210; const endA = 30; const totalA = endA - startA;
   const circ = (Math.PI * r * totalA) / 180;
-  const pct  = (score - 300) / (850 - 300);
   const offset = circ - pct * circ;
   const toXY = (a: number, rad = r) => {
     const rd = ((a - 90) * Math.PI) / 180;
@@ -213,8 +223,6 @@ function CreditGauge({ score, theme }: { score: number; theme: Theme }) {
           style={{ transition: 'cx 1.8s cubic-bezier(0.34,1.4,0.64,1), cy 1.8s cubic-bezier(0.34,1.4,0.64,1)', filter: 'url(#glowSm)' }}
         />
       )}
-      <text x="18" y="130" fill={theme === 'dark' ? 'rgba(249,208,216,0.55)' : '#9a3060'} fontSize="8.5" fontFamily="Inter">300</text>
-      <text x="168" y="130" fill={theme === 'dark' ? '#4ade80' : '#16a34a'} fontSize="8.5" fontFamily="Inter">850</text>
     </svg>
   );
 }
@@ -514,7 +522,7 @@ export default function DashboardPage() {
   const [searchVal, setSearchVal]       = useState('');
   const [showDemo,  setShowDemo]        = useState(false);
 
-  const displayScore = BASE_SCORE;
+  const tier   = TIER_CONFIG[TIER_DATA.accountTier];
   const t = T[theme];
 
   useEffect(() => { const tid = setTimeout(() => setLoaded(true), 100); return () => clearTimeout(tid); }, []);
@@ -613,32 +621,19 @@ export default function DashboardPage() {
           ) : (
             <div className="grid grid-cols-12 gap-4 xl:gap-5 2xl:gap-6 max-w-screen-2xl mx-auto">
 
-              {/* Credit Health Score */}
+              {/* Estado de tu cuenta */}
               <GlowCard theme={theme} className="col-span-12 lg:col-span-5" delay={200} loaded={loaded}>
                 <div className="p-4 sm:p-5 flex flex-col">
                   <div className="text-center">
-                    <div className={`text-xs uppercase tracking-widest mb-1 ${t.sub}`}>Credit Health Score</div>
+                    <div className={`text-xs uppercase tracking-widest mb-1 ${t.sub}`}>Estado de tu cuenta</div>
                     <div className="flex justify-center" style={{ transform: 'scale(0.82)', transformOrigin: 'top center', marginBottom: '-26px' }}>
-                      <CreditGauge score={displayScore} theme={theme} />
+                      <CreditGauge pct={tier.pct} theme={theme} />
                     </div>
-                    <div className={`text-5xl xl:text-6xl font-bold mt-0 mb-0.5 ${t.text}`}>
-                      <AnimatedCounter target={displayScore} />
-                    </div>
-                    <div className="flex items-center justify-center gap-1.5 mb-1">
-                      <ArrowUpRight size={13} color="#22c55e" />
-                      <span className="text-sm font-semibold text-green-500">+62 pts since January</span>
-                    </div>
-                    <CompactLevelProgress score={displayScore} theme={theme} loaded={loaded} />
-                    <div className="flex items-center justify-center gap-2 mt-3">
-                      <span className="inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full"
-                        style={{ background: theme === 'dark' ? 'rgba(34,197,94,0.12)' : 'rgba(34,197,94,0.1)', color: '#22c55e' }}>
-                        <ArrowUpRight size={11} />62 pts since January
-                      </span>
-                      <span className="text-xs" style={{ color: theme === 'dark' ? 'rgba(249,208,216,0.3)' : 'rgba(122,30,44,0.4)' }}>•</span>
-                      <span className="text-xs" style={{ color: theme === 'dark' ? 'rgba(249,208,216,0.35)' : 'rgba(122,30,44,0.45)' }}>Next update in 7 days</span>
+                    <div className="text-3xl font-bold mt-0 mb-3" style={{ color: tier.color }}>
+                      {tier.label}
                     </div>
                   </div>
-                  <div className="flex justify-center mt-4">
+                  <div className="flex justify-center mt-2">
                     <CreditCard3D />
                   </div>
                   <button className="mt-3 flex items-center gap-1 text-xs font-semibold mx-auto hover:opacity-80 transition-opacity"
