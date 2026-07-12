@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useRef } from 'react';
 import {
-  LayoutDashboard, FileText, BarChart3, Wallet, BookOpen,
-  PhoneCall, Settings, Bell, Search, ChevronRight,
+  LayoutDashboard, FileText, BarChart3, Settings, Bell, Search, ChevronRight,
   TrendingUp, TrendingDown, AlertCircle, CheckCircle,
   Clock, Zap, Target, ChevronDown, X,
   ArrowUpRight, ArrowDownRight, RefreshCw, Eye, Lock,
   Menu, Sun, Moon, ChevronLeft, Activity,
+  Gem, Sparkles, Users, BookOpen, Cpu, BellRing,
 } from 'lucide-react';
 import { CreditCard3D } from '@/components/demo/credit-card-3d';
 import { WhatIfSimulator } from '@/components/demo/what-if-simulator';
@@ -18,20 +18,20 @@ type Theme = 'dark' | 'light';
 
 const BASE_SCORE = 742;
 const NAV_ITEMS = [
-  { icon: LayoutDashboard, label: 'Overview',         id: 'overview' },
-  { icon: FileText,         label: 'Disputes',         id: 'disputes', badge: 3 },
-  { icon: BarChart3,        label: 'Reports',          id: 'reports' },
-  { icon: Wallet,           label: 'Wallet & Billing', id: 'wallet' },
-];
-const SUPPORT_ITEMS = [
-  { icon: BookOpen,  label: 'Documents',     id: 'documents' },
-  { icon: PhoneCall, label: 'Advance Calls', id: 'calls' },
-  { icon: Settings,  label: 'Settings',      id: 'settings' },
+  { icon: LayoutDashboard, label: 'Dashboard',       id: 'overview' },
+  { icon: BarChart3,        label: 'Credit Report',   id: 'reports' },
+  { icon: FileText,         label: 'Disputes',        id: 'disputes', badge: 3 },
+  { icon: Cpu,              label: 'Simulator',       id: 'simulator' },
+  { icon: TrendingUp,       label: 'Recommendations', id: 'recommendations' },
+  { icon: BellRing,         label: 'Alerts',          id: 'alerts' },
+  { icon: Users,            label: 'Accounts',        id: 'accounts' },
+  { icon: BookOpen,         label: 'Education',       id: 'education' },
+  { icon: Settings,         label: 'Settings',        id: 'settings' },
 ];
 const DISPUTES = [
-  { id: 1, title: 'New Dispute Resolved',  desc: 'Medic atten - Signarer appointe signatee decline - 1TT pe signing',  time: '2h ago',  status: 'success', pts: '+62' },
-  { id: 2, title: 'Medical/rolputee',      desc: 'Medical econore - S1C - Sectinc. Signing signing users 3 ago',       time: '8h ago',  status: 'error',   pts: '-12' },
-  { id: 3, title: 'Udtilmute aliee',       desc: 'Create oester.bowl: 329 - You Fin credit monitor...',                 time: '1d ago',  status: 'warning', pts: '+18' },
+  { id: 1, title: 'Medical Collection Account', desc: 'Experian • Dispute resolved',  time: 'Resolved Jun 3',  status: 'success', pts: '+62' },
+  { id: 2, title: 'Late Payment',               desc: 'Equifax • In progress',         time: 'Updated 2d ago',  status: 'error',   pts: '-12' },
+  { id: 3, title: 'Account Information',        desc: 'TransUnion • Under review',     time: 'Updated 5d ago',  status: 'warning', pts: '+18' },
 ];
 const SCORE_HISTORY = [
   { month: 'Jan', score: 680 }, { month: 'Feb', score: 695 },
@@ -437,17 +437,16 @@ function Sidebar({ active, setActive, collapsed, setCollapsed, mobileOpen, setMo
       </div>
       <nav className="flex-1 px-2 pt-4 space-y-0.5 overflow-y-auto">
         {NAV_ITEMS.map(item => <NavBtn key={item.id} item={item} showLabel={showLabel} />)}
-        {showLabel && <div className="pt-4 pb-1.5"><span className="text-xs font-semibold uppercase tracking-widest text-wine-800/70 px-3">Support</span></div>}
-        {!showLabel && <div className="py-2 border-t border-wine-950/40 my-1" />}
-        {SUPPORT_ITEMS.map(item => <NavBtn key={item.id} item={item} showLabel={showLabel} />)}
       </nav>
       {showLabel && (
         <div className="mx-2 mb-3 rounded-xl p-3.5 border border-wine-900/50" style={{ background: 'linear-gradient(135deg,#38171f,#1e0e12)' }}>
-          <div className="text-xs text-wine-400/55 uppercase tracking-widest mb-0.5">Membership Tier</div>
-          <div className="text-sm font-bold text-white mb-0.5">Concierge Tier</div>
-          <div className="text-xs text-wine-300/45 mb-2.5">2 executive overload</div>
+          <div className="flex items-center gap-2 mb-1">
+            <Gem size={14} style={{ color: '#f59e0b' }} />
+            <div className="text-sm font-bold text-white">Unlock Premium</div>
+          </div>
+          <div className="text-xs text-wine-300/55 mb-2.5 leading-relaxed">Get advanced tools, more insights and 3-bureau monitoring.</div>
           <button className="w-full py-1.5 rounded-lg text-xs font-semibold text-white hover:brightness-110 transition-all"
-            style={{ background: 'linear-gradient(135deg,#ab1c42,#7a1838)' }}>Manage Tier</button>
+            style={{ background: 'linear-gradient(135deg,#ab1c42,#7a1838)' }}>Upgrade Now</button>
         </div>
       )}
       {!showLabel && (
@@ -462,8 +461,8 @@ function Sidebar({ active, setActive, collapsed, setCollapsed, mobileOpen, setMo
         {showLabel && (
           <>
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-semibold text-white truncate">Elara Manchehi</div>
-              <div className="text-xs text-wine-400/45">4 months selected</div>
+              <div className="text-xs font-semibold text-white truncate">Elena Manchehi</div>
+              <div className="text-xs text-wine-400/45">Premium Member</div>
             </div>
             <ChevronDown size={13} className="text-wine-400/35 flex-shrink-0" />
           </>
@@ -531,13 +530,13 @@ export default function DashboardPage() {
           <button className="lg:hidden text-wine-300/70 hover:text-white transition-colors" onClick={() => setMobileOpen(true)}><Menu size={20} /></button>
           <div className="flex-1 min-w-0">
             <div className="text-base sm:text-lg font-bold text-white leading-tight truncate">Good afternoon, Elena.</div>
-            <p className="text-xs text-wine-300/50 hidden sm:block">Your credit health is looking strong today</p>
+            <p className="text-xs text-wine-300/50 hidden sm:block">Your credit health is strong. Let's keep building.</p>
           </div>
           <div className="relative hidden md:flex items-center">
             <Search size={13} className="absolute left-3 text-wine-400/40" />
             <input
               value={searchVal} onChange={e => setSearchVal(e.target.value)}
-              placeholder="Search disputes, chats..."
+              placeholder="Search disputes, reports, accounts..."
               className="text-xs pl-8 pr-3 py-2 rounded-lg outline-none w-44 xl:w-52 text-wine-200/60 placeholder-wine-400/30 border transition-all"
               style={{ background: 'rgba(74,8,32,0.3)', borderColor: 'rgba(74,8,32,0.5)' }}
             />
@@ -620,10 +619,22 @@ export default function DashboardPage() {
                       }
                     </div>
                     <CompactLevelProgress score={displayScore} theme={theme} loaded={loaded} />
+                    <div className="flex items-center justify-center gap-2 mt-3">
+                      <span className="inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full"
+                        style={{ background: theme === 'dark' ? 'rgba(34,197,94,0.12)' : 'rgba(34,197,94,0.1)', color: '#22c55e' }}>
+                        <ArrowUpRight size={11} />62 pts since January
+                      </span>
+                      <span className="text-xs" style={{ color: theme === 'dark' ? 'rgba(249,208,216,0.3)' : 'rgba(122,30,44,0.4)' }}>•</span>
+                      <span className="text-xs" style={{ color: theme === 'dark' ? 'rgba(249,208,216,0.35)' : 'rgba(122,30,44,0.45)' }}>Next update in 7 days</span>
+                    </div>
                   </div>
                   <div className="flex justify-center mt-4">
                     <CreditCard3D />
                   </div>
+                  <button className="mt-3 flex items-center gap-1 text-xs font-semibold mx-auto hover:opacity-80 transition-opacity"
+                    style={{ color: '#e04a6e' }}>
+                    View Credit Report <ChevronRight size={13} />
+                  </button>
                 </div>
               </GlowCard>
 
@@ -633,35 +644,28 @@ export default function DashboardPage() {
                 <GlowCard theme={theme} delay={300} loaded={loaded}>
                   <div className="p-5">
                     <div className="flex items-center justify-between mb-4">
-                      <span className={`text-sm font-semibold ${t.text}`}>Quick Action Center</span>
+                      <span className={`text-sm font-semibold ${t.text}`}>Quick Actions</span>
                       <button className={`text-xs flex items-center gap-1 transition-colors hover:text-wine-500 ${t.sub}`}>View all <ChevronRight size={11} /></button>
                     </div>
-                    <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
                       {[
-                        { icon: Zap,        label: 'Disputes',     value: '3',   sub: '2 sponsored',   delta: '+62',     color: '#ab1c42', pct: undefined },
-                        { icon: TrendingUp, label: 'Pts Improved', value: '+62', sub: 'Pts this month', delta: undefined, color: '#22c55e', pct: 78 },
-                        { icon: Target,     label: 'Active',       value: '78%', sub: 'Achieved',       delta: undefined, color: '#f59e0b', pct: 78 },
+                        { icon: Sparkles,   value: '3',    title: 'Active Disputes',  sub: '2 require your action', btn: 'View Disputes',  color: '#ab1c42' },
+                        { icon: TrendingUp, value: '+62 pts', title: 'This Month',    sub: 'Great progress!',        btn: 'See Progress',   color: '#22c55e' },
+                        { icon: Target,     value: '78%',  title: 'Goals Achieved',   sub: 'On track',               btn: 'View Goals',     color: '#f59e0b' },
+                        { icon: FileText,   value: '4',    title: 'New Alerts',       sub: 'Review activity',        btn: 'View Alerts',    color: '#3b82f6' },
                       ].map((item, i) => (
-                        <div key={i} className="rounded-xl p-3 sm:p-4 border cursor-pointer transition-all duration-200 hover:scale-[1.03]"
+                        <div key={i} className="rounded-xl p-3 sm:p-4 border flex flex-col gap-2 cursor-pointer transition-all duration-200 hover:scale-[1.02]"
                           style={{ background: t.rowBg, borderColor: t.rowBorder }}>
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: `${item.color}22` }}>
-                              <item.icon size={14} color={item.color} />
-                            </div>
-                            {item.delta && <span className="text-xs font-bold" style={{ color: item.color }}>{item.delta}</span>}
+                          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${item.color}22` }}>
+                            <item.icon size={16} color={item.color} />
                           </div>
-                          <div className={`text-lg sm:text-xl font-bold mb-0.5 ${t.text}`}>{item.value}</div>
-                          <div className={`text-xs leading-tight ${t.sub}`}>{item.sub}</div>
-                          {item.pct !== undefined && (
-                            <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: t.trackBg }}>
-                              <div className="h-full rounded-full relative overflow-hidden"
-                                style={{ width: loaded ? `${item.pct}%` : '0%', background: item.color,
-                                  transition: `width 1.1s cubic-bezier(0.34,1.2,0.64,1) ${800 + i * 150}ms`,
-                                  boxShadow: `0 0 6px ${item.color}88` }}>
-                                <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent)', backgroundSize: '200% 100%', animation: 'shimmer 2s infinite' }} />
-                              </div>
-                            </div>
-                          )}
+                          <div className={`text-xl font-bold ${t.text}`}>{item.value}</div>
+                          <div className="min-h-0">
+                            <div className={`text-xs font-semibold ${t.text}`}>{item.title}</div>
+                            <div className={`text-xs mt-0.5 ${t.sub}`}>{item.sub}</div>
+                          </div>
+                          <button className="mt-auto w-full py-1.5 rounded-lg text-xs font-semibold text-white hover:brightness-110 transition-all"
+                            style={{ background: 'linear-gradient(135deg,#ab1c42,#7a1838)' }}>{item.btn}</button>
                         </div>
                       ))}
                     </div>
@@ -700,7 +704,7 @@ export default function DashboardPage() {
                     <div className="p-5">
                       <div className="flex items-center justify-between mb-3">
                         <span className={`text-sm font-semibold ${t.text}`}>Score Factors</span>
-                        <Activity size={14} className="text-wine-500/60" />
+                        <button className={`text-xs hover:text-wine-400 transition-colors ${t.sub}`}>Learn more</button>
                       </div>
                       {FACTORS.map((f, i) => <FactorBar key={f.label} {...f} delay={i * 120} theme={theme} />)}
                     </div>
@@ -723,32 +727,32 @@ export default function DashboardPage() {
                 <div className="p-5">
                   <div className="flex items-center justify-between mb-4">
                     <span className={`text-sm font-semibold ${t.text}`}>Recent Disputes</span>
-                    <button className={`text-xs flex items-center gap-1 transition-colors hover:text-wine-500 ${t.sub}`}>More <ChevronRight size={11} /></button>
+                    <button className={`text-xs flex items-center gap-1 transition-colors hover:text-wine-500 ${t.sub}`}>View all <ChevronRight size={11} /></button>
                   </div>
                   <div className="space-y-2.5">
                     {DISPUTES.map((d, i) => {
                       const Icon = d.status === 'success' ? CheckCircle : d.status === 'error' ? AlertCircle : Clock;
                       const c = d.status === 'success' ? '#22c55e' : d.status === 'error' ? '#ef4444' : '#f59e0b';
                       return (
-                        <div key={d.id} className="flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all duration-200 hover:scale-[1.01]"
-                          style={{ background: t.rowBg, borderColor: t.rowBorder, animationDelay: `${i * 80}ms` }}>
-                          <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: `${c}22` }}>
+                        <div key={d.id} className="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all duration-200 hover:scale-[1.01]"
+                          style={{ background: t.rowBg, borderColor: t.rowBorder }}>
+                          <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: `${c}22` }}>
                             <Icon size={13} color={c} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between gap-2">
-                              <span className={`text-xs font-semibold truncate ${t.text}`}>{d.title}</span>
-                              <span className="text-xs font-bold flex-shrink-0" style={{ color: c }}>{d.pts}</span>
-                            </div>
-                            <p className={`text-xs mt-0.5 leading-relaxed line-clamp-2 ${t.sub}`}>{d.desc}</p>
-                            <span className={`text-xs mt-1 block ${t.sub}`}>{d.time}</span>
+                            <div className={`text-xs font-semibold truncate ${t.text}`}>{d.title}</div>
+                            <div className={`text-xs mt-0.5 ${t.sub}`}>{d.desc}</div>
+                          </div>
+                          <div className="text-right flex-shrink-0">
+                            <div className="text-xs font-bold" style={{ color: c }}>{d.pts} pts</div>
+                            <div className={`text-xs mt-0.5 ${t.sub}`}>{d.time}</div>
                           </div>
                         </div>
                       );
                     })}
                   </div>
                   <button className={`mt-4 w-full py-2.5 rounded-xl border text-xs font-semibold transition-all hover:border-wine-600/50 flex items-center justify-center gap-2 ${t.sub}`}
-                    style={{ background: t.rowBg, borderColor: t.rowBorder }}>+ Open new item</button>
+                    style={{ background: t.rowBg, borderColor: t.rowBorder }}>+ Start a New Dispute</button>
                 </div>
               </GlowCard>
 
@@ -757,30 +761,24 @@ export default function DashboardPage() {
                 <div className="p-5">
                   <div className="flex items-center justify-between mb-4">
                     <span className={`text-sm font-semibold ${t.text}`}>Account Summary</span>
-                    <div className="flex items-center gap-2">
-                      {[RefreshCw, Eye].map((Icon, i) => (
-                        <button key={i} className="w-7 h-7 rounded-lg flex items-center justify-center border transition-all hover:scale-105"
-                          style={{ background: t.rowBg, borderColor: t.rowBorder }}>
-                          <Icon size={11} className="text-wine-500/60" />
-                        </button>
-                      ))}
-                    </div>
+                    <button className={`text-xs flex items-center gap-1 transition-colors hover:text-wine-500 ${t.sub}`}>View all accounts <ChevronRight size={11} /></button>
                   </div>
-                  <div className="space-y-2.5">
+                  <div className="grid grid-cols-3 gap-2.5">
                     {[
-                      { label: 'Total Credit Limit', value: '$48,200', delta: '+$2,500', up: true  },
-                      { label: 'Current Balance',    value: '$11,568', delta: '-$820',   up: false },
-                      { label: 'Available Credit',   value: '$36,632', delta: '+$3,320', up: true  },
-                      { label: 'Utilization Rate',   value: '24.0%',   delta: '-1.7%',   up: true  },
+                      { label: 'Total Credit Limit', value: '$48,200', delta: '+$2,500',  up: true,  badge: null },
+                      { label: 'Current Balance',    value: '$11,568', delta: '-$820',    up: false, badge: null },
+                      { label: 'Available Credit',   value: '$36,632', delta: '+$3,320',  up: true,  badge: null },
+                      { label: 'Utilization Rate',   value: '24.0%',   delta: '-1.7%',    up: true,  badge: null },
+                      { label: 'On-Time Payments',   value: '100%',    delta: 'Excellent', up: true,  badge: 'Excellent' },
+                      { label: 'Accounts',           value: '7',       delta: 'Active',    up: true,  badge: 'Active' },
                     ].map((item, i) => (
-                      <div key={i} className="flex items-center justify-between p-3 rounded-xl border transition-all"
+                      <div key={i} className="p-3 rounded-xl border transition-all"
                         style={{ background: t.rowBg, borderColor: t.rowBorder }}>
-                        <div>
-                          <div className={`text-xs ${t.sub}`}>{item.label}</div>
-                          <div className={`text-base font-bold mt-0.5 ${t.text}`}>{item.value}</div>
-                        </div>
-                        <div className={`flex items-center gap-1 text-xs font-semibold ${item.up ? 'text-green-500' : 'text-red-500'}`}>
-                          {item.up ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}{item.delta}
+                        <div className={`text-xs mb-1 ${t.sub}`}>{item.label}</div>
+                        <div className={`text-base font-bold ${t.text}`}>{item.value}</div>
+                        <div className={`flex items-center gap-0.5 text-xs font-semibold mt-0.5 ${item.badge ? 'text-green-500' : item.up ? 'text-green-500' : 'text-red-400'}`}>
+                          {!item.badge && (item.up ? <ArrowUpRight size={10} /> : <ArrowDownRight size={10} />)}
+                          {item.delta}
                         </div>
                       </div>
                     ))}
@@ -794,7 +792,10 @@ export default function DashboardPage() {
                       <div className={`text-xs font-semibold ${t.text}`}>Identity Protection Active</div>
                       <div className={`text-xs ${t.sub}`}>Monitoring 3 bureaus 24/7</div>
                     </div>
-                    <div className="ml-auto w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                    <button className="ml-auto flex items-center gap-1 text-xs font-semibold hover:opacity-80 transition-opacity" style={{ color: '#e04a6e' }}>
+                      View status <ChevronRight size={11} />
+                    </button>
+                    <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse flex-shrink-0" />
                   </div>
                 </div>
               </GlowCard>
