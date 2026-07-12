@@ -893,56 +893,65 @@ export default function DashboardPage() {
         </main>
       </div>
 
-      {/* Demo banner — fixed bottom-right, appears after 10 s */}
+      {/* Demo banner — slim bar on mobile, card on desktop */}
       {showDemo && (
-        <div
-          className="fixed bottom-6 right-6 z-50 max-w-xs w-full rounded-2xl border shadow-2xl p-4 animate-slide-in-up"
-          style={{
-            background:  'linear-gradient(135deg, #1e0e12 0%, #150a0d 100%)',
-            borderColor: 'rgba(224,74,110,0.35)',
-            boxShadow:   '0 8px 40px rgba(171,28,66,0.25), 0 2px 8px rgba(0,0,0,0.6)',
-          }}
-        >
-          {/* Top row */}
-          <div className="flex items-start justify-between gap-3 mb-2">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse flex-shrink-0" />
-              <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#f59e0b' }}>
-                Demo
-              </span>
-            </div>
-            <button
-              onClick={() => setShowDemo(false)}
-              className="text-wine-400/40 hover:text-wine-200/70 transition-colors flex-shrink-0 -mt-0.5"
-              aria-label="Cerrar"
-            >
-              <X size={14} />
+        <>
+          {/* Mobile: thin bottom bar, full-width, above safe area */}
+          <div
+            className="sm:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center gap-3 px-4 py-3 border-t animate-slide-in-up"
+            style={{
+              background:  '#150a0d',
+              borderColor: 'rgba(224,74,110,0.3)',
+              boxShadow:   '0 -4px 20px rgba(0,0,0,0.5)',
+            }}
+          >
+            <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse flex-shrink-0" />
+            <p className="flex-1 text-xs" style={{ color: 'rgba(249,208,216,0.6)' }}>
+              <span className="font-semibold text-white">Demo</span>
+              {' — '}Se está revisando qué data conectar. Se les avisará pronto.
+            </p>
+            <button onClick={() => setShowDemo(false)} className="flex-shrink-0 p-1" aria-label="Cerrar">
+              <X size={13} style={{ color: 'rgba(249,208,216,0.4)' }} />
             </button>
           </div>
 
-          {/* Message */}
-          <p className="text-sm font-semibold text-white leading-snug mb-1">
-            Esto es un demo
-          </p>
-          <p className="text-xs leading-relaxed" style={{ color: 'rgba(249,208,216,0.55)' }}>
-            Se está revisando qué data puede ser conectada. Se les avisará pronto.
-          </p>
-
-          {/* Divider + brand */}
-          <div className="mt-3 pt-3 flex items-center justify-between border-t" style={{ borderColor: 'rgba(74,8,32,0.5)' }}>
-            <div className="flex items-center gap-1.5">
-              <CoffeeCreditIcon size={16} color="#e04a6e" />
-              <span className="text-[10px] font-semibold" style={{ color: 'rgba(249,208,216,0.35)' }}>My Credit Café</span>
+          {/* Desktop: card bottom-right */}
+          <div
+            className="hidden sm:block fixed bottom-6 right-6 z-50 w-72 rounded-2xl border shadow-2xl p-4 animate-slide-in-up"
+            style={{
+              background:  'linear-gradient(135deg, #1e0e12 0%, #150a0d 100%)',
+              borderColor: 'rgba(224,74,110,0.35)',
+              boxShadow:   '0 8px 40px rgba(171,28,66,0.25), 0 2px 8px rgba(0,0,0,0.6)',
+            }}
+          >
+            <div className="flex items-start justify-between gap-3 mb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse flex-shrink-0" />
+                <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#f59e0b' }}>Demo</span>
+              </div>
+              <button onClick={() => setShowDemo(false)} className="text-wine-400/40 hover:text-wine-200/70 transition-colors" aria-label="Cerrar">
+                <X size={14} />
+              </button>
             </div>
-            <button
-              onClick={() => setShowDemo(false)}
-              className="text-[10px] font-semibold px-2.5 py-1 rounded-lg transition-all hover:brightness-110"
-              style={{ background: 'rgba(171,28,66,0.25)', color: '#e04a6e' }}
-            >
-              Entendido
-            </button>
+            <p className="text-sm font-semibold text-white leading-snug mb-1">Esto es un demo</p>
+            <p className="text-xs leading-relaxed" style={{ color: 'rgba(249,208,216,0.55)' }}>
+              Se está revisando qué data puede ser conectada. Se les avisará pronto.
+            </p>
+            <div className="mt-3 pt-3 flex items-center justify-between border-t" style={{ borderColor: 'rgba(74,8,32,0.5)' }}>
+              <div className="flex items-center gap-1.5">
+                <CoffeeCreditIcon size={16} color="#e04a6e" />
+                <span className="text-[10px] font-semibold" style={{ color: 'rgba(249,208,216,0.35)' }}>My Credit Café</span>
+              </div>
+              <button
+                onClick={() => setShowDemo(false)}
+                className="text-[10px] font-semibold px-2.5 py-1 rounded-lg transition-all hover:brightness-110"
+                style={{ background: 'rgba(171,28,66,0.25)', color: '#e04a6e' }}
+              >
+                Entendido
+              </button>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
