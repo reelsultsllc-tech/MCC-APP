@@ -622,8 +622,8 @@ export default function DashboardPage() {
             <div className="grid grid-cols-12 gap-4 xl:gap-5 2xl:gap-6 max-w-screen-2xl mx-auto">
 
               {/* Estado de tu cuenta */}
-              <GlowCard theme={theme} className="col-span-12 lg:col-span-5 lg:self-start" delay={200} loaded={loaded}>
-                <div className="pt-4 sm:pt-5 px-4 sm:px-5 pb-3 flex flex-col">
+              <GlowCard theme={theme} className="col-span-12 lg:col-span-5" delay={200} loaded={loaded}>
+                <div className="pt-4 sm:pt-5 px-4 sm:px-5 pb-4 flex flex-col h-full">
                   <div className="text-center">
                     <div className={`text-xs uppercase tracking-widest mb-1 ${t.sub}`}>Estado de tu cuenta</div>
                     {/* overflow-hidden clips the SVG's empty bottom (below cy=105) */}
@@ -636,10 +636,10 @@ export default function DashboardPage() {
                       {tier.label}
                     </div>
                   </div>
-                  <div className="flex justify-center mt-1">
+                  <div className="flex-1 flex items-center justify-center py-2">
                     <CreditCard3D />
                   </div>
-                  <button className="mt-1.5 flex items-center gap-1 text-xs font-semibold mx-auto hover:opacity-80 transition-opacity"
+                  <button className="flex items-center gap-1 text-xs font-semibold mx-auto hover:opacity-80 transition-opacity"
                     style={{ color: '#e04a6e' }}>
                     View Credit Report <ChevronRight size={13} />
                   </button>
