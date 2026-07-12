@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Sparkles, Clock, ChevronRight, CheckCircle, X } from 'lucide-react';
+import { Sparkles, Clock, ChevronRight, CheckCircle, X, CreditCard, CalendarCheck, Search } from 'lucide-react';
 
 type Theme = 'dark' | 'light';
 
@@ -9,41 +9,38 @@ const INSIGHTS = [
   {
     id: 1,
     priority: 'high' as const,
-    badge: 'URGENTE',
-    badgeColor: '#ef4444',
-    icon: '💳',
-    title: 'Reduce tu saldo ahora',
-    message: 'Elena, si reduces el saldo de tu tarjeta en $450 antes del 18 de julio, tu score podría subir +15 pts',
+    badge: 'HIGH IMPACT',
+    badgeColor: '#ab1c42',
+    Icon: CreditCard,
+    title: 'Pay down $450 on your credit card before Jul 18',
+    message: 'Could increase your score by up to 15 points.',
     pts: '+15',
-    deadline: '18 jul',
-    action: 'Pagar $450 ahora',
-    dismissed: false,
+    deadline: 'Jul 18',
+    action: 'Take Action',
   },
   {
     id: 2,
     priority: 'medium' as const,
-    badge: 'ESTA SEMANA',
+    badge: 'THIS WEEK',
     badgeColor: '#f59e0b',
-    icon: '📅',
-    title: 'Activa autopago mínimo',
-    message: 'Tienes un pago venciendo el 22 de julio. Configurar autopago evitaría -50 pts por mora',
+    Icon: CalendarCheck,
+    title: 'Set up autopay for minimum payments',
+    message: 'Avoid late payments and protect your score.',
     pts: '+50',
-    deadline: '22 jul',
-    action: 'Configurar autopago',
-    dismissed: false,
+    deadline: 'Jul 22',
+    action: 'Set Up',
   },
   {
     id: 3,
     priority: 'low' as const,
-    badge: 'OPORTUNIDAD',
+    badge: 'OPPORTUNITY',
     badgeColor: '#3b82f6',
-    icon: '🔍',
-    title: 'Disputa marca antigua',
-    message: 'Detectamos una consulta de 2021 potencialmente disputable que podría mejorar tu perfil crediticio',
+    Icon: Search,
+    title: 'Dispute 1 account with outdated information',
+    message: 'You have a strong case based on our analysis.',
     pts: '+8',
     deadline: null,
-    action: 'Ver disputa',
-    dismissed: false,
+    action: 'Review',
   },
 ];
 
@@ -60,28 +57,34 @@ export function AIInsights({ theme }: { theme: Theme }) {
 
   return (
     <div className="p-5">
-      <div className="flex items-center gap-2.5 mb-4">
-        <div className="w-8 h-8 rounded-xl flex items-center justify-center relative" style={{ background: 'linear-gradient(135deg, #ab1c4230, #4a082020)' }}>
-          <Sparkles size={15} color="#e04a6e" />
-          <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-wine-500 animate-ping opacity-75" />
-          <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-wine-500" />
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl flex items-center justify-center relative" style={{ background: 'linear-gradient(135deg, #ab1c4230, #4a082020)' }}>
+            <Sparkles size={15} color="#e04a6e" />
+            <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-wine-500 animate-ping opacity-75" />
+            <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-wine-500" />
+          </div>
+          <div>
+            <div className={`text-sm font-semibold ${textCls}`}>AI Insights</div>
+            <div className={`text-xs ${subCls}`}>Personalized recommendations for you</div>
+          </div>
         </div>
-        <div>
-          <div className={`text-sm font-semibold ${textCls}`}>AI Insights</div>
-          <div className={`text-xs ${subCls}`}>{visible.length} recomendaciones personalizadas</div>
-        </div>
+        <span className="text-xs font-bold px-2 py-1 rounded-full" style={{ background: '#ab1c4222', color: '#e04a6e' }}>
+          {visible.length} new
+        </span>
       </div>
 
       {visible.length === 0 && (
         <div className="text-center py-8">
           <CheckCircle size={32} color="#22c55e" className="mx-auto mb-2 opacity-60" />
-          <p className={`text-sm ${subCls}`}>Todo al día, Elena!</p>
+          <p className={`text-sm ${subCls}`}>All caught up, Elena!</p>
         </div>
       )}
 
       <div className="space-y-2.5">
         {visible.map(insight => {
           const isOpen = expanded === insight.id;
+          const { Icon } = insight;
           return (
             <div
               key={insight.id}
@@ -92,18 +95,20 @@ export function AIInsights({ theme }: { theme: Theme }) {
                 className="w-full text-left p-3 flex items-start gap-3"
                 onClick={() => setExpanded(isOpen ? null : insight.id)}
               >
-                <span className="text-lg leading-none mt-0.5 flex-shrink-0">{insight.icon}</span>
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                  style={{ background: `${insight.badgeColor}18` }}>
+                  <Icon size={14} style={{ color: insight.badgeColor }} />
+                </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                     <span
-                      className="text-xs font-bold px-1.5 py-0.5 rounded"
+                      className="text-[10px] font-bold px-1.5 py-0.5 rounded"
                       style={{ background: `${insight.badgeColor}22`, color: insight.badgeColor }}
                     >
                       {insight.badge}
                     </span>
-                    <span className="text-xs font-bold" style={{ color: '#22c55e' }}>{insight.pts} pts</span>
                   </div>
-                  <div className={`text-xs font-semibold ${textCls}`}>{insight.title}</div>
+                  <div className={`text-xs font-semibold leading-snug ${textCls}`}>{insight.title}</div>
                 </div>
                 <div className="flex items-center gap-1 flex-shrink-0">
                   <ChevronRight
@@ -127,7 +132,7 @@ export function AIInsights({ theme }: { theme: Theme }) {
                     {insight.deadline && (
                       <div className="flex items-center gap-1.5 text-xs" style={{ color: insight.badgeColor }}>
                         <Clock size={11} />
-                        <span className="font-medium">Antes del {insight.deadline}</span>
+                        <span className="font-medium">Before {insight.deadline}</span>
                       </div>
                     )}
                     <button
@@ -143,6 +148,12 @@ export function AIInsights({ theme }: { theme: Theme }) {
           );
         })}
       </div>
+
+      {visible.length > 0 && (
+        <button className={`mt-3 w-full text-center text-xs font-medium hover:text-wine-400 transition-colors ${subCls}`}>
+          View all recommendations →
+        </button>
+      )}
     </div>
   );
 }

@@ -1,50 +1,62 @@
 'use client';
 
 import { useState } from 'react';
-import { Sliders, TrendingUp, TrendingDown, Zap } from 'lucide-react';
+import { Sliders, TrendingUp, TrendingDown, Zap, CreditCard, Clock, PlusCircle, ShieldOff } from 'lucide-react';
 
 type Theme = 'dark' | 'light';
 
 const ACTIONS = [
   {
     id: 'payDebt',
-    label: 'Pagar deuda de tarjeta',
-    icon: '💳',
+    label: 'Pay Down Debt',
+    question: 'How much would you like to pay down?',
+    icon: CreditCard,
+    color: '#ab1c42',
     effect: (v: number) => Math.round((v / 100) * 1.9),
     unit: '$',
     min: 0, max: 5000, step: 50, defaultVal: 1000,
     positive: true,
     formatVal: (v: number) => `$${v.toLocaleString()}`,
-  },
-  {
-    id: 'delayPayment',
-    label: 'Atrasar un pago',
-    icon: '⏰',
-    effect: (v: number) => -Math.round(v * 1.6),
-    unit: 'días',
-    min: 0, max: 90, step: 5, defaultVal: 30,
-    positive: false,
-    formatVal: (v: number) => `${v} días`,
+    insight: (v: number, d: number) => `Paying down $${v.toLocaleString()} could increase your score by ${d} points.`,
   },
   {
     id: 'newCard',
-    label: 'Abrir nueva tarjeta',
-    icon: '🆕',
+    label: 'Add New Card',
+    question: 'How many new cards?',
+    icon: PlusCircle,
+    color: '#f59e0b',
     effect: (v: number) => -v * 11,
-    unit: 'tarjeta(s)',
+    unit: 'card(s)',
     min: 0, max: 3, step: 1, defaultVal: 1,
     positive: false,
-    formatVal: (v: number) => `${v} tarjeta${v !== 1 ? 's' : ''}`,
+    formatVal: (v: number) => `${v} card${v !== 1 ? 's' : ''}`,
+    insight: (v: number, d: number) => `Opening ${v} new card${v !== 1 ? 's' : ''} could lower your score by ${Math.abs(d)} points.`,
   },
   {
-    id: 'closeAccount',
-    label: 'Cerrar cuenta antigua',
-    icon: '🔒',
-    effect: (v: number) => -v * 17,
-    unit: 'cuenta(s)',
-    min: 0, max: 3, step: 1, defaultVal: 1,
-    positive: false,
-    formatVal: (v: number) => `${v} cuenta${v !== 1 ? 's' : ''}`,
+    id: 'removeInquiry',
+    label: 'Remove Inquiry',
+    question: 'Inquiries to dispute',
+    icon: ShieldOff,
+    color: '#22c55e',
+    effect: (v: number) => v * 8,
+    unit: 'inquiry(ies)',
+    min: 0, max: 5, step: 1, defaultVal: 1,
+    positive: true,
+    formatVal: (v: number) => `${v} inquir${v !== 1 ? 'ies' : 'y'}`,
+    insight: (v: number, d: number) => `Removing ${v} inquir${v !== 1 ? 'ies' : 'y'} could improve your score by ${d} points.`,
+  },
+  {
+    id: 'payOnTime',
+    label: 'Pay On Time',
+    question: 'Months of on-time payments',
+    icon: Clock,
+    color: '#3b82f6',
+    effect: (v: number) => Math.round(v * 2.4),
+    unit: 'months',
+    min: 0, max: 24, step: 1, defaultVal: 6,
+    positive: true,
+    formatVal: (v: number) => `${v} month${v !== 1 ? 's' : ''}`,
+    insight: (v: number, d: number) => `${v} months of on-time payments could add ${d} points to your score.`,
   },
 ];
 
@@ -64,9 +76,8 @@ export function WhatIfSimulator({ baseScore, onDeltaChange, theme }: {
   const handleActionChange = (id: string) => {
     const a = ACTIONS.find(x => x.id === id)!;
     setActiveId(id);
-    const defDelta = a.effect(a.defaultVal);
     setSliderVal(a.defaultVal);
-    onDeltaChange(defDelta);
+    onDeltaChange(a.effect(a.defaultVal));
   };
 
   const handleSlider = (v: number) => {
@@ -88,34 +99,39 @@ export function WhatIfSimulator({ baseScore, onDeltaChange, theme }: {
           <Sliders size={15} color="#e04a6e" />
         </div>
         <div>
-          <div className={`text-sm font-semibold ${textCls}`}>Simulador What-If</div>
-          <div className={`text-xs ${subCls}`}>Simula el impacto en tu score</div>
+          <div className={`text-sm font-semibold ${textCls}`}>What-If Simulator</div>
+          <div className={`text-xs ${subCls}`}>See how actions may impact your score</div>
         </div>
       </div>
 
-      {/* action grid */}
-      <div className="grid grid-cols-2 gap-2 mb-5">
-        {ACTIONS.map(a => (
-          <button
-            key={a.id}
-            onClick={() => handleActionChange(a.id)}
-            className="px-3 py-2.5 rounded-xl text-xs font-medium text-left border transition-all duration-200 hover:scale-[1.02]"
-            style={{
-              background: activeId === a.id ? 'rgba(171,28,66,0.15)' : bg,
-              borderColor: activeId === a.id ? '#ab1c42' : border,
-              color: activeId === a.id ? '#e04a6e' : (dark ? 'rgba(249,208,216,0.5)' : '#7a3045'),
-              boxShadow: activeId === a.id ? '0 0 12px rgba(171,28,66,0.2)' : 'none',
-            }}
-          >
-            <span className="mr-1">{a.icon}</span>{a.label}
-          </button>
-        ))}
+      {/* action tabs */}
+      <div className="flex gap-2 mb-5 flex-wrap">
+        {ACTIONS.map(a => {
+          const Icon = a.icon;
+          const isActive = activeId === a.id;
+          return (
+            <button
+              key={a.id}
+              onClick={() => handleActionChange(a.id)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium border transition-all duration-200 hover:scale-[1.02]"
+              style={{
+                background: isActive ? 'rgba(171,28,66,0.15)' : bg,
+                borderColor: isActive ? '#ab1c42' : border,
+                color: isActive ? '#e04a6e' : (dark ? 'rgba(249,208,216,0.5)' : '#7a3045'),
+                boxShadow: isActive ? '0 0 12px rgba(171,28,66,0.2)' : 'none',
+              }}
+            >
+              <Icon size={12} />
+              {a.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* slider */}
       <div className="mb-5">
         <div className="flex justify-between items-center mb-2">
-          <span className={`text-xs ${subCls}`}>{action.label}</span>
+          <span className={`text-xs ${subCls}`}>{action.question}</span>
           <span className="text-sm font-bold" style={{ color: '#e04a6e' }}>
             {action.formatVal(sliderVal)}
           </span>
@@ -137,21 +153,21 @@ export function WhatIfSimulator({ baseScore, onDeltaChange, theme }: {
           />
         </div>
         <div className="flex justify-between mt-1">
-          <span className={`text-xs ${subCls}`}>{action.min === 0 ? (action.unit === '$' ? '$0' : `0 ${action.unit}`) : action.min}</span>
-          <span className={`text-xs ${subCls}`}>{action.unit === '$' ? `$${action.max.toLocaleString()}` : `${action.max} ${action.unit}`}</span>
+          <span className={`text-xs ${subCls}`}>{action.unit === '$' ? '$0' : `0`}</span>
+          <span className={`text-xs ${subCls}`}>{action.unit === '$' ? `$${action.max.toLocaleString()}` : `${action.max}`}</span>
         </div>
       </div>
 
       {/* result */}
       <div
-        className="rounded-xl p-4 flex items-center justify-between border transition-all duration-300"
+        className="rounded-xl p-4 flex items-start justify-between gap-4 border transition-all duration-300"
         style={{
           background: delta > 0 ? 'rgba(34,197,94,0.08)' : delta < 0 ? 'rgba(239,68,68,0.08)' : bg,
           borderColor: delta > 0 ? 'rgba(34,197,94,0.4)' : delta < 0 ? 'rgba(239,68,68,0.4)' : border,
         }}
       >
         <div>
-          <div className={`text-xs ${subCls} mb-0.5`}>Score proyectado</div>
+          <div className={`text-xs font-semibold uppercase tracking-wide mb-1 ${subCls}`}>Projected Score</div>
           <div className="flex items-center gap-2">
             <span className={`text-3xl font-bold ${textCls}`}>{projected}</span>
             {delta !== 0 && (
@@ -162,20 +178,23 @@ export function WhatIfSimulator({ baseScore, onDeltaChange, theme }: {
             )}
           </div>
         </div>
-        <div className="text-right">
+        <div className="text-right max-w-36">
           {delta === 0 ? (
-            <div className={`text-xs ${subCls} max-w-28 leading-relaxed`}>
-              <Zap size={12} className="inline mb-0.5 mr-1" />Mueve el slider
+            <div className={`text-xs ${subCls} leading-relaxed`}>
+              <Zap size={12} className="inline mb-0.5 mr-1" />Move the slider
             </div>
           ) : (
-            <div
-              className="text-xs font-medium max-w-32 leading-relaxed"
-              style={{ color: delta > 0 ? '#22c55e' : '#ef4444' }}
-            >
-              {delta > 0
-                ? `Score sube a ${projected} con esta acción`
-                : `Score baja a ${projected} con esta acción`}
-            </div>
+            <>
+              <div className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: delta > 0 ? '#22c55e' : '#ef4444' }}>Insight</div>
+              <div className="text-xs leading-relaxed" style={{ color: delta > 0 ? '#22c55e' : '#ef4444' }}>
+                {action.insight(sliderVal, Math.abs(delta))}
+                {delta > 0 && (
+                  <button className="block mt-1.5 text-wine-400/70 hover:text-wine-300 transition-colors text-left">
+                    Show details →
+                  </button>
+                )}
+              </div>
+            </>
           )}
         </div>
       </div>
