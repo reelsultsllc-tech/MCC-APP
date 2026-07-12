@@ -8,9 +8,10 @@ import {
   ArrowUpRight, ArrowDownRight, RefreshCw, Eye, Lock,
   Menu, Sun, Moon, ChevronLeft, Activity,
   Gem, Sparkles, Users, BookOpen, Cpu, BellRing,
+  CreditCard, FolderOpen, Timer,
 } from 'lucide-react';
 import { CreditCard3D } from '@/components/demo/credit-card-3d';
-import { WhatIfSimulator } from '@/components/demo/what-if-simulator';
+import { ProgressCard } from '@/components/demo/progress-card';
 import { AIInsights } from '@/components/demo/ai-insights';
 import { ProgressMetricCard } from '@/components/ui/progress-metric-card';
 
@@ -28,11 +29,21 @@ const NAV_ITEMS = [
   { icon: BookOpen,         label: 'Education',       id: 'education' },
   { icon: Settings,         label: 'Settings',        id: 'settings' },
 ];
+// Mock — replace with API data contract: { disputes: [{ id, item, bureau, status, statusDate, documentUrl }] }
 const DISPUTES = [
-  { id: 1, title: 'Medical Collection Account', desc: 'Experian • Dispute resolved',  time: 'Resolved Jun 3',  status: 'success', pts: '+62' },
-  { id: 2, title: 'Late Payment',               desc: 'Equifax • In progress',         time: 'Updated 2d ago',  status: 'error',   pts: '-12' },
-  { id: 3, title: 'Account Information',        desc: 'TransUnion • Under review',     time: 'Updated 5d ago',  status: 'warning', pts: '+18' },
+  { id: 1, title: 'Medical Collection Account', desc: 'Experian • Dispute resolved', time: 'Resolved Jun 3',  status: 'success', documentUrl: '/docs/sample.pdf' },
+  { id: 2, title: 'Late Payment',               desc: 'Equifax • In progress',        time: 'Updated 2d ago', status: 'error',   documentUrl: '/docs/sample.pdf' },
+  { id: 3, title: 'Account Information',        desc: 'TransUnion • Under review',    time: 'Updated 5d ago', status: 'warning', documentUrl: null },
 ];
+
+// Mock — replace with API data contract: { activeDisputes, responseClockDays, responseClockActive, newDocuments30d, nextPayment: { amount, date } }
+const QA_DATA = {
+  activeDisputes:      3,
+  responseClockDays:   16,
+  responseClockActive: true,
+  newDocuments30d:     2,
+  nextPayment:         { amount: 149.00, date: '2026-08-01' },
+};
 const SCORE_HISTORY = [
   { month: 'Jan', score: 680 }, { month: 'Feb', score: 695 },
   { month: 'Mar', score: 701 }, { month: 'Apr', score: 718 },
@@ -501,9 +512,8 @@ export default function DashboardPage() {
   const [loaded, setLoaded]             = useState(false);
   const [showNotif, setShowNotif]       = useState(false);
   const [searchVal, setSearchVal]       = useState('');
-  const [whatIfDelta, setWhatIfDelta]   = useState(0);
 
-  const displayScore = Math.min(850, Math.max(300, BASE_SCORE + whatIfDelta));
+  const displayScore = BASE_SCORE;
   const t = T[theme];
 
   useEffect(() => { const tid = setTimeout(() => setLoaded(true), 100); return () => clearTimeout(tid); }, []);
@@ -613,10 +623,8 @@ export default function DashboardPage() {
                       <AnimatedCounter target={displayScore} />
                     </div>
                     <div className="flex items-center justify-center gap-1.5 mb-1">
-                      {whatIfDelta >= 0
-                        ? <><ArrowUpRight size={13} color="#22c55e" /><span className="text-sm font-semibold text-green-500">+62 pts since January</span></>
-                        : <><ArrowDownRight size={13} color="#ef4444" /><span className="text-sm font-semibold text-red-400">What-if simulation active</span></>
-                      }
+                      <ArrowUpRight size={13} color="#22c55e" />
+                      <span className="text-sm font-semibold text-green-500">+62 pts since January</span>
                     </div>
                     <CompactLevelProgress score={displayScore} theme={theme} loaded={loaded} />
                     <div className="flex items-center justify-center gap-2 mt-3">
@@ -645,29 +653,99 @@ export default function DashboardPage() {
                   <div className="p-5">
                     <div className="flex items-center justify-between mb-4">
                       <span className={`text-sm font-semibold ${t.text}`}>Quick Actions</span>
-                      <button className={`text-xs flex items-center gap-1 transition-colors hover:text-wine-500 ${t.sub}`}>View all <ChevronRight size={11} /></button>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
-                      {[
-                        { icon: Sparkles,   value: '3',    title: 'Active Disputes',  sub: '2 require your action', btn: 'View Disputes',  color: '#ab1c42' },
-                        { icon: TrendingUp, value: '+62 pts', title: 'This Month',    sub: 'Great progress!',        btn: 'See Progress',   color: '#22c55e' },
-                        { icon: Target,     value: '78%',  title: 'Goals Achieved',   sub: 'On track',               btn: 'View Goals',     color: '#f59e0b' },
-                        { icon: FileText,   value: '4',    title: 'New Alerts',       sub: 'Review activity',        btn: 'View Alerts',    color: '#3b82f6' },
-                      ].map((item, i) => (
-                        <div key={i} className="rounded-xl p-3 sm:p-4 border flex flex-col gap-2 cursor-pointer transition-all duration-200 hover:scale-[1.02]"
-                          style={{ background: t.rowBg, borderColor: t.rowBorder }}>
-                          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${item.color}22` }}>
-                            <item.icon size={16} color={item.color} />
+                      {/* Card 1 — Disputas activas */}
+                      {(() => {
+                        const active = QA_DATA.activeDisputes;
+                        return (
+                          <div className="rounded-xl p-3 sm:p-4 border flex flex-col gap-2 transition-all duration-200 hover:scale-[1.02]"
+                            style={{ background: t.rowBg, borderColor: t.rowBorder }}>
+                            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#ab1c4222' }}>
+                              <AlertCircle size={16} color="#ab1c42" />
+                            </div>
+                            <div className={`text-xl font-bold ${t.text}`}>{active}</div>
+                            <div className="min-h-0 flex-1">
+                              <div className={`text-xs font-semibold ${t.text}`}>Disputas activas</div>
+                              <div className={`text-xs mt-0.5 ${t.sub}`}>{active > 1 ? `${active} en proceso` : '1 en proceso'}</div>
+                            </div>
+                            <button className="mt-auto w-full py-1.5 rounded-lg text-xs font-semibold text-white hover:brightness-110 transition-all"
+                              style={{ background: 'linear-gradient(135deg,#ab1c42,#7a1838)' }}>
+                              Ver disputas
+                            </button>
                           </div>
-                          <div className={`text-xl font-bold ${t.text}`}>{item.value}</div>
-                          <div className="min-h-0">
-                            <div className={`text-xs font-semibold ${t.text}`}>{item.title}</div>
-                            <div className={`text-xs mt-0.5 ${t.sub}`}>{item.sub}</div>
+                        );
+                      })()}
+                      {/* Card 2 — Reloj de respuesta FCRA */}
+                      {(() => {
+                        const { responseClockDays: days, responseClockActive: clockOn } = QA_DATA;
+                        const urgent = clockOn && days <= 7;
+                        const color  = urgent ? '#ef4444' : clockOn ? '#f59e0b' : '#22c55e';
+                        return (
+                          <div className="rounded-xl p-3 sm:p-4 border flex flex-col gap-2 transition-all duration-200 hover:scale-[1.02]"
+                            style={{ background: t.rowBg, borderColor: t.rowBorder }}>
+                            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${color}22` }}>
+                              <Timer size={16} color={color} />
+                            </div>
+                            <div className={`text-xl font-bold ${t.text}`}>
+                              {clockOn ? `${days}d` : '—'}
+                            </div>
+                            <div className="min-h-0 flex-1">
+                              <div className={`text-xs font-semibold ${t.text}`}>Reloj FCRA</div>
+                              <div className={`text-xs mt-0.5 ${t.sub}`}>
+                                {clockOn ? 'Días para respuesta del buró' : 'Sin disputas activas'}
+                              </div>
+                            </div>
+                            <button className="mt-auto w-full py-1.5 rounded-lg text-xs font-semibold text-white hover:brightness-110 transition-all"
+                              style={{ background: 'linear-gradient(135deg,#ab1c42,#7a1838)' }}>
+                              Ver plan
+                            </button>
                           </div>
-                          <button className="mt-auto w-full py-1.5 rounded-lg text-xs font-semibold text-white hover:brightness-110 transition-all"
-                            style={{ background: 'linear-gradient(135deg,#ab1c42,#7a1838)' }}>{item.btn}</button>
-                        </div>
-                      ))}
+                        );
+                      })()}
+                      {/* Card 3 — Documentos nuevos */}
+                      {(() => {
+                        const docs = QA_DATA.newDocuments30d;
+                        return (
+                          <div className="rounded-xl p-3 sm:p-4 border flex flex-col gap-2 transition-all duration-200 hover:scale-[1.02]"
+                            style={{ background: t.rowBg, borderColor: t.rowBorder }}>
+                            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#3b82f622' }}>
+                              <FolderOpen size={16} color="#3b82f6" />
+                            </div>
+                            <div className={`text-xl font-bold ${t.text}`}>{docs}</div>
+                            <div className="min-h-0 flex-1">
+                              <div className={`text-xs font-semibold ${t.text}`}>Documentos nuevos</div>
+                              <div className={`text-xs mt-0.5 ${t.sub}`}>En los últimos 30 días</div>
+                            </div>
+                            <button className="mt-auto w-full py-1.5 rounded-lg text-xs font-semibold text-white hover:brightness-110 transition-all"
+                              style={{ background: 'linear-gradient(135deg,#ab1c42,#7a1838)' }}>
+                              Ver documentos
+                            </button>
+                          </div>
+                        );
+                      })()}
+                      {/* Card 4 — Próximo pago */}
+                      {(() => {
+                        const { amount, date } = QA_DATA.nextPayment;
+                        const payDate = new Date(date).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
+                        return (
+                          <div className="rounded-xl p-3 sm:p-4 border flex flex-col gap-2 transition-all duration-200 hover:scale-[1.02]"
+                            style={{ background: t.rowBg, borderColor: t.rowBorder }}>
+                            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#22c55e22' }}>
+                              <CreditCard size={16} color="#22c55e" />
+                            </div>
+                            <div className={`text-xl font-bold ${t.text}`}>${amount.toFixed(0)}</div>
+                            <div className="min-h-0 flex-1">
+                              <div className={`text-xs font-semibold ${t.text}`}>Próximo pago</div>
+                              <div className={`text-xs mt-0.5 ${t.sub}`}>{payDate}</div>
+                            </div>
+                            <button className="mt-auto w-full py-1.5 rounded-lg text-xs font-semibold text-white hover:brightness-110 transition-all"
+                              style={{ background: 'linear-gradient(135deg,#ab1c42,#7a1838)' }}>
+                              Ver facturación
+                            </button>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                 </GlowCard>
@@ -712,9 +790,9 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* What-If Simulator */}
+              {/* Tu progreso */}
               <GlowCard theme={theme} className="col-span-12 lg:col-span-6" delay={550} loaded={loaded}>
-                <WhatIfSimulator baseScore={BASE_SCORE} onDeltaChange={setWhatIfDelta} theme={theme} />
+                <ProgressCard theme={theme} />
               </GlowCard>
 
               {/* AI Insights */}
@@ -730,9 +808,9 @@ export default function DashboardPage() {
                     <button className={`text-xs flex items-center gap-1 transition-colors hover:text-wine-500 ${t.sub}`}>View all <ChevronRight size={11} /></button>
                   </div>
                   <div className="space-y-2.5">
-                    {DISPUTES.map((d, i) => {
+                    {DISPUTES.map((d) => {
                       const Icon = d.status === 'success' ? CheckCircle : d.status === 'error' ? AlertCircle : Clock;
-                      const c = d.status === 'success' ? '#22c55e' : d.status === 'error' ? '#ef4444' : '#f59e0b';
+                      const c    = d.status === 'success' ? '#22c55e'   : d.status === 'error' ? '#ef4444'   : '#f59e0b';
                       return (
                         <div key={d.id} className="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all duration-200 hover:scale-[1.01]"
                           style={{ background: t.rowBg, borderColor: t.rowBorder }}>
@@ -743,9 +821,17 @@ export default function DashboardPage() {
                             <div className={`text-xs font-semibold truncate ${t.text}`}>{d.title}</div>
                             <div className={`text-xs mt-0.5 ${t.sub}`}>{d.desc}</div>
                           </div>
-                          <div className="text-right flex-shrink-0">
-                            <div className="text-xs font-bold" style={{ color: c }}>{d.pts} pts</div>
-                            <div className={`text-xs mt-0.5 ${t.sub}`}>{d.time}</div>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            {d.documentUrl && (
+                              <a href={d.documentUrl} target="_blank" rel="noopener noreferrer"
+                                onClick={e => e.stopPropagation()}
+                                className="w-6 h-6 rounded flex items-center justify-center transition-all hover:scale-110"
+                                style={{ background: theme === 'dark' ? 'rgba(224,74,110,0.12)' : 'rgba(224,74,110,0.08)' }}
+                                title="Ver documento">
+                                <FileText size={11} color="#e04a6e" />
+                              </a>
+                            )}
+                            <div className={`text-xs text-right ${t.sub}`}>{d.time}</div>
                           </div>
                         </div>
                       );
