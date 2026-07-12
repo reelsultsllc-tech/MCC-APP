@@ -626,10 +626,13 @@ export default function DashboardPage() {
                 <div className="p-4 sm:p-5 flex flex-col">
                   <div className="text-center">
                     <div className={`text-xs uppercase tracking-widest mb-1 ${t.sub}`}>Estado de tu cuenta</div>
-                    <div className="flex justify-center" style={{ transform: 'scale(0.82)', transformOrigin: 'top center', marginBottom: '-54px' }}>
-                      <CreditGauge pct={tier.pct} theme={theme} />
+                    {/* overflow-hidden clips the SVG's empty bottom (below cy=105) */}
+                    <div className="flex justify-center overflow-hidden" style={{ height: '88px' }}>
+                      <div style={{ transform: 'scale(0.82)', transformOrigin: 'top center', flexShrink: 0 }}>
+                        <CreditGauge pct={tier.pct} theme={theme} />
+                      </div>
                     </div>
-                    <div className="text-3xl font-bold mt-0 mb-2" style={{ color: tier.color }}>
+                    <div className="text-3xl font-bold mt-1 mb-2" style={{ color: tier.color }}>
                       {tier.label}
                     </div>
                   </div>
