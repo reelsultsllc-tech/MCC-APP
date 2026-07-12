@@ -622,7 +622,7 @@ export default function DashboardPage() {
             <div className="grid grid-cols-12 gap-4 xl:gap-5 2xl:gap-6 max-w-screen-2xl mx-auto">
 
               {/* Estado de tu cuenta */}
-              <GlowCard theme={theme} className="col-span-12 lg:col-span-5" delay={200} loaded={loaded}>
+              <GlowCard theme={theme} className="col-span-12 lg:col-span-5 lg:self-start" delay={200} loaded={loaded}>
                 <div className="p-4 sm:p-5 flex flex-col">
                   <div className="text-center">
                     <div className={`text-xs uppercase tracking-widest mb-1 ${t.sub}`}>Estado de tu cuenta</div>
