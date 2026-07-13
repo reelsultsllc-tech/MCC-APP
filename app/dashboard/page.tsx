@@ -460,7 +460,7 @@ export default function DashboardPage() {
         </header>
 
         {/* main content */}
-        <main className="flex-1 overflow-auto p-4 sm:p-5 xl:p-7 2xl:p-9">
+        <main className="flex-1 overflow-auto p-4 sm:p-5 xl:p-6">
           {themeLoading ? (
             <div className="grid grid-cols-12 gap-4 max-w-screen-2xl mx-auto">
               {[5, 7, 7, 5, 6, 6, 12].map((span, i) => (
@@ -471,10 +471,10 @@ export default function DashboardPage() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col lg:flex-row gap-4 xl:gap-5 2xl:gap-6 max-w-screen-2xl mx-auto">
+            <div className="flex flex-col lg:flex-row gap-4 xl:gap-5 max-w-[1440px] mx-auto w-full">
 
               {/* ── Left column ─────────────────────────────────────────── */}
-              <div className="flex flex-col gap-4 xl:gap-5 2xl:gap-6 w-full lg:w-[42%] flex-shrink-0">
+              <div className="flex flex-col gap-4 xl:gap-5 w-full lg:w-[38%] flex-shrink-0">
 
               {/* Estado de tu cuenta */}
               <GlowCard theme={theme} className="" delay={200} loaded={loaded}>
@@ -589,7 +589,7 @@ export default function DashboardPage() {
               </div>{/* end left column */}
 
               {/* ── Right column ────────────────────────────────────────── */}
-              <div className="flex flex-col gap-4 xl:gap-5 2xl:gap-6 flex-1 min-w-0">
+              <div className="flex flex-col gap-4 xl:gap-5 flex-1 min-w-0">
 
               {/* Acciones rápidas */}
               <GlowCard theme={theme} className="" delay={300} loaded={loaded}>
@@ -597,7 +597,7 @@ export default function DashboardPage() {
                     <div className="flex items-center justify-between mb-4">
                       <span className={`text-sm font-semibold ${t.text}`}>Acciones rápidas</span>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+                    <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
                       {/* Card 1 — Detalle de disputas (link-out to CDM portal) */}
                       <div className="rounded-xl p-3 sm:p-4 border flex flex-col gap-2 transition-all duration-200 hover:scale-[1.02]"
                         style={{ background: t.rowBg, borderColor: t.rowBorder }}>
