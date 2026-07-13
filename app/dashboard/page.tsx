@@ -5,13 +5,13 @@ import {
   LayoutDashboard, FileText, BarChart3, Settings, Bell, Search, ChevronRight,
   TrendingUp, AlertCircle, CheckCircle,
   Clock, Zap, Target, ChevronDown, X,
-  ArrowUpRight, ArrowDownRight, RefreshCw, Eye, Lock,
+  Lock, RefreshCw, Eye,
   Menu, Sun, Moon, ChevronLeft, Activity,
-  Gem, Sparkles, Users, BookOpen, Cpu, BellRing,
+  Gem, Sparkles, Users, BookOpen, Route, BellRing,
   CreditCard, FolderOpen, Timer, ExternalLink,
 } from 'lucide-react';
 import { CreditCard3D } from '@/components/demo/credit-card-3d';
-import { ProgressCard } from '@/components/demo/progress-card';
+import { StrategyTimeline } from '@/components/demo/strategy-timeline';
 import { AIInsights } from '@/components/demo/ai-insights';
 
 type Theme = 'dark' | 'light';
@@ -32,18 +32,19 @@ const NAV_ITEMS = [
   { icon: LayoutDashboard, label: 'Dashboard',       id: 'overview' },
   { icon: BarChart3,        label: 'Credit Report',   id: 'reports' },
   { icon: FileText,         label: 'Disputes',        id: 'disputes', badge: 3 },
-  { icon: Cpu,              label: 'Simulator',       id: 'simulator' },
+  { icon: Route,            label: 'Mi Plan',         id: 'mi-plan' },
   { icon: TrendingUp,       label: 'Recommendations', id: 'recommendations' },
   { icon: BellRing,         label: 'Alerts',          id: 'alerts' },
   { icon: Users,            label: 'Accounts',        id: 'accounts' },
   { icon: BookOpen,         label: 'Education',       id: 'education' },
   { icon: Settings,         label: 'Settings',        id: 'settings' },
 ];
-// Mock — replace with API data contract: { disputes: [{ id, item, bureau, status, statusDate, documentUrl }] }
-const DISPUTES = [
-  { id: 1, title: 'Medical Collection Account', desc: 'Experian • Dispute resolved', time: 'Resolved Jun 3',  status: 'success', documentUrl: '/docs/sample.pdf' },
-  { id: 2, title: 'Late Payment',               desc: 'Equifax • In progress',        time: 'Updated 2d ago', status: 'error',   documentUrl: '/docs/sample.pdf' },
-  { id: 3, title: 'Account Information',        desc: 'TransUnion • Under review',    time: 'Updated 5d ago', status: 'warning', documentUrl: null },
+// Mock — replace with Google Drive API data contract:
+// { documents: [{ id, uploadDate, url }] }
+// 'name' comes from Drive file.name metadata in production; url must be a signed temporary link (PII)
+const DOCUMENTS = [
+  { id: 'doc_001', name: 'Carta enviada', uploadDate: '2026-06-03', url: '/docs/sample.pdf' },
+  { id: 'doc_002', name: 'Carta enviada', uploadDate: '2026-07-01', url: '/docs/sample.pdf' },
 ];
 
 // Mock — replace with API data contract: { cdmPortalUrl, responseClockDays, responseClockActive, newDocuments30d, nextPayment: { amount, date } }
@@ -604,9 +605,9 @@ export default function DashboardPage() {
                   </div>
               </GlowCard>
 
-              {/* Tu progreso */}
+              {/* Strategy Plan */}
               <GlowCard theme={theme} className="col-span-12 lg:col-span-6" delay={550} loaded={loaded}>
-                <ProgressCard theme={theme} />
+                <StrategyTimeline theme={theme} />
               </GlowCard>
 
               {/* AI Insights */}
@@ -614,76 +615,72 @@ export default function DashboardPage() {
                 <AIInsights theme={theme} />
               </GlowCard>
 
-              {/* Recent Disputes */}
+              {/* Documentos */}
               <GlowCard theme={theme} className="col-span-12 lg:col-span-7" delay={650} loaded={loaded}>
                 <div className="p-5">
                   <div className="flex items-center justify-between mb-4">
-                    <span className={`text-sm font-semibold ${t.text}`}>Recent Disputes</span>
-                    <button className={`text-xs flex items-center gap-1 transition-colors hover:text-wine-500 ${t.sub}`}>View all <ChevronRight size={11} /></button>
+                    <span className={`text-sm font-semibold ${t.text}`}>Documentos</span>
                   </div>
-                  <div className="space-y-2.5">
-                    {DISPUTES.map((d) => {
-                      const Icon = d.status === 'success' ? CheckCircle : d.status === 'error' ? AlertCircle : Clock;
-                      const c    = d.status === 'success' ? '#22c55e'   : d.status === 'error' ? '#ef4444'   : '#f59e0b';
-                      return (
-                        <div key={d.id} className="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all duration-200 hover:scale-[1.01]"
-                          style={{ background: t.rowBg, borderColor: t.rowBorder }}>
-                          <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: `${c}22` }}>
-                            <Icon size={13} color={c} />
+                  {DOCUMENTS.length === 0 ? (
+                    <div className="text-center py-8">
+                      <FileText size={28} color="#ab1c42" className="mx-auto mb-2 opacity-30" />
+                      <p className={`text-xs ${t.sub}`}>No hay documentos disponibles aún.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2.5">
+                      {DOCUMENTS.map((doc) => {
+                        const uploadDate = new Date(doc.uploadDate).toLocaleDateString('es-MX', {
+                          day: 'numeric', month: 'short', year: 'numeric',
+                        });
+                        return (
+                          <div key={doc.id} className="flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 hover:scale-[1.01]"
+                            style={{ background: t.rowBg, borderColor: t.rowBorder }}>
+                            <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
+                              style={{ background: 'rgba(224,74,110,0.12)' }}>
+                              <FileText size={13} color="#e04a6e" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className={`text-xs font-semibold ${t.text}`}>{doc.name}</div>
+                              <div className={`text-xs mt-0.5 ${t.sub}`}>{uploadDate}</div>
+                            </div>
+                            <a href={doc.url} target="_blank" rel="noopener noreferrer"
+                              className="flex-shrink-0 flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-all hover:brightness-110"
+                              style={{ background: 'rgba(224,74,110,0.12)', color: '#e04a6e' }}>
+                              Ver <ExternalLink size={10} />
+                            </a>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <div className={`text-xs font-semibold truncate ${t.text}`}>{d.title}</div>
-                            <div className={`text-xs mt-0.5 ${t.sub}`}>{d.desc}</div>
-                          </div>
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            {d.documentUrl && (
-                              <a href={d.documentUrl} target="_blank" rel="noopener noreferrer"
-                                onClick={e => e.stopPropagation()}
-                                className="w-6 h-6 rounded flex items-center justify-center transition-all hover:scale-110"
-                                style={{ background: theme === 'dark' ? 'rgba(224,74,110,0.12)' : 'rgba(224,74,110,0.08)' }}
-                                title="Ver documento">
-                                <FileText size={11} color="#e04a6e" />
-                              </a>
-                            )}
-                            <div className={`text-xs text-right ${t.sub}`}>{d.time}</div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <button className={`mt-4 w-full py-2.5 rounded-xl border text-xs font-semibold transition-all hover:border-wine-600/50 flex items-center justify-center gap-2 ${t.sub}`}
-                    style={{ background: t.rowBg, borderColor: t.rowBorder }}>+ Start a New Dispute</button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </GlowCard>
 
               {/* Account Summary */}
               <GlowCard theme={theme} className="col-span-12 lg:col-span-5" delay={700} loaded={loaded}>
-                <div className="p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className={`text-sm font-semibold ${t.text}`}>Account Summary</span>
-                    <button className={`text-xs flex items-center gap-1 transition-colors hover:text-wine-500 ${t.sub}`}>View all accounts <ChevronRight size={11} /></button>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2.5">
-                    {[
-                      { label: 'Total Credit Limit', value: '$48,200', delta: '+$2,500',  up: true,  badge: null },
-                      { label: 'Current Balance',    value: '$11,568', delta: '-$820',    up: false, badge: null },
-                      { label: 'Available Credit',   value: '$36,632', delta: '+$3,320',  up: true,  badge: null },
-                      { label: 'Utilization Rate',   value: '24.0%',   delta: '-1.7%',    up: true,  badge: null },
-                      { label: 'On-Time Payments',   value: '100%',    delta: 'Excellent', up: true,  badge: 'Excellent' },
-                      { label: 'Accounts',           value: '7',       delta: 'Active',    up: true,  badge: 'Active' },
-                    ].map((item, i) => (
-                      <div key={i} className="p-3 rounded-xl border transition-all"
-                        style={{ background: t.rowBg, borderColor: t.rowBorder }}>
-                        <div className={`text-xs mb-1 ${t.sub}`}>{item.label}</div>
-                        <div className={`text-base font-bold ${t.text}`}>{item.value}</div>
-                        <div className={`flex items-center gap-0.5 text-xs font-semibold mt-0.5 ${item.badge ? 'text-green-500' : item.up ? 'text-green-500' : 'text-red-400'}`}>
-                          {!item.badge && (item.up ? <ArrowUpRight size={10} /> : <ArrowDownRight size={10} />)}
-                          {item.delta}
-                        </div>
+                <div className="p-5 flex flex-col gap-4">
+                  {/* Link-out to monitoring portal */}
+                  <div className="rounded-xl p-4 border flex flex-col items-center text-center gap-3"
+                    style={{ background: t.rowBg, borderColor: t.rowBorder }}>
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                      style={{ background: 'rgba(224,74,110,0.1)' }}>
+                      <BarChart3 size={20} color="#e04a6e" />
+                    </div>
+                    <div>
+                      <div className={`text-sm font-semibold mb-1 ${t.text}`}>Resumen de cuenta</div>
+                      <div className={`text-xs leading-relaxed ${t.sub}`}>
+                        Tu resumen de cuenta está disponible en tu portal de monitoreo
                       </div>
-                    ))}
+                    </div>
+                    <a href="https://portal.myfreescorenow.com" target="_blank" rel="noopener noreferrer"
+                      className="w-full py-2 rounded-lg text-xs font-semibold text-white hover:brightness-110 transition-all text-center block"
+                      style={{ background: 'linear-gradient(135deg,#ab1c42,#7a1838)' }}>
+                      Ver balances y cuentas →
+                    </a>
                   </div>
-                  <div className="mt-3 p-3 rounded-xl flex items-center gap-3 border"
+
+                  {/* Identity Protection — real source: MyFreeScoreNow */}
+                  <div className="p-3 rounded-xl flex items-center gap-3 border"
                     style={{ background: theme === 'dark' ? 'linear-gradient(135deg,#2a1218,#1e0e12)' : '#fff5f6', borderColor: t.cardBorder }}>
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#ab1c4222' }}>
                       <Lock size={13} color="#ab1c42" />
