@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import {
   LayoutDashboard, FileText, BarChart3, Settings, Bell, Search, ChevronRight,
-  TrendingUp, TrendingDown, AlertCircle, CheckCircle,
+  TrendingUp, AlertCircle, CheckCircle,
   Clock, Zap, Target, ChevronDown, X,
   ArrowUpRight, ArrowDownRight, RefreshCw, Eye, Lock,
   Menu, Sun, Moon, ChevronLeft, Activity,
@@ -13,7 +13,6 @@ import {
 import { CreditCard3D } from '@/components/demo/credit-card-3d';
 import { ProgressCard } from '@/components/demo/progress-card';
 import { AIInsights } from '@/components/demo/ai-insights';
-import { ProgressMetricCard } from '@/components/ui/progress-metric-card';
 
 type Theme = 'dark' | 'light';
 
@@ -55,29 +54,6 @@ const QA_DATA = {
   newDocuments30d:     2,
   nextPayment:         { amount: 149.00, date: '2026-08-01' },
 };
-const SCORE_HISTORY = [
-  { month: 'Jan', score: 680 }, { month: 'Feb', score: 695 },
-  { month: 'Mar', score: 701 }, { month: 'Apr', score: 718 },
-  { month: 'May', score: 725 }, { month: 'Jun', score: 742 },
-];
-const SCORE_SERIES = [{
-  name: 'Score',
-  accent: 'rose' as const,
-  data: [
-    { value: 652, date: '01 Oct, 2025' }, { value: 661, date: '01 Nov, 2025' },
-    { value: 668, date: '01 Dic, 2025' }, { value: 680, date: '01 Ene, 2026' },
-    { value: 695, date: '01 Feb, 2026' }, { value: 701, date: '01 Mar, 2026' },
-    { value: 718, date: '01 Abr, 2026' }, { value: 725, date: '01 May, 2026' },
-    { value: 742, date: '01 Jun, 2026' },
-  ],
-}];
-const FACTORS = [
-  { label: 'Payment History',    value: 98, color: '#22c55e', trend: 'up' },
-  { label: 'Credit Utilization', value: 24, color: '#ef4444', trend: 'down' },
-  { label: 'Account Age',        value: 72, color: '#f59e0b', trend: 'up' },
-  { label: 'Credit Mix',         value: 85, color: '#3b82f6', trend: 'up' },
-  { label: 'New Inquiries',      value: 60, color: '#a855f7', trend: 'neutral' },
-];
 
 const T = {
   dark: {
@@ -227,34 +203,6 @@ function CreditGauge({ pct, theme }: { pct: number; theme: Theme }) {
   );
 }
 
-// ── FactorBar ─────────────────────────────────────────────────────────────────
-function FactorBar({ label, value, color, trend, delay, theme }: {
-  label: string; value: number; color: string; trend: string; delay: number; theme: Theme;
-}) {
-  const [w, setW] = useState(0);
-  useEffect(() => { const t = setTimeout(() => setW(value), 300 + delay); return () => clearTimeout(t); }, [value, delay]);
-  const t = T[theme];
-  return (
-    <div className="mb-3">
-      <div className="flex justify-between items-center mb-1.5">
-        <span className={`text-xs ${t.sub}`}>{label}</span>
-        <div className="flex items-center gap-1.5">
-          <span className={`text-xs font-bold ${t.text}`}>{value}%</span>
-          {trend === 'up'   && <TrendingUp   size={10} color="#22c55e" />}
-          {trend === 'down' && <TrendingDown  size={10} color="#ef4444" />}
-        </div>
-      </div>
-      <div className="h-2 rounded-full overflow-hidden" style={{ background: t.trackBg }}>
-        <div className="h-full rounded-full relative overflow-hidden"
-          style={{ width: `${w}%`, background: color, transition: 'width 1.1s cubic-bezier(0.34,1.2,0.64,1)', boxShadow: `0 0 8px ${color}88` }}>
-          <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.38),transparent)', backgroundSize: '200% 100%', animation: `shimmer 2.3s infinite ${delay}ms` }} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ── CompactLevelProgress ─────────────────────────────────────────────────────
 const TIERS_COMPACT = [
   { label: 'Poor',      min: 300, max: 579,  color: '#dc2626' },
@@ -287,96 +235,6 @@ function CompactLevelProgress({ score, theme, loaded }: { score: number; theme: 
           <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.38),transparent)', backgroundSize: '200% 100%', animation: 'shimmer 2.3s infinite' }} />
         </div>
       </div>
-    </div>
-  );
-}
-
-// ── MiniChart ─────────────────────────────────────────────────────────────────
-function MiniChart({ theme }: { theme: Theme }) {
-  const [hovered, setHovered] = useState<number | null>(null);
-  const [anim, setAnim]       = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  useEffect(() => { const t = setTimeout(() => setAnim(true), 600); return () => clearTimeout(t); }, []);
-
-  const W = 200; const H = 55;
-  const max = Math.max(...SCORE_HISTORY.map(d => d.score));
-  const min = Math.min(...SCORE_HISTORY.map(d => d.score)) - 15;
-  const pts = SCORE_HISTORY.map((d, i) => ({
-    x: (i / (SCORE_HISTORY.length - 1)) * W,
-    y: H - ((d.score - min) / (max - min)) * H * 0.85 - 4,
-    ...d,
-  }));
-  const line = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-  const area = `${line} L ${W} ${H} L 0 ${H} Z`;
-
-  const dark = theme === 'dark';
-  const hpt  = hovered !== null ? pts[hovered] : null;
-
-  return (
-    <div ref={containerRef} className="relative">
-      <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none"
-        className="overflow-visible" style={{ height: '58px' }}
-        onMouseLeave={() => setHovered(null)}
-      >
-        <defs>
-          <linearGradient id="aG" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stopColor="#e04a6e" stopOpacity={dark ? '0.6' : '0.35'} />
-            <stop offset="70%"  stopColor="#ab1c42" stopOpacity={dark ? '0.2' : '0.08'} />
-            <stop offset="100%" stopColor="#ab1c42" stopOpacity="0" />
-          </linearGradient>
-          <linearGradient id="lineG" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%"   stopColor="#ab1c42" />
-            <stop offset="100%" stopColor="#e04a6e" />
-          </linearGradient>
-          <filter id="lGlow">
-            <feGaussianBlur stdDeviation="2.5" result="b" />
-            <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
-          </filter>
-        </defs>
-        {anim && <path d={area} fill="url(#aG)" />}
-        <path d={line} fill="none" stroke="url(#lineG)" strokeWidth="2.5"
-          strokeLinecap="round" strokeLinejoin="round" style={{ filter: 'url(#lGlow)' }} />
-        {hovered !== null && hpt && (
-          <line x1={hpt.x} y1={0} x2={hpt.x} y2={H}
-            stroke={dark ? 'rgba(249,208,216,0.2)' : 'rgba(122,24,56,0.15)'}
-            strokeWidth="1" strokeDasharray="3 3" />
-        )}
-        {pts.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y}
-            r={hovered === i ? 5 : (i === pts.length - 1 ? 4 : 3)}
-            fill={i === pts.length - 1 || hovered === i ? '#e04a6e' : '#ab1c42'}
-            style={{ filter: (i === pts.length - 1 || hovered === i) ? 'url(#lGlow)' : undefined, cursor: 'pointer', transition: 'r 0.15s ease' }}
-            onMouseEnter={() => setHovered(i)}
-          />
-        ))}
-      </svg>
-
-      {hovered !== null && hpt && containerRef.current && (() => {
-        const rect = containerRef.current!.getBoundingClientRect();
-        const svgW = rect.width;
-        const xPx = (hpt.x / W) * svgW;
-        const yPx = (hpt.y / H) * 58;
-        const flip = xPx > svgW * 0.65;
-        return (
-          <div
-            className="absolute pointer-events-none z-20 px-2.5 py-1.5 rounded-lg border text-xs font-semibold shadow-lg"
-            style={{
-              left: flip ? xPx - 70 : xPx + 10,
-              top:  Math.max(0, yPx - 28),
-              background: dark ? '#2a1218' : '#fff',
-              borderColor: dark ? 'rgba(171,28,66,0.5)' : '#f0d8dd',
-              color: dark ? '#fff' : '#1a0a0e',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            <span style={{ color: '#e04a6e' }}>{hpt.month}</span>
-            &nbsp;·&nbsp;{hpt.score}
-            <span style={{ color: '#22c55e', marginLeft: 4 }}>
-              {hovered > 0 ? `+${hpt.score - pts[hovered - 1].score}` : ''}
-            </span>
-          </div>
-        );
-      })()}
     </div>
   );
 }
@@ -646,10 +504,8 @@ export default function DashboardPage() {
                 </div>
               </GlowCard>
 
-              {/* Right column */}
-              <div className="col-span-12 lg:col-span-7 flex flex-col gap-4 xl:gap-5">
-                {/* Quick Action Center */}
-                <GlowCard theme={theme} delay={300} loaded={loaded}>
+              {/* Quick Actions */}
+              <GlowCard theme={theme} className="col-span-12 lg:col-span-7" delay={300} loaded={loaded}>
                   <div className="p-5">
                     <div className="flex items-center justify-between mb-4">
                       <span className={`text-sm font-semibold ${t.text}`}>Quick Actions</span>
@@ -746,47 +602,7 @@ export default function DashboardPage() {
                       })()}
                     </div>
                   </div>
-                </GlowCard>
-
-                {/* Score Trend + Factors */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 xl:gap-5">
-                  <GlowCard theme={theme} delay={400} loaded={loaded}>
-                    <div
-                      style={{
-                        '--card':             theme === 'dark' ? '#1e0e12' : '#fff',
-                        '--border':           theme === 'dark' ? 'rgba(74,8,32,0.45)' : '#f0d8dd',
-                        '--foreground':       theme === 'dark' ? '#fff' : '#241014',
-                        '--muted-foreground': theme === 'dark' ? 'rgba(249,208,216,0.5)' : '#9a7080',
-                        '--muted':            theme === 'dark' ? 'rgba(74,8,32,0.25)' : 'rgba(122,30,44,0.08)',
-                        height: '100%',
-                      } as React.CSSProperties}
-                    >
-                      <ProgressMetricCard
-                        title="Score Trend"
-                        subtitle="Historial de crédito"
-                        series={SCORE_SERIES}
-                        accent="rose"
-                        periods={[
-                          { label: '3M', points: 3 },
-                          { label: '6M', points: 6 },
-                          { label: '9M', points: 9 },
-                        ]}
-                        valueFormatter={(v) => String(Math.round(v))}
-                        dateFormatter={(d) => d}
-                      />
-                    </div>
-                  </GlowCard>
-                  <GlowCard theme={theme} delay={500} loaded={loaded}>
-                    <div className="p-5">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className={`text-sm font-semibold ${t.text}`}>Score Factors</span>
-                        <button className={`text-xs hover:text-wine-400 transition-colors ${t.sub}`}>Learn more</button>
-                      </div>
-                      {FACTORS.map((f, i) => <FactorBar key={f.label} {...f} delay={i * 120} theme={theme} />)}
-                    </div>
-                  </GlowCard>
-                </div>
-              </div>
+              </GlowCard>
 
               {/* Tu progreso */}
               <GlowCard theme={theme} className="col-span-12 lg:col-span-6" delay={550} loaded={loaded}>
