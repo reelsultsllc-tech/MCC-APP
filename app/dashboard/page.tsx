@@ -316,17 +316,6 @@ function Sidebar({ active, setActive, collapsed, setCollapsed, mobileOpen, setMo
       <nav className="flex-1 px-2 pt-4 space-y-0.5 overflow-y-auto">
         {NAV_ITEMS.map(item => <NavBtn key={item.id} item={item} showLabel={showLabel} />)}
       </nav>
-      {showLabel && (
-        <div className="mx-2 mb-3 rounded-xl p-3.5 border border-wine-900/50" style={{ background: 'linear-gradient(135deg,#38171f,#1e0e12)' }}>
-          <div className="flex items-center gap-2 mb-1">
-            <Gem size={14} style={{ color: '#f59e0b' }} />
-            <div className="text-sm font-bold text-white">Unlock Premium</div>
-          </div>
-          <div className="text-xs text-wine-300/55 mb-2.5 leading-relaxed">Get advanced tools, more insights and 3-bureau monitoring.</div>
-          <button className="w-full py-1.5 rounded-lg text-xs font-semibold text-white hover:brightness-110 transition-all"
-            style={{ background: 'linear-gradient(135deg,#ab1c42,#7a1838)' }}>Upgrade Now</button>
-        </div>
-      )}
       {!showLabel && (
         <div className="px-2 pb-2">
           <button onClick={() => setCollapsed(false)} className="w-full flex items-center justify-center py-2 rounded-lg text-wine-400/50 hover:text-white transition-colors"
@@ -340,7 +329,7 @@ function Sidebar({ active, setActive, collapsed, setCollapsed, mobileOpen, setMo
           <>
             <div className="flex-1 min-w-0">
               <div className="text-xs font-semibold text-white truncate">Elena Manchehi</div>
-              <div className="text-xs text-wine-400/45">Premium Member</div>
+              <div className="text-xs text-wine-400/45">Miembro Premium</div>
             </div>
             <ChevronDown size={13} className="text-wine-400/35 flex-shrink-0" />
           </>
@@ -408,14 +397,14 @@ export default function DashboardPage() {
         >
           <button className="lg:hidden text-wine-300/70 hover:text-white transition-colors" onClick={() => setMobileOpen(true)}><Menu size={20} /></button>
           <div className="flex-1 min-w-0">
-            <div className="text-base sm:text-lg font-bold text-white leading-tight truncate">Good afternoon, Elena.</div>
-            <p className="text-xs text-wine-300/50 hidden sm:block">Your credit health is strong. Let's keep building.</p>
+            <div className="text-base sm:text-lg font-bold text-white leading-tight truncate">Buenas tardes, Elena.</div>
+            <p className="text-xs text-wine-300/50 hidden sm:block">Tu crédito está en buena forma. Sigamos avanzando.</p>
           </div>
           <div className="relative hidden md:flex items-center">
             <Search size={13} className="absolute left-3 text-wine-400/40" />
             <input
               value={searchVal} onChange={e => setSearchVal(e.target.value)}
-              placeholder="Search disputes, reports, accounts..."
+              placeholder="Buscar disputas, reportes, cuentas..."
               className="text-xs pl-8 pr-3 py-2 rounded-lg outline-none w-44 xl:w-52 text-wine-200/60 placeholder-wine-400/30 border transition-all"
               style={{ background: 'rgba(74,8,32,0.3)', borderColor: 'rgba(74,8,32,0.5)' }}
             />
@@ -443,13 +432,13 @@ export default function DashboardPage() {
                 style={{ background: theme === 'dark' ? '#150a0d' : '#fff', borderColor: t.cardBorder }}
               >
                 <div className="flex items-center justify-between mb-3">
-                  <span className={`text-sm font-semibold ${t.text}`}>Notifications</span>
+                  <span className={`text-sm font-semibold ${t.text}`}>Notificaciones</span>
                   <button onClick={() => setShowNotif(false)}><X size={13} className="text-wine-400/50" /></button>
                 </div>
                 {[
-                  { text: 'Dispute #3812 resolved', time: '2h ago',  icon: CheckCircle, c: '#22c55e' },
-                  { text: 'Score increased +62 pts', time: '1d ago', icon: TrendingUp,  c: '#ab1c42' },
-                  { text: 'New report available',    time: '2d ago', icon: FileText,    c: '#f59e0b' },
+                  { text: 'Disputa #3812 resuelta',   time: 'Hace 2h', icon: CheckCircle, c: '#22c55e' },
+                  { text: 'Puntaje subió +62 pts',    time: 'Hace 1d', icon: TrendingUp,  c: '#ab1c42' },
+                  { text: 'Nuevo reporte disponible', time: 'Hace 2d', icon: FileText,    c: '#f59e0b' },
                 ].map((n, i) => (
                   <div key={i} className="flex items-start gap-3 py-2 border-t" style={{ borderColor: t.cardBorder }}>
                     <n.icon size={13} color={n.c} className="mt-0.5 flex-shrink-0" />
@@ -498,10 +487,11 @@ export default function DashboardPage() {
                   <div className="flex items-center justify-center py-3">
                     <CreditCard3D />
                   </div>
-                  <button className="mt-2 flex items-center gap-1 text-xs font-semibold mx-auto hover:opacity-80 transition-opacity"
+                  <a href="https://portal.myfreescorenow.com" target="_blank" rel="noopener noreferrer"
+                    className="mt-2 flex items-center gap-1 text-xs font-semibold mx-auto hover:opacity-80 transition-opacity"
                     style={{ color: '#e04a6e' }}>
-                    View Credit Report <ChevronRight size={13} />
-                  </button>
+                    Ver mi reporte completo <ChevronRight size={13} />
+                  </a>
                 </div>
               </GlowCard>
 
@@ -509,7 +499,7 @@ export default function DashboardPage() {
               <GlowCard theme={theme} className="col-span-12 lg:col-span-7" delay={300} loaded={loaded}>
                   <div className="p-5">
                     <div className="flex items-center justify-between mb-4">
-                      <span className={`text-sm font-semibold ${t.text}`}>Quick Actions</span>
+                      <span className={`text-sm font-semibold ${t.text}`}>Acciones rápidas</span>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
                       {/* Card 1 — Detalle de disputas (link-out to CDM portal) */}
@@ -648,44 +638,36 @@ export default function DashboardPage() {
                 </div>
               </GlowCard>
 
-              {/* Resumen de cuenta */}
+              {/* Protección de identidad — real source: MyFreeScoreNow */}
               <GlowCard theme={theme} className="col-span-12 lg:col-span-5" delay={700} loaded={loaded}>
-                <div className="p-5 flex flex-col gap-4">
-                  {/* Link-out to monitoring portal */}
-                  <div className="rounded-xl p-4 border flex flex-col items-center text-center gap-3"
-                    style={{ background: t.rowBg, borderColor: t.rowBorder }}>
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center"
-                      style={{ background: 'rgba(224,74,110,0.1)' }}>
-                      <BarChart3 size={20} color="#e04a6e" />
+                <div className="p-5">
+                  <div className="flex items-center gap-2.5 mb-4">
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+                      style={{ background: '#ab1c4222' }}>
+                      <Lock size={15} color="#ab1c42" />
                     </div>
                     <div>
-                      <div className={`text-sm font-semibold mb-1 ${t.text}`}>Resumen de cuenta</div>
-                      <div className={`text-xs leading-relaxed ${t.sub}`}>
-                        Tu resumen de cuenta está disponible en tu portal de monitoreo
+                      <div className={`text-sm font-semibold ${t.text}`}>Protección de identidad</div>
+                      <div className={`text-xs ${t.sub}`}>Monitoreo de los 3 burós 24/7</div>
+                    </div>
+                    <div className="ml-auto w-2 h-2 rounded-full bg-green-400 animate-pulse flex-shrink-0" />
+                  </div>
+                  <div className="space-y-2">
+                    {(['Equifax', 'Experian', 'TransUnion'] as const).map(bureau => (
+                      <div key={bureau} className="flex items-center justify-between px-3 py-2.5 rounded-xl border"
+                        style={{ background: t.rowBg, borderColor: t.rowBorder }}>
+                        <div className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0" />
+                          <span className={`text-xs font-medium ${t.text}`}>{bureau}</span>
+                        </div>
+                        <span className="text-xs font-semibold" style={{ color: '#22c55e' }}>Activo</span>
                       </div>
-                    </div>
-                    <a href="https://portal.myfreescorenow.com" target="_blank" rel="noopener noreferrer"
-                      className="w-full py-2 rounded-lg text-xs font-semibold text-white hover:brightness-110 transition-all text-center block"
-                      style={{ background: 'linear-gradient(135deg,#ab1c42,#7a1838)' }}>
-                      Ver balances y cuentas →
-                    </a>
+                    ))}
                   </div>
-
-                  {/* Identity Protection — real source: MyFreeScoreNow */}
-                  <div className="p-3 rounded-xl flex items-center gap-3 border"
-                    style={{ background: theme === 'dark' ? 'linear-gradient(135deg,#2a1218,#1e0e12)' : '#fff5f6', borderColor: t.cardBorder }}>
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#ab1c4222' }}>
-                      <Lock size={13} color="#ab1c42" />
-                    </div>
-                    <div>
-                      <div className={`text-xs font-semibold ${t.text}`}>Identity Protection Active</div>
-                      <div className={`text-xs ${t.sub}`}>Monitoring 3 bureaus 24/7</div>
-                    </div>
-                    <button className="ml-auto flex items-center gap-1 text-xs font-semibold hover:opacity-80 transition-opacity" style={{ color: '#e04a6e' }}>
-                      View status <ChevronRight size={11} />
-                    </button>
-                    <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse flex-shrink-0" />
-                  </div>
+                  <button className="mt-3 flex items-center gap-1 text-xs font-semibold hover:opacity-80 transition-opacity"
+                    style={{ color: '#e04a6e' }}>
+                    Ver estado de monitoreo <ChevronRight size={11} />
+                  </button>
                 </div>
               </GlowCard>
 
