@@ -39,12 +39,12 @@ const NAV_ITEMS = [
   { icon: BookOpen,         label: 'Education',       id: 'education' },
   { icon: Settings,         label: 'Settings',        id: 'settings' },
 ];
-// Mock — replace with Google Drive API data contract:
-// { documents: [{ id, uploadDate, url }] }
-// 'name' comes from Drive file.name metadata in production; url must be a signed temporary link (PII)
-const DOCUMENTS = [
-  { id: 'doc_001', name: 'Carta enviada', uploadDate: '2026-06-03', url: '/docs/sample.pdf' },
-  { id: 'doc_002', name: 'Carta enviada', uploadDate: '2026-07-01', url: '/docs/sample.pdf' },
+// Mock — replace with CDM invoice webhook data contract:
+// { payments: [{ id, date, amount }] } — status: "paid" invoices only
+const PAYMENTS = [
+  { id: 'inv_001', date: '2026-07-01', amount: 149.00 },
+  { id: 'inv_002', date: '2026-06-01', amount: 149.00 },
+  { id: 'inv_003', date: '2026-05-01', amount: 149.00 },
 ];
 
 // Mock — replace with API data contract: { cdmPortalUrl, responseClockDays, responseClockActive, newDocuments30d, nextPayment: { amount, date } }
@@ -478,11 +478,11 @@ export default function DashboardPage() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-12 gap-4 xl:gap-5 2xl:gap-6 max-w-screen-2xl mx-auto">
+            <div className="grid grid-cols-12 gap-4 xl:gap-5 2xl:gap-6 max-w-screen-2xl mx-auto items-start">
 
               {/* Estado de tu cuenta */}
               <GlowCard theme={theme} className="col-span-12 lg:col-span-5" delay={200} loaded={loaded}>
-                <div className="pt-4 sm:pt-5 px-4 sm:px-5 pb-4 flex flex-col h-full">
+                <div className="p-5 flex flex-col">
                   <div className="text-center">
                     <div className={`text-xs uppercase tracking-widest mb-1 ${t.sub}`}>Estado de tu cuenta</div>
                     {/* overflow-hidden clips the SVG's empty bottom (below cy=105) */}
@@ -495,10 +495,10 @@ export default function DashboardPage() {
                       {tier.label}
                     </div>
                   </div>
-                  <div className="flex-1 flex items-center justify-center py-2">
+                  <div className="flex items-center justify-center py-3">
                     <CreditCard3D />
                   </div>
-                  <button className="flex items-center gap-1 text-xs font-semibold mx-auto hover:opacity-80 transition-opacity"
+                  <button className="mt-2 flex items-center gap-1 text-xs font-semibold mx-auto hover:opacity-80 transition-opacity"
                     style={{ color: '#e04a6e' }}>
                     View Credit Report <ChevronRight size={13} />
                   </button>
@@ -615,48 +615,40 @@ export default function DashboardPage() {
                 <AIInsights theme={theme} />
               </GlowCard>
 
-              {/* Documentos */}
+              {/* Historial de pagos */}
               <GlowCard theme={theme} className="col-span-12 lg:col-span-7" delay={650} loaded={loaded}>
                 <div className="p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className={`text-sm font-semibold ${t.text}`}>Documentos</span>
+                  <div className="flex items-center gap-2.5 mb-4">
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center"
+                      style={{ background: 'rgba(34,197,94,0.1)' }}>
+                      <CheckCircle size={15} color="#22c55e" />
+                    </div>
+                    <div className={`text-sm font-semibold ${t.text}`}>Historial de pagos</div>
                   </div>
-                  {DOCUMENTS.length === 0 ? (
-                    <div className="text-center py-8">
-                      <FileText size={28} color="#ab1c42" className="mx-auto mb-2 opacity-30" />
-                      <p className={`text-xs ${t.sub}`}>No hay documentos disponibles aún.</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2.5">
-                      {DOCUMENTS.map((doc) => {
-                        const uploadDate = new Date(doc.uploadDate).toLocaleDateString('es-MX', {
-                          day: 'numeric', month: 'short', year: 'numeric',
-                        });
-                        return (
-                          <div key={doc.id} className="flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 hover:scale-[1.01]"
-                            style={{ background: t.rowBg, borderColor: t.rowBorder }}>
-                            <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-                              style={{ background: 'rgba(224,74,110,0.12)' }}>
-                              <FileText size={13} color="#e04a6e" />
+                  <div className="space-y-2.5">
+                    {PAYMENTS.map(p => {
+                      const payDate = new Date(p.date).toLocaleDateString('es-MX', {
+                        day: 'numeric', month: 'long', year: 'numeric',
+                      });
+                      return (
+                        <div key={p.id} className="flex items-center justify-between p-3 rounded-xl border"
+                          style={{ background: t.rowBg, borderColor: t.rowBorder }}>
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+                              style={{ background: 'rgba(34,197,94,0.12)' }}>
+                              <CheckCircle size={12} color="#22c55e" />
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <div className={`text-xs font-semibold ${t.text}`}>{doc.name}</div>
-                              <div className={`text-xs mt-0.5 ${t.sub}`}>{uploadDate}</div>
-                            </div>
-                            <a href={doc.url} target="_blank" rel="noopener noreferrer"
-                              className="flex-shrink-0 flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-all hover:brightness-110"
-                              style={{ background: 'rgba(224,74,110,0.12)', color: '#e04a6e' }}>
-                              Ver <ExternalLink size={10} />
-                            </a>
+                            <span className={`text-xs ${t.sub}`}>{payDate}</span>
                           </div>
-                        );
-                      })}
-                    </div>
-                  )}
+                          <span className={`text-xs font-bold ${t.text}`}>${p.amount.toFixed(2)}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </GlowCard>
 
-              {/* Account Summary */}
+              {/* Resumen de cuenta */}
               <GlowCard theme={theme} className="col-span-12 lg:col-span-5" delay={700} loaded={loaded}>
                 <div className="p-5 flex flex-col gap-4">
                   {/* Link-out to monitoring portal */}
