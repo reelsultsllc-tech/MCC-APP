@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Sparkles, Clock, ChevronRight, CheckCircle, X, CreditCard, CalendarCheck, Search } from 'lucide-react';
+import { Sparkles, Clock, ChevronRight, ChevronDown, CheckCircle, X, CreditCard, CalendarCheck, Search } from 'lucide-react';
 
 type Theme = 'dark' | 'light';
 
@@ -45,6 +45,7 @@ const INSIGHTS = [
 export function AIInsights({ theme }: { theme: Theme }) {
   const [dismissed, setDismissed] = useState<number[]>([]);
   const [expanded,  setExpanded]  = useState<number | null>(1);
+  const [listOpen,  setListOpen]  = useState(false);
 
   const visible = INSIGHTS.filter(i => !dismissed.includes(i.id));
   const dark    = theme === 'dark';
@@ -55,36 +56,43 @@ export function AIInsights({ theme }: { theme: Theme }) {
 
   return (
     <div className="p-5">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl flex items-center justify-center relative"
-            style={{ background: 'linear-gradient(135deg, #ab1c4230, #4a082020)' }}>
-            <Sparkles size={15} color="#e04a6e" />
-            <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-wine-500 animate-ping opacity-75" />
-            <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-wine-500" />
-          </div>
-          <div>
-            <div className={`text-sm font-semibold ${textCls}`}>AI Insights</div>
-            <div className={`text-xs ${subCls}`}>Recomendaciones personalizadas para ti</div>
-          </div>
+      {/* Header — click to toggle list */}
+      <button className="w-full flex items-center gap-2.5 mb-4" onClick={() => setListOpen(o => !o)}>
+        <div className="w-8 h-8 rounded-xl flex items-center justify-center relative flex-shrink-0"
+          style={{ background: 'linear-gradient(135deg, #ab1c4230, #4a082020)' }}>
+          <Sparkles size={15} color="#e04a6e" />
+          <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-wine-500 animate-ping opacity-75" />
+          <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-wine-500" />
+        </div>
+        <div className="flex-1 text-left min-w-0">
+          <div className={`text-sm font-semibold ${textCls}`}>AI Insights</div>
+          <div className={`text-xs ${subCls}`}>Recomendaciones personalizadas para ti</div>
         </div>
         {visible.length > 0 && (
-          <span className="text-xs font-bold px-2 py-1 rounded-full"
+          <span className="text-xs font-bold px-2 py-1 rounded-full flex-shrink-0"
             style={{ background: '#ab1c4222', color: '#e04a6e' }}>
             {visible.length} new
           </span>
         )}
-      </div>
+        <ChevronDown
+          size={15}
+          className="flex-shrink-0 transition-transform duration-200"
+          style={{
+            color: dark ? 'rgba(249,208,216,0.4)' : 'rgba(122,48,69,0.4)',
+            transform: listOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+          }}
+        />
+      </button>
 
-      {visible.length === 0 && (
-        <div className="text-center py-8">
+      {listOpen && visible.length === 0 && (
+        <div className="text-center py-8 animate-slide-in-up">
           <CheckCircle size={32} color="#22c55e" className="mx-auto mb-2 opacity-60" />
           <p className={`text-sm ${subCls}`}>¡Todo al día, Elena!</p>
         </div>
       )}
 
-      <div className="space-y-2.5">
+      {listOpen && (
+      <div className="space-y-2.5 animate-slide-in-up">
         {visible.map(insight => {
           const isOpen = expanded === insight.id;
           const { Icon } = insight;
@@ -144,8 +152,9 @@ export function AIInsights({ theme }: { theme: Theme }) {
           );
         })}
       </div>
+      )}
 
-      {visible.length > 0 && (
+      {listOpen && visible.length > 0 && (
         <button className={`mt-3 w-full text-center text-xs font-medium hover:text-wine-400 transition-colors ${subCls}`}>
           Ver todas las recomendaciones →
         </button>
