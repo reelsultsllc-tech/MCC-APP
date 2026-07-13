@@ -467,10 +467,13 @@ export default function DashboardPage() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-12 gap-4 xl:gap-5 2xl:gap-6 max-w-screen-2xl mx-auto items-start">
+            <div className="flex flex-col lg:flex-row gap-4 xl:gap-5 2xl:gap-6 max-w-screen-2xl mx-auto">
+
+              {/* ── Left column ─────────────────────────────────────────── */}
+              <div className="flex flex-col gap-4 xl:gap-5 2xl:gap-6 w-full lg:w-[42%] flex-shrink-0">
 
               {/* Estado de tu cuenta */}
-              <GlowCard theme={theme} className="col-span-12 lg:col-span-5" delay={200} loaded={loaded}>
+              <GlowCard theme={theme} className="" delay={200} loaded={loaded}>
                 <div className="p-5 flex flex-col">
                   <div className="text-center">
                     <div className={`text-xs uppercase tracking-widest mb-1 ${t.sub}`}>Estado de tu cuenta</div>
@@ -495,8 +498,51 @@ export default function DashboardPage() {
                 </div>
               </GlowCard>
 
-              {/* Quick Actions */}
-              <GlowCard theme={theme} className="col-span-12 lg:col-span-7" delay={300} loaded={loaded}>
+              {/* Strategy Plan */}
+              <GlowCard theme={theme} className="" delay={550} loaded={loaded}>
+                <StrategyTimeline theme={theme} />
+              </GlowCard>
+
+              {/* Historial de pagos */}
+              <GlowCard theme={theme} className="" delay={650} loaded={loaded}>
+                <div className="p-5">
+                  <div className="flex items-center gap-2.5 mb-4">
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center"
+                      style={{ background: 'rgba(34,197,94,0.1)' }}>
+                      <CheckCircle size={15} color="#22c55e" />
+                    </div>
+                    <div className={`text-sm font-semibold ${t.text}`}>Historial de pagos</div>
+                  </div>
+                  <div className="space-y-2.5">
+                    {PAYMENTS.map(p => {
+                      const payDate = new Date(p.date).toLocaleDateString('es-MX', {
+                        day: 'numeric', month: 'long', year: 'numeric',
+                      });
+                      return (
+                        <div key={p.id} className="flex items-center justify-between p-3 rounded-xl border"
+                          style={{ background: t.rowBg, borderColor: t.rowBorder }}>
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+                              style={{ background: 'rgba(34,197,94,0.12)' }}>
+                              <CheckCircle size={12} color="#22c55e" />
+                            </div>
+                            <span className={`text-xs ${t.sub}`}>{payDate}</span>
+                          </div>
+                          <span className={`text-xs font-bold ${t.text}`}>${p.amount.toFixed(2)}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </GlowCard>
+
+              </div>{/* end left column */}
+
+              {/* ── Right column ────────────────────────────────────────── */}
+              <div className="flex flex-col gap-4 xl:gap-5 2xl:gap-6 flex-1 min-w-0">
+
+              {/* Acciones rápidas */}
+              <GlowCard theme={theme} className="" delay={300} loaded={loaded}>
                   <div className="p-5">
                     <div className="flex items-center justify-between mb-4">
                       <span className={`text-sm font-semibold ${t.text}`}>Acciones rápidas</span>
@@ -595,51 +641,13 @@ export default function DashboardPage() {
                   </div>
               </GlowCard>
 
-              {/* Strategy Plan */}
-              <GlowCard theme={theme} className="col-span-12 lg:col-span-6" delay={550} loaded={loaded}>
-                <StrategyTimeline theme={theme} />
-              </GlowCard>
-
               {/* AI Insights */}
-              <GlowCard theme={theme} className="col-span-12 lg:col-span-6" delay={600} loaded={loaded}>
+              <GlowCard theme={theme} className="" delay={600} loaded={loaded}>
                 <AIInsights theme={theme} />
               </GlowCard>
 
-              {/* Historial de pagos */}
-              <GlowCard theme={theme} className="col-span-12 lg:col-span-7" delay={650} loaded={loaded}>
-                <div className="p-5">
-                  <div className="flex items-center gap-2.5 mb-4">
-                    <div className="w-8 h-8 rounded-xl flex items-center justify-center"
-                      style={{ background: 'rgba(34,197,94,0.1)' }}>
-                      <CheckCircle size={15} color="#22c55e" />
-                    </div>
-                    <div className={`text-sm font-semibold ${t.text}`}>Historial de pagos</div>
-                  </div>
-                  <div className="space-y-2.5">
-                    {PAYMENTS.map(p => {
-                      const payDate = new Date(p.date).toLocaleDateString('es-MX', {
-                        day: 'numeric', month: 'long', year: 'numeric',
-                      });
-                      return (
-                        <div key={p.id} className="flex items-center justify-between p-3 rounded-xl border"
-                          style={{ background: t.rowBg, borderColor: t.rowBorder }}>
-                          <div className="flex items-center gap-2.5">
-                            <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
-                              style={{ background: 'rgba(34,197,94,0.12)' }}>
-                              <CheckCircle size={12} color="#22c55e" />
-                            </div>
-                            <span className={`text-xs ${t.sub}`}>{payDate}</span>
-                          </div>
-                          <span className={`text-xs font-bold ${t.text}`}>${p.amount.toFixed(2)}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </GlowCard>
-
               {/* Protección de identidad — real source: MyFreeScoreNow */}
-              <GlowCard theme={theme} className="col-span-12 lg:col-span-5" delay={700} loaded={loaded}>
+              <GlowCard theme={theme} className="" delay={700} loaded={loaded}>
                 <div className="p-5">
                   <div className="flex items-center gap-2.5 mb-4">
                     <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -670,6 +678,8 @@ export default function DashboardPage() {
                   </button>
                 </div>
               </GlowCard>
+
+              </div>{/* end right column */}
 
             </div>
           )}
