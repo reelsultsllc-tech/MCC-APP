@@ -369,6 +369,7 @@ export default function DashboardPage() {
   const [showNotif, setShowNotif]       = useState(false);
   const [searchVal, setSearchVal]       = useState('');
   const [showDemo,  setShowDemo]        = useState(false);
+  const [paymentsOpen, setPaymentsOpen] = useState(false);
 
   const tier   = TIER_CONFIG[TIER_DATA.accountTier];
   const t = T[theme];
@@ -506,33 +507,46 @@ export default function DashboardPage() {
               {/* Historial de pagos */}
               <GlowCard theme={theme} className="" delay={650} loaded={loaded}>
                 <div className="p-5">
-                  <div className="flex items-center gap-2.5 mb-4">
-                    <div className="w-8 h-8 rounded-xl flex items-center justify-center"
+                  <button
+                    className="w-full flex items-center gap-2.5"
+                    onClick={() => setPaymentsOpen(o => !o)}
+                  >
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
                       style={{ background: 'rgba(34,197,94,0.1)' }}>
                       <CheckCircle size={15} color="#22c55e" />
                     </div>
-                    <div className={`text-sm font-semibold ${t.text}`}>Historial de pagos</div>
-                  </div>
-                  <div className="space-y-2.5">
-                    {PAYMENTS.map(p => {
-                      const payDate = new Date(p.date).toLocaleDateString('es-MX', {
-                        day: 'numeric', month: 'long', year: 'numeric',
-                      });
-                      return (
-                        <div key={p.id} className="flex items-center justify-between p-3 rounded-xl border"
-                          style={{ background: t.rowBg, borderColor: t.rowBorder }}>
-                          <div className="flex items-center gap-2.5">
-                            <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
-                              style={{ background: 'rgba(34,197,94,0.12)' }}>
-                              <CheckCircle size={12} color="#22c55e" />
+                    <div className={`text-sm font-semibold flex-1 text-left ${t.text}`}>Historial de pagos</div>
+                    <ChevronDown
+                      size={15}
+                      className="flex-shrink-0 transition-transform duration-200"
+                      style={{
+                        color: t.sub.includes('wine-200') ? 'rgba(249,208,216,0.4)' : 'rgba(122,48,69,0.4)',
+                        transform: paymentsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                      }}
+                    />
+                  </button>
+                  {paymentsOpen && (
+                    <div className="mt-4 space-y-2.5 animate-slide-in-up">
+                      {PAYMENTS.map(p => {
+                        const payDate = new Date(p.date).toLocaleDateString('es-MX', {
+                          day: 'numeric', month: 'long', year: 'numeric',
+                        });
+                        return (
+                          <div key={p.id} className="flex items-center justify-between p-3 rounded-xl border"
+                            style={{ background: t.rowBg, borderColor: t.rowBorder }}>
+                            <div className="flex items-center gap-2.5">
+                              <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+                                style={{ background: 'rgba(34,197,94,0.12)' }}>
+                                <CheckCircle size={12} color="#22c55e" />
+                              </div>
+                              <span className={`text-xs ${t.sub}`}>{payDate}</span>
                             </div>
-                            <span className={`text-xs ${t.sub}`}>{payDate}</span>
+                            <span className={`text-xs font-bold ${t.text}`}>${p.amount.toFixed(2)}</span>
                           </div>
-                          <span className={`text-xs font-bold ${t.text}`}>${p.amount.toFixed(2)}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </GlowCard>
 
