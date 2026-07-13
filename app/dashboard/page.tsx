@@ -13,6 +13,7 @@ import {
 import { CreditCard3D } from '@/components/demo/credit-card-3d';
 import { StrategyTimeline } from '@/components/demo/strategy-timeline';
 import { AIInsights } from '@/components/demo/ai-insights';
+import { ChatWidget } from '@/components/demo/chat-widget';
 
 type Theme = 'dark' | 'light';
 
@@ -49,11 +50,13 @@ const PAYMENTS = [
 
 // Mock — replace with API data contract: { cdmPortalUrl, responseClockDays, responseClockActive, newDocuments30d, nextPayment: { amount, date } }
 const QA_DATA = {
-  cdmPortalUrl:        'https://portal.clientdisputemanager.com/client-login',
-  responseClockDays:   16,
-  responseClockActive: true,
-  newDocuments30d:     2,
-  nextPayment:         { amount: 149.00, date: '2026-08-01' },
+  cdmPortalUrl:           'https://portal.clientdisputemanager.com/client-login',
+  responseClockDays:      16,
+  responseClockActive:    true,
+  // true = anchored to LetterStream confirmed delivery; false = upload date fallback (API not yet active)
+  responseClockConfirmed: true,
+  newDocuments30d:        2,
+  nextPayment:            { amount: 149.00, date: '2026-08-01' },
 };
 
 const T = {
@@ -499,9 +502,9 @@ export default function DashboardPage() {
                 </div>
               </GlowCard>
 
-              {/* Strategy Plan */}
+              {/* AI Insights */}
               <GlowCard theme={theme} className="" delay={550} loaded={loaded}>
-                <StrategyTimeline theme={theme} />
+                <AIInsights theme={theme} />
               </GlowCard>
 
               {/* Historial de pagos */}
@@ -583,7 +586,7 @@ export default function DashboardPage() {
                       </div>
                       {/* Card 2 — Reloj de respuesta FCRA */}
                       {(() => {
-                        const { responseClockDays: days, responseClockActive: clockOn } = QA_DATA;
+                        const { responseClockDays: days, responseClockActive: clockOn, responseClockConfirmed: confirmed } = QA_DATA;
                         const urgent = clockOn && days <= 7;
                         const color  = urgent ? '#ef4444' : clockOn ? '#f59e0b' : '#22c55e';
                         return (
@@ -600,6 +603,16 @@ export default function DashboardPage() {
                               <div className={`text-xs mt-0.5 ${t.sub}`}>
                                 {clockOn ? 'Días para respuesta del buró' : 'Sin disputas activas'}
                               </div>
+                              {clockOn && (
+                                <div className="flex items-center gap-1 mt-1">
+                                  <span className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                                    style={{ background: confirmed ? '#22c55e' : '#f59e0b' }} />
+                                  <span className="text-[9px] font-semibold"
+                                    style={{ color: confirmed ? '#22c55e' : '#f59e0b' }}>
+                                    {confirmed ? 'confirmado (LetterStream)' : 'estimado (fecha de envío)'}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                             <button className="mt-auto w-full py-1.5 rounded-lg text-xs font-semibold text-white hover:brightness-110 transition-all"
                               style={{ background: 'linear-gradient(135deg,#ab1c42,#7a1838)' }}>
@@ -655,9 +668,9 @@ export default function DashboardPage() {
                   </div>
               </GlowCard>
 
-              {/* AI Insights */}
+              {/* Strategy Plan */}
               <GlowCard theme={theme} className="" delay={600} loaded={loaded}>
-                <AIInsights theme={theme} />
+                <StrategyTimeline theme={theme} />
               </GlowCard>
 
               {/* Protección de identidad — real source: MyFreeScoreNow */}
@@ -699,6 +712,9 @@ export default function DashboardPage() {
           )}
         </main>
       </div>
+
+      {/* Floating chat widget — fixed, visible on all pages */}
+      <ChatWidget />
 
       {/* Demo banner — slim bar on mobile, card on desktop */}
       {showDemo && (
