@@ -507,6 +507,39 @@ export default function DashboardPage() {
                 <AIInsights theme={theme} />
               </GlowCard>
 
+              {/* Protección de identidad — real source: MyFreeScoreNow */}
+              <GlowCard theme={theme} className="" delay={620} loaded={loaded}>
+                <div className="p-5">
+                  <div className="flex items-center gap-2.5 mb-4">
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+                      style={{ background: '#ab1c4222' }}>
+                      <Lock size={15} color="#ab1c42" />
+                    </div>
+                    <div>
+                      <div className={`text-sm font-semibold ${t.text}`}>Protección de identidad</div>
+                      <div className={`text-xs ${t.sub}`}>Monitoreo de los 3 burós 24/7</div>
+                    </div>
+                    <div className="ml-auto w-2 h-2 rounded-full bg-green-400 animate-pulse flex-shrink-0" />
+                  </div>
+                  <div className="space-y-2">
+                    {(['Equifax', 'Experian', 'TransUnion'] as const).map(bureau => (
+                      <div key={bureau} className="flex items-center justify-between px-3 py-2.5 rounded-xl border"
+                        style={{ background: t.rowBg, borderColor: t.rowBorder }}>
+                        <div className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0" />
+                          <span className={`text-xs font-medium ${t.text}`}>{bureau}</span>
+                        </div>
+                        <span className="text-xs font-semibold" style={{ color: '#22c55e' }}>Activo</span>
+                      </div>
+                    ))}
+                  </div>
+                  <button className="mt-3 flex items-center gap-1 text-xs font-semibold hover:opacity-80 transition-opacity"
+                    style={{ color: '#e04a6e' }}>
+                    Ver estado de monitoreo <ChevronRight size={11} />
+                  </button>
+                </div>
+              </GlowCard>
+
               {/* Historial de pagos */}
               <GlowCard theme={theme} className="" delay={650} loaded={loaded}>
                 <div className="p-5">
@@ -671,39 +704,6 @@ export default function DashboardPage() {
               {/* Strategy Plan */}
               <GlowCard theme={theme} className="" delay={600} loaded={loaded}>
                 <StrategyTimeline theme={theme} />
-              </GlowCard>
-
-              {/* Protección de identidad — real source: MyFreeScoreNow */}
-              <GlowCard theme={theme} className="" delay={700} loaded={loaded}>
-                <div className="p-5">
-                  <div className="flex items-center gap-2.5 mb-4">
-                    <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-                      style={{ background: '#ab1c4222' }}>
-                      <Lock size={15} color="#ab1c42" />
-                    </div>
-                    <div>
-                      <div className={`text-sm font-semibold ${t.text}`}>Protección de identidad</div>
-                      <div className={`text-xs ${t.sub}`}>Monitoreo de los 3 burós 24/7</div>
-                    </div>
-                    <div className="ml-auto w-2 h-2 rounded-full bg-green-400 animate-pulse flex-shrink-0" />
-                  </div>
-                  <div className="space-y-2">
-                    {(['Equifax', 'Experian', 'TransUnion'] as const).map(bureau => (
-                      <div key={bureau} className="flex items-center justify-between px-3 py-2.5 rounded-xl border"
-                        style={{ background: t.rowBg, borderColor: t.rowBorder }}>
-                        <div className="flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0" />
-                          <span className={`text-xs font-medium ${t.text}`}>{bureau}</span>
-                        </div>
-                        <span className="text-xs font-semibold" style={{ color: '#22c55e' }}>Activo</span>
-                      </div>
-                    ))}
-                  </div>
-                  <button className="mt-3 flex items-center gap-1 text-xs font-semibold hover:opacity-80 transition-opacity"
-                    style={{ color: '#e04a6e' }}>
-                    Ver estado de monitoreo <ChevronRight size={11} />
-                  </button>
-                </div>
               </GlowCard>
 
               </div>{/* end right column */}
