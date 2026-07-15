@@ -433,34 +433,36 @@ export default function DashboardPage() {
               <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-wine-500 animate-ping" />
               <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-wine-400" />
             </button>
-            {showNotif && (
-              <div
-                className="fixed top-[62px] right-2 sm:right-4 w-64 max-w-[calc(100vw-1rem)] rounded-xl border shadow-2xl z-[200] p-4 animate-slide-in-up"
-                style={{ background: theme === 'dark' ? '#150a0d' : '#fff', borderColor: t.cardBorder }}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <span className={`text-sm font-semibold ${t.text}`}>Notificaciones</span>
-                  <button onClick={() => setShowNotif(false)}><X size={13} className="text-wine-400/50" /></button>
-                </div>
-                {[
-                  { text: 'Disputa #3812 resuelta',   time: 'Hace 2h', icon: CheckCircle, c: '#22c55e' },
-                  { text: 'Puntaje subió +62 pts',    time: 'Hace 1d', icon: TrendingUp,  c: '#ab1c42' },
-                  { text: 'Nuevo reporte disponible', time: 'Hace 2d', icon: FileText,    c: '#f59e0b' },
-                ].map((n, i) => (
-                  <div key={i} className="flex items-start gap-3 py-2 border-t" style={{ borderColor: t.cardBorder }}>
-                    <n.icon size={13} color={n.c} className="mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className={`text-xs ${t.text}`}>{n.text}</p>
-                      <p className={`text-xs ${t.sub}`}>{n.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
           <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
             style={{ background: 'linear-gradient(135deg,#ab1c42,#4a0820)' }}>EM</div>
         </header>
+
+        {/* Notifications panel — outside header to escape transform stacking context */}
+        {showNotif && (
+          <div
+            className="fixed top-[62px] right-2 sm:right-4 w-64 max-w-[calc(100vw-1rem)] rounded-xl border shadow-2xl z-[200] p-4 animate-slide-in-up"
+            style={{ background: theme === 'dark' ? '#150a0d' : '#fff', borderColor: t.cardBorder }}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className={`text-sm font-semibold ${t.text}`}>Notificaciones</span>
+              <button onClick={() => setShowNotif(false)}><X size={13} className="text-wine-400/50" /></button>
+            </div>
+            {[
+              { text: 'Disputa #3812 resuelta',   time: 'Hace 2h', icon: CheckCircle, c: '#22c55e' },
+              { text: 'Puntaje subió +62 pts',    time: 'Hace 1d', icon: TrendingUp,  c: '#ab1c42' },
+              { text: 'Nuevo reporte disponible', time: 'Hace 2d', icon: FileText,    c: '#f59e0b' },
+            ].map((n, i) => (
+              <div key={i} className="flex items-start gap-3 py-2 border-t" style={{ borderColor: t.cardBorder }}>
+                <n.icon size={13} color={n.c} className="mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className={`text-xs ${t.text}`}>{n.text}</p>
+                  <p className={`text-xs ${t.sub}`}>{n.time}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* main content */}
         <main className="flex-1 overflow-auto p-4 sm:p-5 xl:p-6">
