@@ -474,13 +474,10 @@ export default function DashboardPage() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col lg:flex-row gap-4 xl:gap-5 max-w-[1440px] mx-auto w-full">
-
-              {/* ── Left column ─────────────────────────────────────────── */}
-              <div className="flex flex-col gap-4 xl:gap-5 w-full lg:w-[38%] flex-shrink-0">
+            <div className="grid grid-cols-1 lg:grid-cols-[38%_1fr] gap-4 xl:gap-5 max-w-[1440px] mx-auto w-full">
 
               {/* Estado de tu cuenta */}
-              <GlowCard theme={theme} className="" delay={200} loaded={loaded}>
+              <GlowCard theme={theme} className="order-1 lg:col-start-1 lg:row-start-1" delay={200} loaded={loaded}>
                 <div className="p-5 flex flex-col">
                   <div className="text-center">
                     <div className={`text-xs uppercase tracking-widest mb-1 ${t.sub}`}>Estado de tu cuenta</div>
@@ -506,12 +503,12 @@ export default function DashboardPage() {
               </GlowCard>
 
               {/* AI Insights */}
-              <GlowCard theme={theme} className="" delay={550} loaded={loaded}>
+              <GlowCard theme={theme} className="order-4 lg:col-start-1 lg:row-start-2" delay={550} loaded={loaded}>
                 <AIInsights theme={theme} />
               </GlowCard>
 
               {/* Protección de identidad — real source: MyFreeScoreNow */}
-              <GlowCard theme={theme} className="" delay={620} loaded={loaded}>
+              <GlowCard theme={theme} className="order-5 lg:col-start-1 lg:row-start-3" delay={620} loaded={loaded}>
                 <div className="p-5">
                   <div className="flex items-center gap-2.5 mb-4">
                     <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -544,7 +541,7 @@ export default function DashboardPage() {
               </GlowCard>
 
               {/* Historial de pagos */}
-              <GlowCard theme={theme} className="" delay={650} loaded={loaded}>
+              <GlowCard theme={theme} className="order-6 lg:col-start-1 lg:row-start-4" delay={650} loaded={loaded}>
                 <div className="p-5">
                   <button
                     className="w-full flex items-center gap-2.5"
@@ -589,13 +586,8 @@ export default function DashboardPage() {
                 </div>
               </GlowCard>
 
-              </div>{/* end left column */}
-
-              {/* ── Right column ────────────────────────────────────────── */}
-              <div className="flex flex-col gap-4 xl:gap-5 flex-1 min-w-0">
-
               {/* Acciones rápidas */}
-              <GlowCard theme={theme} className="" delay={300} loaded={loaded}>
+              <GlowCard theme={theme} className="order-3 lg:col-start-2 lg:row-start-1" delay={300} loaded={loaded}>
                   <div className="p-5">
                     <div className="flex items-center justify-between mb-4">
                       <span className={`text-sm font-semibold ${t.text}`}>Acciones rápidas</span>
@@ -705,11 +697,10 @@ export default function DashboardPage() {
               </GlowCard>
 
               {/* Strategy Plan */}
-              <GlowCard theme={theme} className="" delay={600} loaded={loaded}>
+              <GlowCard theme={theme} className="order-2 lg:col-start-2 lg:row-start-2" delay={600} loaded={loaded}>
                 <StrategyTimeline theme={theme} />
               </GlowCard>
 
-              </div>{/* end right column */}
 
             </div>
           )}
