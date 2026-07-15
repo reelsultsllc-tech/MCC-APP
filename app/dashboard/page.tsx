@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import {
   LayoutDashboard, FileText, BarChart3, Settings, Bell, Search, ChevronRight,
   TrendingUp, AlertCircle, CheckCircle,
@@ -46,6 +47,9 @@ const PAYMENTS = [
   { id: 'inv_001', date: '2026-07-01', amount: 149.00 },
   { id: 'inv_002', date: '2026-06-01', amount: 149.00 },
   { id: 'inv_003', date: '2026-05-01', amount: 149.00 },
+  { id: 'inv_004', date: '2026-04-01', amount: 149.00 },
+  { id: 'inv_005', date: '2026-03-01', amount: 149.00 },
+  { id: 'inv_006', date: '2026-02-01', amount: 149.00 },
 ];
 
 // Mock — replace with API data contract: { cdmPortalUrl, responseClockDays, responseClockActive, newDocuments30d, nextPayment: { amount, date } }
@@ -564,25 +568,67 @@ export default function DashboardPage() {
                     />
                   </button>
                   {paymentsOpen && (
-                    <div className="mt-4 space-y-2.5 animate-slide-in-up">
-                      {PAYMENTS.map(p => {
-                        const payDate = new Date(p.date).toLocaleDateString('es-MX', {
-                          day: 'numeric', month: 'long', year: 'numeric',
-                        });
-                        return (
-                          <div key={p.id} className="flex items-center justify-between p-3 rounded-xl border"
-                            style={{ background: t.rowBg, borderColor: t.rowBorder }}>
-                            <div className="flex items-center gap-2.5">
-                              <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
-                                style={{ background: 'rgba(34,197,94,0.12)' }}>
-                                <CheckCircle size={12} color="#22c55e" />
-                              </div>
-                              <span className={`text-xs ${t.sub}`}>{payDate}</span>
+                    <div className="mt-4 animate-slide-in-up">
+                      {/* Bar chart */}
+                      <div className="flex items-end gap-1.5" style={{ height: '96px' }}>
+                        {[...PAYMENTS].reverse().map((p, i) => {
+                          const month = new Date(p.date + 'T12:00:00').toLocaleDateString('es-MX', { month: 'short' });
+                          return (
+                            <div key={p.id} className="flex-1 flex flex-col items-center justify-end gap-1 h-full">
+                              <motion.div
+                                className="w-full rounded-t-md"
+                                style={{ background: 'linear-gradient(to top, #7a1838, #e04a6e)' }}
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: '82%', opacity: 1 }}
+                                transition={{ type: 'spring', stiffness: 260, damping: 22, delay: i * 0.07 }}
+                              />
+                              <span className="text-[8px] font-medium capitalize" style={{ color: 'rgba(249,208,216,0.4)' }}>
+                                {month}
+                              </span>
                             </div>
-                            <span className={`text-xs font-bold ${t.text}`}>${p.amount.toFixed(2)}</span>
+                          );
+                        })}
+                        {/* Upcoming bar */}
+                        {(() => {
+                          const nextMonth = new Date(QA_DATA.nextPayment.date + 'T12:00:00')
+                            .toLocaleDateString('es-MX', { month: 'short' });
+                          return (
+                            <div className="flex-1 flex flex-col items-center justify-end gap-1 h-full">
+                              <div className="w-full rounded-t-md" style={{
+                                height: '82%',
+                                border: '1px dashed rgba(171,28,66,0.4)',
+                                background: 'rgba(171,28,66,0.05)',
+                              }} />
+                              <span className="text-[8px] font-medium capitalize" style={{ color: 'rgba(249,208,216,0.2)' }}>
+                                {nextMonth}
+                              </span>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                      {/* Amount row */}
+                      <div className="flex gap-1.5 mt-1">
+                        {[...PAYMENTS].reverse().map(p => (
+                          <div key={p.id} className="flex-1 text-center">
+                            <span className="text-[8px] font-bold" style={{ color: '#e04a6e' }}>
+                              ${p.amount.toFixed(0)}
+                            </span>
                           </div>
-                        );
-                      })}
+                        ))}
+                        <div className="flex-1 text-center">
+                          <span className="text-[8px]" style={{ color: 'rgba(249,208,216,0.18)' }}>
+                            ${QA_DATA.nextPayment.amount.toFixed(0)}
+                          </span>
+                        </div>
+                      </div>
+                      {/* Total */}
+                      <div className="flex items-center justify-between mt-4 pt-3 border-t"
+                        style={{ borderColor: 'rgba(74,8,32,0.4)' }}>
+                        <span className="text-xs" style={{ color: 'rgba(249,208,216,0.4)' }}>Total pagado</span>
+                        <span className="text-sm font-bold" style={{ color: '#e04a6e' }}>
+                          ${PAYMENTS.reduce((s, p) => s + p.amount, 0).toFixed(2)}
+                        </span>
+                      </div>
                     </div>
                   )}
                 </div>
