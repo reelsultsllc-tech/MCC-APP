@@ -543,7 +543,7 @@ export default function DashboardPage() {
               </GlowCard>
 
               {/* Historial de pagos */}
-              <GlowCard theme={theme} className="order-6 lg:col-start-1 lg:row-start-4" delay={650} loaded={loaded}>
+              <GlowCard theme={theme} className="order-6 lg:col-start-2 lg:row-start-3" delay={650} loaded={loaded}>
                 <div className="p-5">
                   <button
                     className="w-full flex items-center gap-2.5"
