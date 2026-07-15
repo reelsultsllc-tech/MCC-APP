@@ -303,7 +303,7 @@ function Sidebar({ active, setActive, collapsed, setCollapsed, mobileOpen, setMo
     </button>
   );
 
-  const Inner = ({ showLabel }: { showLabel: boolean }) => (
+  const Inner = ({ showLabel, onClose }: { showLabel: boolean; onClose?: () => void }) => (
     <div className="flex flex-col h-full">
       <div className="px-4 py-3.5 border-b border-wine-950/50 flex items-center justify-between gap-2 flex-shrink-0">
         <div className="flex items-center gap-2 min-w-0">
@@ -311,8 +311,11 @@ function Sidebar({ active, setActive, collapsed, setCollapsed, mobileOpen, setMo
           {showLabel && <BrandText />}
         </div>
         {showLabel && (
-          <button onClick={() => setCollapsed(true)} className="text-wine-400/40 hover:text-wine-200/70 transition-colors flex-shrink-0">
-            <ChevronLeft size={15} />
+          <button
+            onClick={onClose ?? (() => setCollapsed(true))}
+            className="text-wine-400/40 hover:text-wine-200/70 transition-colors flex-shrink-0 p-2 -mr-1"
+          >
+            {onClose ? <X size={18} /> : <ChevronLeft size={15} />}
           </button>
         )}
       </div>
@@ -353,7 +356,7 @@ function Sidebar({ active, setActive, collapsed, setCollapsed, mobileOpen, setMo
         <div className="lg:hidden fixed inset-0 z-50 flex">
           <div className="absolute inset-0 bg-black/60" onClick={() => setMobileOpen(false)} />
           <aside className="relative w-60 h-full flex flex-col border-r border-wine-950/50 animate-slide-in-left" style={{ background: sidebarBg }}>
-            <Inner showLabel />
+            <Inner showLabel onClose={() => setMobileOpen(false)} />
           </aside>
         </div>
       )}
