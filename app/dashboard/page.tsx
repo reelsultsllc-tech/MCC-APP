@@ -435,7 +435,7 @@ export default function DashboardPage() {
             </button>
             {showNotif && (
               <div
-                className="absolute right-0 top-full mt-2 w-64 rounded-xl border shadow-2xl z-50 p-4 animate-slide-in-up"
+                className="fixed top-[62px] right-2 sm:right-4 w-64 max-w-[calc(100vw-1rem)] rounded-xl border shadow-2xl z-[200] p-4 animate-slide-in-up"
                 style={{ background: theme === 'dark' ? '#150a0d' : '#fff', borderColor: t.cardBorder }}
               >
                 <div className="flex items-center justify-between mb-3">
