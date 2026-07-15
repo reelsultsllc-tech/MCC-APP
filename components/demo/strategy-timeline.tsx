@@ -139,6 +139,51 @@ export function StrategyTimeline({ theme }: { theme: Theme }) {
         </span>
       </div>
 
+      {/* Horizontal phase strip */}
+      <div className="relative mb-6">
+        {/* Background line */}
+        <div className="absolute inset-x-[10px] top-[10px] h-px"
+          style={{ background: dark ? 'rgba(74,8,32,0.4)' : '#f0d8dd' }} />
+        {/* Progress line */}
+        <div className="absolute top-[10px] left-[10px] h-px transition-all duration-700"
+          style={{
+            width: currentIdx === 0
+              ? '0px'
+              : `calc(${(currentIdx / (STATUSES.length - 1) * 100).toFixed(1)}% - ${(currentIdx / (STATUSES.length - 1) * 20).toFixed(1)}px)`,
+            background: 'linear-gradient(to right, #7a1838, #e04a6e)',
+          }} />
+        {/* Dots + labels */}
+        <div className="flex justify-between">
+          {STATUSES.map((s, idx) => {
+            const completed = idx < currentIdx;
+            const isActive  = idx === currentIdx;
+            const isPending = idx > currentIdx;
+            return (
+              <div key={s.key} className="flex flex-col items-center gap-1.5">
+                <div className="w-5 h-5 rounded-full flex items-center justify-center border-2 flex-shrink-0"
+                  style={{
+                    background:  isPending ? (dark ? '#150a0d' : '#fff8f9') : isActive ? '#d42050' : '#ab1c42',
+                    borderColor: isPending ? (dark ? 'rgba(74,8,32,0.4)' : '#e0c8d0') : isActive ? '#ff3a66' : '#e04a6e',
+                    boxShadow:   isActive ? '0 0 10px rgba(224,74,110,0.45)' : 'none',
+                  }}>
+                  {completed && <CheckCircle2 size={9} color="white" />}
+                  {isActive  && <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />}
+                </div>
+                <span className="text-[8px] font-semibold text-center whitespace-nowrap"
+                  style={{
+                    color: isPending
+                      ? (dark ? 'rgba(249,208,216,0.22)' : '#c8a8b8')
+                      : isActive ? '#e04a6e'
+                      : (dark ? 'rgba(249,208,216,0.6)' : '#7a3050'),
+                  }}>
+                  {s.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Vertical timeline */}
       <div className="flex flex-col">
         {STATUSES.map((s, idx) => {
