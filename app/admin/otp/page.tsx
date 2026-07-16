@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { verifyEmailOtp } from '@/lib/supabase'
 
 export default function AdminOtpPage() {
   const router  = useRouter()
@@ -21,14 +22,9 @@ export default function AdminOtpPage() {
   async function verify(code: string) {
     setLoading(true)
     setError('')
-    const res = await fetch('/api/admin/verify-otp', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ otp: code }),
-    })
-    const data = await res.json()
-    if (!res.ok) {
-      setError(data.error ?? 'Código incorrecto. Revisa tu correo.')
+    const { error: err } = await verifyEmailOtp(email, code)
+    if (err) {
+      setError('Código incorrecto. Revisa tu correo.')
       setLoading(false)
       setDigits(['', '', '', '', '', ''])
       refs[0].current?.focus()
