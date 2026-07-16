@@ -3,13 +3,13 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
-import { ShieldCheck } from 'lucide-react'
+import { motion, AnimatePresence, useMotionValue, useMotionTemplate } from 'framer-motion'
+import { ShieldCheck, CreditCard, TrendingUp, Star, Lock, Zap } from 'lucide-react'
 import { sendOtp } from '@/lib/supabase'
 import { formatPhone } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 
-/* ─── Static data ─────────────────────────────────────────────────────── */
+/* ─── Static data ──────────────────────────────────────────────────────── */
 
 const TESTIMONIALS = [
   { text: 'Eliminaron tres cobros incorrectos en cinco semanas. Mi score subió 92 puntos antes de cerrar mi casa.', name: 'María Kessler', role: 'Propietaria, Austin TX', avatar: 'MK', rating: 5 },
@@ -26,7 +26,7 @@ const FEATURES = [
 const SCORE_START = 580
 const SCORE_END   = 741
 
-/* ─── Score counter ───────────────────────────────────────────────────── */
+/* ─── Score counter ────────────────────────────────────────────────────── */
 
 function useCounter(end: number, durationMs = 1600, startVal = 0) {
   const [val, setVal] = useState(startVal)
@@ -48,23 +48,123 @@ function useCounter(end: number, durationMs = 1600, startVal = 0) {
   return val
 }
 
-/* ─── Page ────────────────────────────────────────────────────────────── */
+/* ─── Orbit icon ───────────────────────────────────────────────────────── */
+
+function OrbitIcon({
+  icon: Icon,
+  radius,
+  duration,
+  delay = 0,
+  reverse = false,
+  color = 'rgba(255,255,255,0.65)',
+}: {
+  icon: React.ElementType
+  radius: number
+  duration: number
+  delay?: number
+  reverse?: boolean
+  color?: string
+}) {
+  return (
+    <motion.div
+      className="absolute pointer-events-none"
+      style={{
+        width: radius * 2,
+        height: radius * 2,
+        top: '50%',
+        left: '50%',
+        marginTop: -radius,
+        marginLeft: -radius,
+      }}
+      animate={{ rotate: reverse ? -360 : 360 }}
+      transition={{ duration, repeat: Infinity, ease: 'linear', delay }}
+    >
+      {/* Icon sits at 12-o'clock on the orbit ring, counter-rotates to stay upright */}
+      <motion.div
+        className="absolute flex items-center justify-center rounded-full"
+        style={{
+          width: 30, height: 30,
+          top: 0, left: '50%',
+          marginLeft: -15,
+          marginTop: -15,
+          background: 'rgba(255,255,255,0.09)',
+          border: '1px solid rgba(255,255,255,0.16)',
+          backdropFilter: 'blur(6px)',
+        }}
+        animate={{ rotate: reverse ? 360 : -360 }}
+        transition={{ duration, repeat: Infinity, ease: 'linear', delay }}
+      >
+        <Icon size={13} color={color} />
+      </motion.div>
+    </motion.div>
+  )
+}
+
+/* ─── BoxReveal ────────────────────────────────────────────────────────── */
+
+function BoxReveal({
+  children,
+  delay = 0,
+  className,
+}: {
+  children: React.ReactNode
+  delay?: number
+  className?: string
+}) {
+  return (
+    <div className={cn('relative overflow-hidden', className)}>
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.38, delay: delay + 0.14, ease: [0.25, 0.46, 0.45, 0.94] }}
+      >
+        {children}
+      </motion.div>
+      {/* Wipe box slides from left → right revealing content */}
+      <motion.div
+        className="absolute inset-0 bg-white z-10"
+        initial={{ scaleX: 1, originX: '0%' }}
+        animate={{ scaleX: 0 }}
+        transition={{ duration: 0.36, delay, ease: [0.65, 0, 0.35, 1] }}
+      />
+    </div>
+  )
+}
+
+/* ─── Orbit config ─────────────────────────────────────────────────────── */
+
+const ORBIT_ICONS = [
+  { icon: CreditCard, radius: 58,  duration: 15, delay: 0,  reverse: false, color: 'rgba(255,200,210,0.75)' },
+  { icon: ShieldCheck,radius: 58,  duration: 15, delay: 7.5,reverse: false, color: 'rgba(255,200,210,0.75)' },
+  { icon: TrendingUp, radius: 95,  duration: 24, delay: 0,  reverse: true,  color: 'rgba(255,180,195,0.55)' },
+  { icon: Star,       radius: 95,  duration: 24, delay: 12, reverse: true,  color: 'rgba(255,180,195,0.55)' },
+  { icon: Lock,       radius: 128, duration: 34, delay: 0,  reverse: false, color: 'rgba(255,160,180,0.35)' },
+  { icon: Zap,        radius: 128, duration: 34, delay: 17, reverse: false, color: 'rgba(255,160,180,0.35)' },
+]
+
+/* ─── Page ─────────────────────────────────────────────────────────────── */
 
 export default function LoginPage() {
   const router = useRouter()
 
   const [rawDigits, setRawDigits] = useState('')
-  const [focused, setFocused]     = useState(false)
-  const [loading, setLoading]     = useState(false)
-  const [error, setError]         = useState<string | null>(null)
+  const [focused,   setFocused]   = useState(false)
+  const [loading,   setLoading]   = useState(false)
+  const [error,     setError]     = useState<string | null>(null)
 
   const displayPhone = formatPhone(rawDigits)
   const isValid      = rawDigits.length === 10
 
-  // Left panel
+  // Left panel spotlight
   const leftRef = useRef<HTMLDivElement>(null)
-  const [spot, setSpot]       = useState({ x: 50, y: 50, on: false })
+  const [spot,     setSpot]     = useState({ x: 50, y: 50, on: false })
   const [testiIdx, setTestiIdx] = useState(0)
+
+  // Mouse-following gradient on phone input
+  const mouseX       = useMotionValue(0)
+  const mouseY       = useMotionValue(0)
+  const [inputHov, setInputHov] = useState(false)
+  const gradientBg   = useMotionTemplate`radial-gradient(${inputHov ? '90px' : '0px'} circle at ${mouseX}px ${mouseY}px, rgba(122,30,44,0.18), transparent 80%)`
 
   const score  = useCounter(SCORE_END, 1600, SCORE_START)
   const barPct = Math.min(Math.round(((score - SCORE_START) / (SCORE_END - SCORE_START)) * 78), 78)
@@ -83,6 +183,12 @@ export default function LoginPage() {
   function handlePhoneChange(e: React.ChangeEvent<HTMLInputElement>) {
     setRawDigits(e.target.value.replace(/\D/g, '').slice(0, 10))
     setError(null)
+  }
+
+  function handleInputMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    const rect = e.currentTarget.getBoundingClientRect()
+    mouseX.set(e.clientX - rect.left)
+    mouseY.set(e.clientY - rect.top)
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -136,7 +242,7 @@ export default function LoginPage() {
         className="w-full max-w-[780px] grid md:grid-cols-[1fr_1fr] rounded-[18px] overflow-hidden border border-red-100/80"
         style={{ boxShadow: '0 32px 64px -16px rgba(155,44,44,0.22)' }}
       >
-        {/* ── LEFT: Brand panel ──────────────────────────────────────── */}
+        {/* ── LEFT: Brand panel ────────────────────────────────────── */}
         <div
           ref={leftRef}
           className="relative hidden md:flex flex-col justify-between p-6 overflow-hidden"
@@ -154,17 +260,28 @@ export default function LoginPage() {
             className="absolute inset-0 pointer-events-none opacity-[0.18]"
             style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.18) 1px, transparent 0)', backgroundSize: '20px 20px' }}
           />
-          {/* Spinning rings */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.35 }}>
-            <motion.svg viewBox="0 0 500 500" className="absolute w-[140%] h-[140%]"
-              animate={{ rotate: 360 }} transition={{ duration: 55, repeat: Infinity, ease: 'linear' }}>
-              <circle cx="250" cy="250" r="220" fill="none" stroke="white" strokeOpacity="0.12" strokeWidth="1" />
-              <circle cx="250" cy="250" r="160" fill="none" stroke="white" strokeOpacity="0.14" strokeWidth="1" />
-            </motion.svg>
-            <motion.svg viewBox="0 0 500 500" className="absolute w-full h-full"
-              animate={{ rotate: -360 }} transition={{ duration: 75, repeat: Infinity, ease: 'linear' }}>
-              <circle cx="250" cy="250" r="110" fill="none" stroke="#fecaca" strokeOpacity="0.22" strokeWidth="1" strokeDasharray="5 9" />
-            </motion.svg>
+
+          {/* ── Orbit display — centered in the panel ── */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.9 }}>
+            {/* Dashed orbit path rings */}
+            <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.1 }}>
+              {[58, 95, 128].map(r => (
+                <circle key={r} cx="50%" cy="50%" r={r} fill="none" stroke="white" strokeWidth="1" strokeDasharray="3 8" />
+              ))}
+            </svg>
+            {/* Center MCC orb */}
+            <div className="relative flex items-center justify-center rounded-full"
+              style={{ width: 52, height: 52, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)' }}>
+              <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+              <div className="absolute inset-0 rounded-full animate-ping" style={{ background: 'rgba(255,255,255,0.07)', animationDuration: '2.8s' }} />
+            </div>
+            {/* Orbiting icons */}
+            {ORBIT_ICONS.map((cfg, i) => (
+              <OrbitIcon key={i} {...cfg} />
+            ))}
           </div>
 
           {/* Content top */}
@@ -195,7 +312,6 @@ export default function LoginPage() {
 
           {/* Content bottom: score card + testimonial */}
           <div className="relative z-10 mt-5">
-            {/* Inline score card */}
             <div className="bg-white/12 border border-white/15 rounded-xl p-3 mb-4 flex items-center justify-between">
               <div>
                 <p className="text-[9px] font-bold uppercase tracking-wider text-rose-200/60 mb-0.5">Score promedio</p>
@@ -214,7 +330,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Testimonial */}
             <div className="border-t border-white/12 pt-3">
               <AnimatePresence mode="wait">
                 <motion.div key={testiIdx}
@@ -250,114 +365,136 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* ── RIGHT: OTP phone form ──────────────────────────────────── */}
+        {/* ── RIGHT: OTP phone form ─────────────────────────────────── */}
         <div className="relative flex flex-col justify-center p-6 sm:p-8 bg-white">
-          {/* Corner glow */}
           <div className="absolute -top-20 -right-20 w-48 h-48 rounded-full pointer-events-none" style={{ background: 'rgba(155,44,44,0.06)', filter: 'blur(35px)' }} />
 
-          {/* Header */}
+          {/* Header with BoxReveal */}
           <div className="mb-5">
-            <h2 className="font-lora text-[1.5rem] font-bold text-[#241014] mb-1 tracking-tight">
-              Bienvenido de vuelta
-            </h2>
-            <p className="text-neutral-500 text-xs leading-relaxed">
-              Ingresa tu número para recibir un código de acceso por SMS.
-            </p>
+            <BoxReveal delay={0.1}>
+              <h2 className="font-lora text-[1.5rem] font-bold text-[#241014] mb-1 tracking-tight">
+                Bienvenido de vuelta
+              </h2>
+            </BoxReveal>
+            <BoxReveal delay={0.18}>
+              <p className="text-neutral-500 text-xs leading-relaxed">
+                Ingresa tu número para recibir un código de acceso por SMS.
+              </p>
+            </BoxReveal>
           </div>
 
           {/* Phone form */}
           <form onSubmit={handleSubmit} className="space-y-3">
-            <div>
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
-                Número de teléfono
-              </label>
-              <div className={cn(
-                'flex items-center rounded-xl border bg-neutral-50 transition-all overflow-hidden',
-                focused ? 'border-[#7A1E2C] ring-2 ring-[rgba(122,30,44,0.12)]' : 'border-neutral-200',
-                error ? 'border-red-400 ring-2 ring-red-100' : '',
-              )}>
-                <span className="pl-3.5 pr-2 text-sm font-semibold text-neutral-400 shrink-0 select-none border-r border-neutral-200 pr-3 mr-0 py-2.5">
-                  +1
-                </span>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={displayPhone}
-                  onChange={handlePhoneChange}
-                  onFocus={() => setFocused(true)}
-                  onBlur={() => setFocused(false)}
-                  placeholder="(555) 000-0000"
-                  autoFocus
-                  className="flex-1 bg-transparent px-3 py-2.5 text-sm font-medium text-[#241014] placeholder:text-neutral-400 focus:outline-none"
-                />
-                {/* Checkmark when valid */}
+            <BoxReveal delay={0.26}>
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
+                  Número de teléfono
+                </label>
+                {/* Mouse-following gradient wrapper */}
+                <motion.div
+                  className="rounded-xl p-[2px] transition-colors duration-300"
+                  style={{ background: gradientBg }}
+                  onMouseMove={handleInputMouseMove}
+                  onMouseEnter={() => setInputHov(true)}
+                  onMouseLeave={() => setInputHov(false)}
+                >
+                  <div className={cn(
+                    'flex items-center rounded-[10px] border bg-neutral-50 transition-all overflow-hidden',
+                    focused ? 'border-[#7A1E2C] ring-2 ring-[rgba(122,30,44,0.12)]' : 'border-neutral-200',
+                    error  ? 'border-red-400 ring-2 ring-red-100' : '',
+                  )}>
+                    <span className="pl-3.5 pr-3 text-sm font-semibold text-neutral-400 shrink-0 select-none border-r border-neutral-200 py-2.5">
+                      +1
+                    </span>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={displayPhone}
+                      onChange={handlePhoneChange}
+                      onFocus={() => setFocused(true)}
+                      onBlur={() => setFocused(false)}
+                      placeholder="(555) 000-0000"
+                      autoFocus
+                      className="flex-1 bg-transparent px-3 py-2.5 text-sm font-medium text-[#241014] placeholder:text-neutral-400 focus:outline-none"
+                    />
+                    <AnimatePresence>
+                      {isValid && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.6 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.6 }}
+                          className="pr-3"
+                        >
+                          <svg className="w-4 h-4 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M5 13l4 4L19 7" />
+                          </svg>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </motion.div>
                 <AnimatePresence>
-                  {isValid && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.6 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.6 }}
-                      className="pr-3"
-                    >
-                      <svg className="w-4 h-4 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M5 13l4 4L19 7" />
-                      </svg>
-                    </motion.div>
+                  {error && (
+                    <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                      className="text-xs text-red-500 mt-1.5 font-medium" role="alert">
+                      {error}
+                    </motion.p>
                   )}
                 </AnimatePresence>
               </div>
-              <AnimatePresence>
-                {error && (
-                  <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                    className="text-xs text-red-500 mt-1.5 font-medium" role="alert">
-                    {error}
-                  </motion.p>
-                )}
-              </AnimatePresence>
-            </div>
+            </BoxReveal>
 
-            <motion.button
-              type="submit"
-              disabled={!isValid || loading}
-              whileHover={{ y: isValid ? -1 : 0 }}
-              whileTap={{ y: 0 }}
-              className="w-full py-3 text-white rounded-xl font-bold text-sm tracking-tight transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{
-                background: 'linear-gradient(180deg,#9b3545 0%,#7A1E2C 60%,#5C1520 100%)',
-                boxShadow: isValid ? '0 8px 24px -6px rgba(122,30,44,0.50)' : 'none',
-              }}
-            >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="w-4 h-4 border-2 border-white/60 border-t-transparent rounded-full animate-spin" />
-                  Enviando código...
-                </span>
-              ) : (
-                'Continuar →'
-              )}
-            </motion.button>
+            <BoxReveal delay={0.34}>
+              <motion.button
+                type="submit"
+                disabled={!isValid || loading}
+                whileHover={{ y: isValid ? -1 : 0 }}
+                whileTap={{ y: 0 }}
+                className="w-full py-3 text-white rounded-xl font-bold text-sm tracking-tight transition-all disabled:opacity-40 disabled:cursor-not-allowed group/btn relative overflow-hidden"
+                style={{
+                  background:  'linear-gradient(180deg,#9b3545 0%,#7A1E2C 60%,#5C1520 100%)',
+                  boxShadow:   isValid ? '0 8px 24px -6px rgba(122,30,44,0.50)' : 'none',
+                }}
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white/60 border-t-transparent rounded-full animate-spin" />
+                    Enviando código...
+                  </span>
+                ) : (
+                  <>
+                    Continuar →
+                    <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-rose-300/60 to-transparent" />
+                  </>
+                )}
+              </motion.button>
+            </BoxReveal>
           </form>
 
-          <p className="text-[11px] text-neutral-400 text-center mt-3">
-            Te enviaremos un código de 6 dígitos. Sin contraseñas.
-          </p>
+          <BoxReveal delay={0.4} className="mt-3">
+            <p className="text-[11px] text-neutral-400 text-center">
+              Te enviaremos un código de 6 dígitos. Sin contraseñas.
+            </p>
+          </BoxReveal>
 
-          {/* Trust footer */}
-          <div className="mt-5 pt-4 border-t border-neutral-100 flex items-center justify-between text-[10px] font-semibold text-neutral-400">
-            <span className="flex items-center gap-1">
-              <ShieldCheck className="w-3 h-3 text-emerald-500" />
-              Encriptación bancaria
-            </span>
-            <span>FCRA · GLB Compliant</span>
-          </div>
+          <BoxReveal delay={0.46} className="mt-5">
+            <div className="pt-4 border-t border-neutral-100 flex items-center justify-between text-[10px] font-semibold text-neutral-400">
+              <span className="flex items-center gap-1">
+                <ShieldCheck className="w-3 h-3 text-emerald-500" />
+                Encriptación bancaria
+              </span>
+              <span>FCRA · GLB Compliant</span>
+            </div>
+          </BoxReveal>
 
-          {/* Team link */}
-          <p className="text-center text-[11px] text-neutral-400 mt-2.5">
-            ¿Eres del equipo?{' '}
-            <Link href="/team/login" className="font-bold hover:underline" style={{ color: '#7A1E2C' }}>
-              Ingresa aquí
-            </Link>
-          </p>
+          <BoxReveal delay={0.52} className="mt-2.5">
+            <p className="text-center text-[11px] text-neutral-400">
+              ¿Eres del equipo?{' '}
+              <Link href="/team/login" className="font-bold hover:underline" style={{ color: '#7A1E2C' }}>
+                Ingresa aquí
+              </Link>
+            </p>
+          </BoxReveal>
         </div>
       </motion.div>
 
@@ -365,13 +502,13 @@ export default function LoginPage() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.4 }}
+        transition={{ delay: 0.5 }}
         className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1.5 text-[10px] font-bold uppercase tracking-wider text-neutral-400"
       >
         {[
           { label: '256-bit Encryption', icon: <svg className="w-3 h-3" style={{ color: '#7A1E2C' }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-12V7a4 4 0 10-8 0v4h8z" /></svg> },
-          { label: 'FCRA Compliant', icon: <svg className="w-3 h-3" style={{ color: '#7A1E2C' }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
-          { label: '12,000+ Miembros', icon: <svg className="w-3 h-3" style={{ color: '#7A1E2C' }} fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.448a1 1 0 00-.364 1.118l1.287 3.957c.3.922-.755 1.688-1.539 1.118l-3.37-2.448a1 1 0 00-1.175 0l-3.37 2.448c-.783.57-1.838-.196-1.539-1.118l1.287-3.957a1 1 0 00-.364-1.118L2.063 9.384c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69l1.286-3.957z" /></svg> },
+          { label: 'FCRA Compliant',     icon: <svg className="w-3 h-3" style={{ color: '#7A1E2C' }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
+          { label: '12,000+ Miembros',  icon: <svg className="w-3 h-3" style={{ color: '#7A1E2C' }} fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.448a1 1 0 00-.364 1.118l1.287 3.957c.3.922-.755 1.688-1.539 1.118l-3.37-2.448a1 1 0 00-1.175 0l-3.37 2.448c-.783.57-1.838-.196-1.539-1.118l1.287-3.957a1 1 0 00-.364-1.118L2.063 9.384c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69l1.286-3.957z" /></svg> },
           { label: 'Cancela cuando quieras', icon: <svg className="w-3 h-3" style={{ color: '#7A1E2C' }} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg> },
         ].map(({ icon, label }) => (
           <span key={label} className="flex items-center gap-1">{icon}{label}</span>
