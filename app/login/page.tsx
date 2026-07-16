@@ -134,12 +134,12 @@ function BoxReveal({
 /* ─── Orbit config ─────────────────────────────────────────────────────── */
 
 const ORBIT_ICONS = [
-  { icon: CreditCard, radius: 44,  duration: 15, delay: 0,  reverse: false, color: 'rgba(255,200,210,0.80)' },
-  { icon: ShieldCheck,radius: 44,  duration: 15, delay: 7.5,reverse: false, color: 'rgba(255,200,210,0.80)' },
-  { icon: TrendingUp, radius: 72,  duration: 24, delay: 0,  reverse: true,  color: 'rgba(255,180,195,0.60)' },
-  { icon: Star,       radius: 72,  duration: 24, delay: 12, reverse: true,  color: 'rgba(255,180,195,0.60)' },
-  { icon: Lock,       radius: 100, duration: 34, delay: 0,  reverse: false, color: 'rgba(255,160,180,0.40)' },
-  { icon: Zap,        radius: 100, duration: 34, delay: 17, reverse: false, color: 'rgba(255,160,180,0.40)' },
+  { icon: CreditCard, radius: 32, duration: 12, delay: 0,   reverse: false, color: 'rgba(255,200,210,0.85)' },
+  { icon: ShieldCheck,radius: 32, duration: 12, delay: 6,   reverse: false, color: 'rgba(255,200,210,0.85)' },
+  { icon: TrendingUp, radius: 55, duration: 20, delay: 0,   reverse: true,  color: 'rgba(255,180,195,0.65)' },
+  { icon: Star,       radius: 55, duration: 20, delay: 10,  reverse: true,  color: 'rgba(255,180,195,0.65)' },
+  { icon: Lock,       radius: 76, duration: 30, delay: 0,   reverse: false, color: 'rgba(255,160,180,0.45)' },
+  { icon: Zap,        radius: 76, duration: 30, delay: 15,  reverse: false, color: 'rgba(255,160,180,0.45)' },
 ]
 
 /* ─── Page ─────────────────────────────────────────────────────────────── */
@@ -204,7 +204,7 @@ export default function LoginPage() {
 
   return (
     <div
-      className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-6 gap-4 relative overflow-hidden"
+      className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-4 gap-3 relative overflow-hidden"
       style={{ background: 'linear-gradient(145deg, #ffffff 0%, #fff0f0 55%, #fddada 100%)' }}
     >
       {/* Background blobs */}
@@ -214,11 +214,11 @@ export default function LoginPage() {
         <div className="absolute -bottom-24 left-1/3 w-64 h-64 rounded-full" style={{ background: 'rgba(253,163,163,0.18)', filter: 'blur(55px)' }} />
       </div>
 
-      {/* Brand mark */}
+      {/* Brand mark — desktop only (mobile has one inside the card) */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-2.5 select-none"
+        className="hidden md:flex items-center gap-2.5 select-none"
       >
         <div
           className="w-8 h-8 rounded-lg flex items-center justify-center"
@@ -262,16 +262,16 @@ export default function LoginPage() {
           />
 
           {/* ── Orbit zone: own contained section at the top ── */}
-          <div className="relative flex-shrink-0 h-[240px] flex items-center justify-center pointer-events-none overflow-hidden">
+          <div className="relative flex-shrink-0 h-[170px] flex items-center justify-center pointer-events-none overflow-hidden">
             {/* Dashed orbit path rings */}
             <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.18 }}>
-              {[44, 72, 100].map(r => (
+              {[32, 55, 76].map(r => (
                 <circle key={r} cx="50%" cy="50%" r={r} fill="none" stroke="white" strokeWidth="1" strokeDasharray="3 8" />
               ))}
             </svg>
             {/* Center MCC orb */}
             <div className="relative z-10 flex items-center justify-center rounded-full flex-shrink-0"
-              style={{ width: 52, height: 52, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)' }}>
+              style={{ width: 40, height: 40, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)' }}>
               <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z" />
                 <path d="m9 12 2 2 4-4" />
@@ -284,23 +284,23 @@ export default function LoginPage() {
           </div>
 
           {/* ── Content zone: below orbit ── */}
-          <div className="relative z-10 flex flex-col justify-between flex-1 px-6 pb-6">
+          <div className="relative z-10 flex flex-col justify-between flex-1 px-5 pb-5">
             <div>
-              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-rose-200/75 bg-white/10 border border-white/15 rounded-full px-2.5 py-0.5 mb-3">
+              <span className="inline-flex items-center gap-1.5 text-[9px] font-bold tracking-widest uppercase text-rose-200/75 bg-white/10 border border-white/15 rounded-full px-2 py-0.5 mb-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-rose-300 animate-pulse" />
                 Portal de Miembros
               </span>
-              <h1 className="font-lora text-[1.5rem] leading-[1.1] font-bold text-white mb-2">
+              <h1 className="font-lora text-[1.3rem] leading-[1.15] font-bold text-white mb-1.5">
                 Tu score de crédito,<br />reimaginado.
               </h1>
-              <p className="text-rose-100/75 text-[11px] leading-relaxed">
-                Disputas automatizadas, revisión experta y un asesor dedicado — diseñado para personas que exigen resultados.
+              <p className="text-rose-100/70 text-[10.5px] leading-relaxed">
+                Disputas automatizadas, revisión experta y un asesor dedicado — para personas que exigen resultados.
               </p>
-              <ul className="mt-3 space-y-1.5">
+              <ul className="mt-2.5 space-y-1">
                 {FEATURES.map(f => (
-                  <li key={f} className="flex items-center gap-2 text-[11px] text-rose-50/85">
-                    <span className="w-4 h-4 rounded-full bg-white/15 flex items-center justify-center shrink-0">
-                      <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+                  <li key={f} className="flex items-center gap-2 text-[10.5px] text-rose-50/85">
+                    <span className="w-3.5 h-3.5 rounded-full bg-white/15 flex items-center justify-center shrink-0">
+                      <svg className="w-2 h-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
                         <path d="M5 13l4 4L19 7" />
                       </svg>
                     </span>
@@ -311,8 +311,8 @@ export default function LoginPage() {
             </div>
 
           {/* Score card + testimonial */}
-          <div className="mt-4">
-            <div className="bg-white/12 border border-white/15 rounded-xl p-3 mb-4 flex items-center justify-between">
+          <div className="mt-3">
+            <div className="bg-white/12 border border-white/15 rounded-xl p-2.5 mb-3 flex items-center justify-between">
               <div>
                 <p className="text-[9px] font-bold uppercase tracking-wider text-rose-200/60 mb-0.5">Score promedio</p>
                 <div className="flex items-end gap-1.5">
@@ -367,13 +367,23 @@ export default function LoginPage() {
         </div>
 
         {/* ── RIGHT: OTP phone form ─────────────────────────────────── */}
-        <div className="relative flex flex-col justify-center p-6 sm:p-8 bg-white">
+        <div className="relative flex flex-col justify-center p-5 sm:p-6 bg-white">
           <div className="absolute -top-20 -right-20 w-48 h-48 rounded-full pointer-events-none" style={{ background: 'rgba(155,44,44,0.06)', filter: 'blur(35px)' }} />
 
+          {/* Mobile-only brand mark (left panel is hidden on mobile) */}
+          <div className="flex md:hidden items-center gap-2 mb-5">
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#7A1E2C,#5C1520)' }}>
+              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z" /><path d="m9 12 2 2 4-4" />
+              </svg>
+            </div>
+            <span className="font-lora font-bold text-[15px] text-[#241014]">My Credit <span style={{ color: '#7A1E2C' }}>Café</span></span>
+          </div>
+
           {/* Header with BoxReveal */}
-          <div className="mb-5">
+          <div className="mb-4">
             <BoxReveal delay={0.1}>
-              <h2 className="font-lora text-[1.5rem] font-bold text-[#241014] mb-1 tracking-tight">
+              <h2 className="font-lora text-[1.3rem] font-bold text-[#241014] mb-1 tracking-tight">
                 Bienvenido de vuelta
               </h2>
             </BoxReveal>
@@ -478,8 +488,8 @@ export default function LoginPage() {
             </p>
           </BoxReveal>
 
-          <BoxReveal delay={0.46} className="mt-5">
-            <div className="pt-4 border-t border-neutral-100 flex items-center justify-between text-[10px] font-semibold text-neutral-400">
+          <BoxReveal delay={0.46} className="mt-4">
+            <div className="pt-3 border-t border-neutral-100 flex items-center justify-between text-[10px] font-semibold text-neutral-400">
               <span className="flex items-center gap-1">
                 <ShieldCheck className="w-3 h-3 text-emerald-500" />
                 Encriptación bancaria
@@ -499,12 +509,12 @@ export default function LoginPage() {
         </div>
       </motion.div>
 
-      {/* Trust strip */}
+      {/* Trust strip — desktop only */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1.5 text-[10px] font-bold uppercase tracking-wider text-neutral-400"
+        className="hidden md:flex flex-wrap items-center justify-center gap-x-6 gap-y-1.5 text-[10px] font-bold uppercase tracking-wider text-neutral-400"
       >
         {[
           { label: '256-bit Encryption', icon: <svg className="w-3 h-3" style={{ color: '#7A1E2C' }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-12V7a4 4 0 10-8 0v4h8z" /></svg> },
