@@ -821,7 +821,6 @@ export default function DashboardPage() {
                           ${PAYMENTS.reduce((s, p) => s + p.amount, 0).toFixed(2)}
                         </span>
                       </div>
-                    </div>
                   </div>
                 </div>
               </GlowCard>
