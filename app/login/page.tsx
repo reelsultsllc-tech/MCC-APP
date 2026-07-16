@@ -54,17 +54,19 @@ function OrbitIcon({
   icon: Icon,
   radius,
   duration,
-  delay = 0,
+  initialAngle = 0,
   reverse = false,
   color = 'rgba(255,255,255,0.65)',
 }: {
   icon: React.ElementType
   radius: number
   duration: number
-  delay?: number
+  initialAngle?: number
   reverse?: boolean
   color?: string
 }) {
+  const start = reverse ? initialAngle : initialAngle
+  const end   = reverse ? initialAngle - 360 : initialAngle + 360
   return (
     <motion.div
       className="absolute pointer-events-none"
@@ -76,25 +78,27 @@ function OrbitIcon({
         marginTop: -radius,
         marginLeft: -radius,
       }}
-      animate={{ rotate: reverse ? -360 : 360 }}
-      transition={{ duration, repeat: Infinity, ease: 'linear', delay }}
+      initial={{ rotate: start }}
+      animate={{ rotate: end }}
+      transition={{ duration, repeat: Infinity, ease: 'linear', repeatType: 'loop' }}
     >
       {/* Icon sits at 12-o'clock on the orbit ring, counter-rotates to stay upright */}
       <motion.div
         className="absolute flex items-center justify-center rounded-full"
         style={{
-          width: 30, height: 30,
+          width: 26, height: 26,
           top: 0, left: '50%',
-          marginLeft: -15,
-          marginTop: -15,
-          background: 'rgba(255,255,255,0.09)',
-          border: '1px solid rgba(255,255,255,0.16)',
+          marginLeft: -13,
+          marginTop: -13,
+          background: 'rgba(255,255,255,0.10)',
+          border: '1px solid rgba(255,255,255,0.18)',
           backdropFilter: 'blur(6px)',
         }}
-        animate={{ rotate: reverse ? 360 : -360 }}
-        transition={{ duration, repeat: Infinity, ease: 'linear', delay }}
+        initial={{ rotate: -start }}
+        animate={{ rotate: reverse ? 360 - initialAngle : -(initialAngle + 360) }}
+        transition={{ duration, repeat: Infinity, ease: 'linear', repeatType: 'loop' }}
       >
-        <Icon size={13} color={color} />
+        <Icon size={12} color={color} />
       </motion.div>
     </motion.div>
   )
@@ -134,12 +138,15 @@ function BoxReveal({
 /* ─── Orbit config ─────────────────────────────────────────────────────── */
 
 const ORBIT_ICONS = [
-  { icon: CreditCard, radius: 32, duration: 12, delay: 0,   reverse: false, color: 'rgba(255,200,210,0.85)' },
-  { icon: ShieldCheck,radius: 32, duration: 12, delay: 6,   reverse: false, color: 'rgba(255,200,210,0.85)' },
-  { icon: TrendingUp, radius: 55, duration: 20, delay: 0,   reverse: true,  color: 'rgba(255,180,195,0.65)' },
-  { icon: Star,       radius: 55, duration: 20, delay: 10,  reverse: true,  color: 'rgba(255,180,195,0.65)' },
-  { icon: Lock,       radius: 76, duration: 30, delay: 0,   reverse: false, color: 'rgba(255,160,180,0.45)' },
-  { icon: Zap,        radius: 76, duration: 30, delay: 15,  reverse: false, color: 'rgba(255,160,180,0.45)' },
+  // Inner ring (r=32): 180° apart
+  { icon: CreditCard, radius: 32, duration: 12, initialAngle:   0, reverse: false, color: 'rgba(255,200,210,0.90)' },
+  { icon: ShieldCheck,radius: 32, duration: 12, initialAngle: 180, reverse: false, color: 'rgba(255,200,210,0.90)' },
+  // Middle ring (r=55): 180° apart, offset 90° from inner
+  { icon: TrendingUp, radius: 55, duration: 20, initialAngle:  90, reverse: true,  color: 'rgba(255,180,195,0.70)' },
+  { icon: Star,       radius: 55, duration: 20, initialAngle: 270, reverse: true,  color: 'rgba(255,180,195,0.70)' },
+  // Outer ring (r=76): 180° apart, offset 45° from inner
+  { icon: Lock,       radius: 76, duration: 30, initialAngle:  45, reverse: false, color: 'rgba(255,160,180,0.50)' },
+  { icon: Zap,        radius: 76, duration: 30, initialAngle: 225, reverse: false, color: 'rgba(255,160,180,0.50)' },
 ]
 
 /* ─── Page ─────────────────────────────────────────────────────────────── */
