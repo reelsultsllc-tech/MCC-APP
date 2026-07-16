@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { verifyEmailOtp } from '@/lib/supabase'
+import { MccLogoIcon } from '@/components/MccLogo'
 
 export default function AdminOtpPage() {
   const router  = useRouter()
@@ -57,12 +58,7 @@ export default function AdminOtpPage() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#7A1E2C,#5C1520)', boxShadow: '0 8px 24px rgba(122,30,44,0.4)' }}>
-            <svg viewBox="0 0 24 24" className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z" />
-              <path d="m9 12 2 2 4-4" />
-            </svg>
-          </div>
+          <MccLogoIcon size={48} />
         </div>
 
         <h1 className="font-lora text-2xl font-semibold text-white text-center mb-1">Revisa tu correo</h1>

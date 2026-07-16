@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { sendEmailOtp } from '@/lib/supabase'
 import { ShieldCheck, Mail } from 'lucide-react'
+import { MccLogo } from '@/components/MccLogo'
 
 const ADMIN_EMAIL = 'mycreditcafe2026@gmail.com'
 
@@ -42,21 +43,9 @@ export default function AdminLoginPage() {
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-2.5 mb-8"
+        className="mb-8"
       >
-        <div
-          className="w-9 h-9 rounded-xl flex items-center justify-center"
-          style={{ background: 'linear-gradient(135deg,#7A1E2C,#5C1520)', boxShadow: '0 6px 20px rgba(122,30,44,0.4)' }}
-        >
-          <svg viewBox="0 0 24 24" className="w-4.5 h-4.5 text-white w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z" />
-            <path d="m9 12 2 2 4-4" />
-          </svg>
-        </div>
-        <div>
-          <p className="font-lora font-bold text-white text-base leading-tight">MCC Admin</p>
-          <p className="text-[10px]" style={{ color: 'rgba(249,208,216,0.4)' }}>Acceso restringido</p>
-        </div>
+        <MccLogo size="sm" dark={true} />
       </motion.div>
 
       {/* Card */}

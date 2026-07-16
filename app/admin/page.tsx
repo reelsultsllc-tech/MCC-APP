@@ -9,7 +9,10 @@ import {
   Users, FileText, CreditCard, Settings, LayoutDashboard,
   AlertTriangle, CheckCircle2, Clock, LogOut,
   Search, Bell, BarChart2, ExternalLink, ChevronRight, Star,
+  Brain, TrendingUp, TrendingDown, ChevronDown, Sparkles,
 } from 'lucide-react'
+import { MccLogo, MccLogoIcon } from '@/components/MccLogo'
+import AdminProfilePopover from '@/components/AdminProfilePopover'
 
 /* ─── Design tokens ─────────────────────────────────────────────── */
 
@@ -82,12 +85,69 @@ const PAYMENTS = [
 const NAV = [
   { id:'overview',  label:'Resumen',  Icon:LayoutDashboard },
   { id:'clients',   label:'Clientes', Icon:Users },
+  { id:'insights',  label:'IA',       Icon:Brain },
   { id:'disputes',  label:'Disputas', Icon:FileText },
   { id:'payments',  label:'Pagos',    Icon:CreditCard },
   { id:'settings',  label:'Ajustes',  Icon:Settings },
 ] as const
 
 type Tab = typeof NAV[number]['id']
+
+/* ─── AI Insights data ──────────────────────────────────────────── */
+
+const AI_INSIGHTS = [
+  {
+    id:1, clientId:2, priority:'urgent' as const,
+    client:'Jonathan Reyes',
+    category:'Pago vencido',
+    insight:'Pago vencido 10 días. Alto riesgo de reporte negativo adicional si no se regulariza esta semana.',
+    action:'Llamar al cliente hoy',
+    impact:'Previene −40 pts en score',
+    impactColor:'#f87171',
+  },
+  {
+    id:2, clientId:1, priority:'high' as const,
+    client:'Marisol Vega',
+    category:'Disputa estancada',
+    insight:'Portfolio Recovery ignoró 2 cartas de validación. Escalamiento al CFPB aumenta tasa de resolución en 73%.',
+    action:'Escalar al CFPB',
+    impact:'+24 pts estimados al resolver',
+    impactColor:'#a3d080',
+  },
+  {
+    id:3, clientId:4, priority:'high' as const,
+    client:'Luis Domínguez',
+    category:'Caso estancado',
+    insight:'Disputa con Convergent Outsourcing lleva 36 días sin movimiento. La ley FDCPA permite demanda por daños estatutarios.',
+    action:'Revisar opción legal FDCPA',
+    impact:'+15 pts si se elimina',
+    impactColor:'#a3d080',
+  },
+  {
+    id:4, clientId:5, priority:'medium' as const,
+    client:'Carmen Ruiz',
+    category:'Oportunidad de score',
+    insight:'Score de 714. A 36 pts de 750, umbral para hipoteca convencional FHA con tasa preferencial.',
+    action:'Optimizar utilización de crédito',
+    impact:'Meta: 750 en 2-3 meses',
+    impactColor:'#60a5fa',
+  },
+  {
+    id:5, clientId:6, priority:'medium' as const,
+    client:'Roberto Medina',
+    category:'Inicio reciente',
+    insight:'Cliente nuevo con score 510. Prioridad: eliminar las 2 colecciones abiertas antes de aplicar nuevas líneas de crédito.',
+    action:'Enviar disputas a los 3 bureaus',
+    impact:'+30-50 pts estimados',
+    impactColor:'#a3d080',
+  },
+]
+
+const RECOMMENDATIONS = [
+  { id:1, title:'Optimizar mezcla de crédito', body:'3 clientes solo tienen tarjetas de crédito. Agregar un préstamo a plazos puede mejorar score promedio +12 pts.', tag:'Portafolio' },
+  { id:2, title:'Seguimiento de disputas Q3', body:'6 disputas llevan más de 30 días abiertas. La ley FCRA exige respuesta en 30 días; iniciar escalamiento masivo.', tag:'Urgente' },
+  { id:3, title:'Retención de clientes completados', body:'Carmen Ruiz y Sandra Gutiérrez completaron el programa. Ofrecerles plan de mantenimiento antes de que el score decaiga.', tag:'Retención' },
+]
 
 /* ─── Micro helpers ─────────────────────────────────────────────── */
 
@@ -392,17 +452,254 @@ function DisputesSection() {
   )
 }
 
+/* ─── AI Insights ───────────────────────────────────────────────── */
+
+function InsightsSection() {
+  const [expanded, setExpanded] = useState<number | null>(null)
+  const urgentCount = AI_INSIGHTS.filter(i => i.priority === 'urgent').length
+
+  const priorityStyle = {
+    urgent: { color:'#f87171', bg:'rgba(248,113,113,0.12)', label:'Urgente',  border:'rgba(248,113,113,0.35)' },
+    high:   { color:tk.amber,  bg:'rgba(245,158,11,0.10)', label:'Alto',      border:'rgba(245,158,11,0.30)' },
+    medium: { color:'#60a5fa', bg:'rgba(96,165,250,0.08)', label:'Medio',     border:'rgba(96,165,250,0.25)' },
+  }
+
+  return (
+    <div className="space-y-6">
+
+      {/* Header banner */}
+      <div className="rounded-2xl border p-4 flex items-center gap-3"
+        style={{ background:'rgba(171,28,66,0.08)', borderColor:'rgba(171,28,66,0.35)' }}>
+        <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+          style={{ background:'linear-gradient(135deg,#7A1E2C,#ab1c42)' }}>
+          <Sparkles size={16} color="#fff" />
+        </div>
+        <div>
+          <p className="text-sm font-semibold" style={{ color:tk.text }}>Motor de Inteligencia MCC</p>
+          <p className="text-xs" style={{ color:tk.muted }}>
+            {urgentCount} alerta{urgentCount!==1?'s':''} urgente{urgentCount!==1?'s':''} · {AI_INSIGHTS.length} recomendaciones activas
+          </p>
+        </div>
+      </div>
+
+      {/* AI Insights — individual alerts */}
+      <div>
+        <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color:tk.dim }}>
+          Alertas personalizadas por cliente
+        </p>
+        <div className="space-y-2">
+          {AI_INSIGHTS.map(ins => {
+            const s = priorityStyle[ins.priority]
+            const open = expanded === ins.id
+            return (
+              <div key={ins.id} className="rounded-2xl border overflow-hidden transition-all"
+                style={{ borderColor: open ? s.border : tk.cardB, background: open ? s.bg : tk.card }}>
+                {/* Row */}
+                <button className="w-full flex items-center gap-3 px-4 py-3.5 text-left"
+                  onClick={() => setExpanded(open ? null : ins.id)}>
+                  <div className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center"
+                    style={{ background: s.bg, border:`1px solid ${s.border}` }}>
+                    <Brain size={12} color={s.color} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-semibold" style={{ color:tk.text }}>{ins.client}</span>
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
+                        style={{ background:s.bg, color:s.color, border:`1px solid ${s.border}` }}>
+                        {s.label}
+                      </span>
+                      <span className="text-[10px]" style={{ color:tk.dim }}>{ins.category}</span>
+                    </div>
+                    {/* Preview on mobile (collapsed) */}
+                    {!open && (
+                      <p className="text-[10.5px] mt-0.5 truncate md:hidden" style={{ color:tk.muted }}>{ins.insight}</p>
+                    )}
+                    {/* Always visible on desktop */}
+                    <p className="text-[10.5px] mt-0.5 hidden md:block" style={{ color:tk.muted }}>{ins.insight}</p>
+                  </div>
+                  <ChevronDown size={14} color={tk.dim}
+                    style={{ transform: open ? 'rotate(180deg)' : 'none', transition:'transform 0.2s', flexShrink:0 }} />
+                </button>
+
+                {/* Expanded detail (mobile) / Always visible on desktop */}
+                <AnimatePresence>
+                  {open && (
+                    <motion.div initial={{ height:0, opacity:0 }} animate={{ height:'auto', opacity:1 }}
+                      exit={{ height:0, opacity:0 }} transition={{ duration:0.18 }}
+                      className="md:hidden border-t px-4 py-3" style={{ borderColor:s.border }}>
+                      <p className="text-xs mb-3" style={{ color:tk.muted }}>{ins.insight}</p>
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="text-xs font-semibold" style={{ color:ins.impactColor }}>{ins.impact}</span>
+                        <button className="text-xs font-bold px-3 py-1.5 rounded-lg"
+                          style={{ background:s.bg, color:s.color, border:`1px solid ${s.border}` }}>
+                          {ins.action}
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Action row — always visible on desktop */}
+                <div className="hidden md:flex items-center justify-between px-4 pb-3.5 -mt-1">
+                  <span className="text-xs font-semibold" style={{ color:ins.impactColor }}>{ins.impact}</span>
+                  <button className="text-xs font-bold px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80"
+                    style={{ background:s.bg, color:s.color, border:`1px solid ${s.border}` }}>
+                    {ins.action}
+                  </button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Recomendaciones personalizadas */}
+      <div>
+        <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color:tk.dim }}>
+          Recomendaciones personalizadas — Portafolio
+        </p>
+        <div className="grid md:grid-cols-3 gap-3">
+          {RECOMMENDATIONS.map(r => (
+            <div key={r.id} className="rounded-2xl border p-4 space-y-2"
+              style={{ background:tk.card, borderColor:tk.cardB }}>
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-sm font-semibold leading-tight" style={{ color:tk.text }}>{r.title}</p>
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
+                  style={{ background:'rgba(171,28,66,0.18)', color:tk.lite }}>{r.tag}</span>
+              </div>
+              <p className="text-[11px] leading-relaxed" style={{ color:tk.muted }}>{r.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Historial de pagos — expanded desktop / collapsible mobile */}
+      <PaymentHistoryBlock />
+    </div>
+  )
+}
+
+/* ─── Payment history (shared block) ───────────────────────────── */
+
+function PaymentHistoryBlock() {
+  const [openIds, setOpenIds] = useState<Set<number>>(new Set())
+  const collected = PAYMENTS.filter(p => p.status==='paid').reduce((s,p) => s+p.amount, 0)
+  const pending   = PAYMENTS.filter(p => p.status!=='paid').reduce((s,p) => s+p.amount, 0)
+
+  const pStyle = {
+    paid:    { color:'#86efac', bg:'rgba(134,239,172,0.12)', label:'Pagado' },
+    overdue: { color:tk.red,    bg:'rgba(248,113,113,0.12)', label:'Vencido' },
+    pending: { color:'#fcd34d', bg:'rgba(252,211,77,0.10)',  label:'Pendiente' },
+  } as const
+
+  function toggle(id: number) {
+    setOpenIds(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
+
+  return (
+    <div>
+      <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color:tk.dim }}>
+        Historial de pagos — Julio 2026
+      </p>
+
+      {/* Desktop: full table (always expanded) */}
+      <div className="hidden md:block rounded-2xl border overflow-hidden" style={{ borderColor:tk.cardB }}>
+        <table className="w-full">
+          <thead>
+            <tr style={{ background:'rgba(122,30,44,0.12)', borderBottom:`1px solid ${tk.cardB}` }}>
+              {['Cliente','Plan','Monto','Fecha de pago','Estado'].map(col => (
+                <th key={col} className="text-left px-5 py-3 text-[9px] font-bold uppercase tracking-wider" style={{ color:tk.dim }}>{col}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {PAYMENTS.map((p, i) => {
+              const s = pStyle[p.status as keyof typeof pStyle]
+              return (
+                <motion.tr key={p.id} initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:i*0.04 }}
+                  className="border-b last:border-0 transition-colors hover:bg-white/[0.02]" style={{ borderColor:tk.cardB }}>
+                  <td className="px-5 py-3.5">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0"
+                        style={{ background:'rgba(122,30,44,0.35)', color:'#f9d0d8' }}>
+                        {p.client.split(' ').map(n=>n[0]).join('')}
+                      </div>
+                      <span className="text-sm" style={{ color:tk.text }}>{p.client}</span>
+                    </div>
+                  </td>
+                  <td className="px-5 py-3.5">
+                    <Badge label={p.plan}
+                      color={p.plan==='Premier'?'#d4aa60':tk.muted}
+                      bg={p.plan==='Premier'?'rgba(184,134,46,0.18)':'rgba(255,255,255,0.06)'} />
+                  </td>
+                  <td className="px-5 py-3.5 text-sm font-bold font-lora" style={{ color:tk.text }}>${p.amount}</td>
+                  <td className="px-5 py-3.5 text-xs" style={{ color:tk.muted }}>{p.date}</td>
+                  <td className="px-5 py-3.5">
+                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ color:s.color, background:s.bg }}>{s.label}</span>
+                  </td>
+                </motion.tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Mobile: collapsible cards */}
+      <div className="md:hidden space-y-2">
+        {PAYMENTS.map(p => {
+          const s = pStyle[p.status as keyof typeof pStyle]
+          const isOpen = openIds.has(p.id)
+          return (
+            <div key={p.id} className="rounded-2xl border overflow-hidden" style={{ borderColor: isOpen ? 'rgba(122,30,44,0.6)' : tk.cardB, background:tk.card }}>
+              <button className="w-full flex items-center justify-between px-4 py-3.5 text-left"
+                onClick={() => toggle(p.id)}>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold"
+                    style={{ background:'rgba(122,30,44,0.35)', color:'#f9d0d8' }}>
+                    {p.client.split(' ').map(n=>n[0]).join('')}
+                  </div>
+                  <span className="text-sm font-medium" style={{ color:tk.text }}>{p.client}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ color:s.color, background:s.bg }}>{s.label}</span>
+                  <ChevronDown size={13} color={tk.dim} style={{ transform:isOpen?'rotate(180deg)':'none', transition:'transform 0.2s' }} />
+                </div>
+              </button>
+              <AnimatePresence>
+                {isOpen && (
+                  <motion.div initial={{ height:0, opacity:0 }} animate={{ height:'auto', opacity:1 }}
+                    exit={{ height:0, opacity:0 }} transition={{ duration:0.18 }}
+                    className="border-t px-4 py-3 grid grid-cols-3 gap-3" style={{ borderColor:tk.cardB }}>
+                    {[
+                      { label:'Plan',  value:p.plan },
+                      { label:'Monto', value:`$${p.amount}` },
+                      { label:'Fecha', value:p.date },
+                    ].map(d => (
+                      <div key={d.label}>
+                        <p className="text-[9px] uppercase tracking-wider mb-0.5" style={{ color:tk.dim }}>{d.label}</p>
+                        <p className="text-xs font-semibold" style={{ color:tk.text }}>{d.value}</p>
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 /* ─── Payments ──────────────────────────────────────────────────── */
 
 function PaymentsSection() {
   const collected = PAYMENTS.filter(p => p.status==='paid').reduce((s,p) => s+p.amount, 0)
   const pending   = PAYMENTS.filter(p => p.status!=='paid').reduce((s,p) => s+p.amount, 0)
-
-  const pStyle = {
-    paid:    { color:'#86efac', label:'Pagado' },
-    overdue: { color:tk.red,    label:'Vencido' },
-    pending: { color:'#fcd34d', label:'Pendiente' },
-  } as const
 
   return (
     <div className="space-y-5">
@@ -418,42 +715,7 @@ function PaymentsSection() {
           </div>
         ))}
       </div>
-
-      <div className="rounded-2xl border overflow-hidden" style={{ borderColor:tk.cardB }}>
-        <div className="px-4 py-3 border-b" style={{ background:'rgba(122,30,44,0.12)', borderColor:tk.cardB }}>
-          <p className="text-sm font-semibold" style={{ color:tk.text }}>Pagos — Julio 2026</p>
-        </div>
-        <table className="w-full">
-          <thead>
-            <tr style={{ borderBottom:`1px solid ${tk.cardB}` }}>
-              {['Cliente','Plan','Monto','Fecha','Estado'].map(col => (
-                <th key={col} className="text-left px-4 py-2.5 text-[9px] font-bold uppercase tracking-wider" style={{ color:tk.dim }}>{col}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {PAYMENTS.map((p, i) => {
-              const s = pStyle[p.status as keyof typeof pStyle]
-              return (
-                <motion.tr key={p.id} initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:i*0.04 }}
-                  className="border-b last:border-0" style={{ borderColor:tk.cardB }}>
-                  <td className="px-4 py-3 text-sm" style={{ color:tk.text }}>{p.client}</td>
-                  <td className="px-4 py-3">
-                    <Badge label={p.plan}
-                      color={p.plan==='Premier'?'#d4aa60':tk.muted}
-                      bg={p.plan==='Premier'?'rgba(184,134,46,0.18)':'rgba(255,255,255,0.06)'} />
-                  </td>
-                  <td className="px-4 py-3 text-sm font-semibold" style={{ color:tk.text }}>${p.amount}</td>
-                  <td className="px-4 py-3 text-xs" style={{ color:tk.muted }}>{p.date}</td>
-                  <td className="px-4 py-3">
-                    <span className="text-xs font-semibold" style={{ color:s.color }}>{s.label}</span>
-                  </td>
-                </motion.tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
+      <PaymentHistoryBlock />
     </div>
   )
 }
@@ -533,7 +795,7 @@ export default function AdminPage() {
   const alertTotal   = stalledCount + overdueCount
 
   const TITLES: Record<Tab, string> = {
-    overview:'Resumen', clients:'Clientes', disputes:'Disputas', payments:'Pagos', settings:'Ajustes',
+    overview:'Resumen', clients:'Clientes', insights:'IA & Insights', disputes:'Disputas', payments:'Pagos', settings:'Ajustes',
   }
 
   return (
@@ -545,18 +807,7 @@ export default function AdminPage() {
 
         {/* Logo */}
         <div className="px-4 py-5 border-b" style={{ borderColor:tk.cardB }}>
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-              style={{ background:'linear-gradient(135deg,#7A1E2C,#5C1520)' }}>
-              <svg viewBox="0 0 24 24" className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z" /><path d="m9 12 2 2 4-4" />
-              </svg>
-            </div>
-            <div>
-              <p className="font-lora font-bold text-sm text-white leading-tight">MCC Admin</p>
-              <p className="text-[9px]" style={{ color:tk.dim }}>Panel de gestión</p>
-            </div>
-          </div>
+          <MccLogo size="sm" dark={true} />
         </div>
 
         {/* Nav */}
@@ -602,7 +853,13 @@ export default function AdminPage() {
         {/* Top bar */}
         <header className="sticky top-0 z-20 flex items-center justify-between px-4 sm:px-6 py-3.5 border-b"
           style={{ background:tk.sidebar, borderColor:tk.cardB }}>
-          <h1 className="font-lora text-lg font-semibold" style={{ color:tk.text }}>{TITLES[tab]}</h1>
+          {/* Left: mobile logo + section title */}
+          <div className="flex items-center gap-3">
+            <span className="lg:hidden">
+              <MccLogoIcon size={24} />
+            </span>
+            <h1 className="font-lora text-lg font-semibold" style={{ color:tk.text }}>{TITLES[tab]}</h1>
+          </div>
           <div className="flex items-center gap-3">
             <div className="relative">
               <Bell size={16} color={tk.muted} />
@@ -611,14 +868,7 @@ export default function AdminPage() {
                   style={{ background:'#e04a6e' }}>{alertTotal}</div>
               )}
             </div>
-            <button onClick={logout} className="hidden lg:flex items-center gap-1.5 text-xs transition-colors"
-              style={{ color:tk.dim }}
-              onMouseEnter={e => (e.currentTarget.style.color=tk.red)}
-              onMouseLeave={e => (e.currentTarget.style.color=tk.dim)}>
-              <LogOut size={13} /> Salir
-            </button>
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
-              style={{ background:'rgba(122,30,44,0.4)', color:'#f9d0d8' }}>AD</div>
+            <AdminProfilePopover onNavigate={(section) => setTab(section as Tab)} />
           </div>
         </header>
 
@@ -629,6 +879,7 @@ export default function AdminPage() {
               transition={{ duration:0.18 }}>
               {tab==='overview'  && <OverviewSection stalledCount={stalledCount} />}
               {tab==='clients'   && <ClientsSection />}
+              {tab==='insights'  && <InsightsSection />}
               {tab==='disputes'  && <DisputesSection />}
               {tab==='payments'  && <PaymentsSection />}
               {tab==='settings'  && <SettingsSection />}
