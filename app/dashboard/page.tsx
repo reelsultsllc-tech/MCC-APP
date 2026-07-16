@@ -411,6 +411,27 @@ function Toggle({ on, onChange }: { on: boolean; onChange: () => void }) {
   );
 }
 
+// ── Settings helpers (module-level to avoid SWC nested-JSX issue) ─────────────
+function SettingsBlock({ title, cardStyle, children }: { title: string; cardStyle: React.CSSProperties; children: ReactNode }) {
+  return (
+    <div className="rounded-2xl border p-5" style={cardStyle}>
+      <h3 className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: 'rgba(249,208,216,0.4)' }}>{title}</h3>
+      {children}
+    </div>
+  );
+}
+function SettingsRow({ label, sub, textClass, right }: { label: string; sub?: string; textClass: string; right: ReactNode }) {
+  return (
+    <div className="flex items-center justify-between gap-4 py-3 border-b last:border-0" style={{ borderColor: 'rgba(122,30,44,0.2)' }}>
+      <div>
+        <div className={`text-sm font-medium ${textClass}`}>{label}</div>
+        {sub && <div className="text-xs mt-0.5" style={{ color: 'rgba(249,208,216,0.4)' }}>{sub}</div>}
+      </div>
+      {right}
+    </div>
+  );
+}
+
 // ── Settings section ──────────────────────────────────────────────────────────
 function SettingsSection({ theme, t, setActiveNav }: { theme: Theme; t: typeof T.dark; setActiveNav: (s: string) => void }) {
   const [notifDisputes, setNotifDisputes] = useState(true);
@@ -418,57 +439,37 @@ function SettingsSection({ theme, t, setActiveNav }: { theme: Theme; t: typeof T
   const [notifPayment,  setNotifPayment]  = useState(false);
   const [saved, setSaved] = useState(false);
 
-  const card = {
-    background: theme === 'dark' ? 'rgba(255,255,255,0.02)' : '#fff',
-    borderColor: theme === 'dark' ? 'rgba(122,30,44,0.35)' : '#f0d8dd',
+  const cardStyle: React.CSSProperties = {
+    background:   theme === 'dark' ? 'rgba(255,255,255,0.02)' : '#fff',
+    borderColor:  theme === 'dark' ? 'rgba(122,30,44,0.35)' : '#f0d8dd',
   };
-
-  function Block({ title, children }: { title: string; children: ReactNode }) {
-    return (
-      <div className="rounded-2xl border p-5" style={card}>
-        <h3 className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: 'rgba(249,208,216,0.4)' }}>{title}</h3>
-        {children}
-      </div>
-    );
-  }
-
-  function Row({ label, sub, right }: { label: string; sub?: string; right: ReactNode }) {
-    return (
-      <div className="flex items-center justify-between gap-4 py-3 border-b last:border-0" style={{ borderColor: 'rgba(122,30,44,0.2)' }}>
-        <div>
-          <div className={`text-sm font-medium ${t.text}`}>{label}</div>
-          {sub && <div className="text-xs mt-0.5" style={{ color: 'rgba(249,208,216,0.4)' }}>{sub}</div>}
-        </div>
-        {right}
-      </div>
-    );
-  }
+  const tc = t.text;
 
   return (
     <div className="max-w-2xl mx-auto space-y-4">
       <div className="mb-2">
-        <h1 className={`text-lg font-bold ${t.text}`}>Configuración</h1>
+        <h1 className={`text-lg font-bold ${tc}`}>Configuración</h1>
         <p className="text-xs mt-0.5" style={{ color: 'rgba(249,208,216,0.4)' }}>Gestiona tu perfil, notificaciones y plan.</p>
       </div>
 
       {/* Perfil */}
-      <Block title="Perfil">
-        <Row label="Nombre" sub="Nombre completo en tu cuenta"
-          right={<span className={`text-sm ${t.text}`}>Elena Manchehi</span>} />
-        <Row label="Correo electrónico"
+      <SettingsBlock title="Perfil" cardStyle={cardStyle}>
+        <SettingsRow textClass={tc} label="Nombre" sub="Nombre completo en tu cuenta"
+          right={<span className={`text-sm ${tc}`}>Elena Manchehi</span>} />
+        <SettingsRow textClass={tc} label="Correo electrónico"
           right={<span className="text-sm" style={{ color: 'rgba(249,208,216,0.5)' }}>el•••@gmail.com</span>} />
-        <Row label="Membresía" right={
+        <SettingsRow textClass={tc} label="Membresía" right={
           <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: 'rgba(171,28,66,0.2)', color: '#e04a6e' }}>Premium</span>
         } />
-      </Block>
+      </SettingsBlock>
 
       {/* Notificaciones */}
-      <Block title="Notificaciones">
-        <Row label="Actualizaciones de disputas" sub="Recibe un correo cuando cambia el estatus de una disputa"
+      <SettingsBlock title="Notificaciones" cardStyle={cardStyle}>
+        <SettingsRow textClass={tc} label="Actualizaciones de disputas" sub="Recibe un correo cuando cambia el estatus de una disputa"
           right={<Toggle on={notifDisputes} onChange={() => setNotifDisputes(v => !v)} />} />
-        <Row label="Cambio de puntaje" sub="Alerta cuando tu score sube o baja"
+        <SettingsRow textClass={tc} label="Cambio de puntaje" sub="Alerta cuando tu score sube o baja"
           right={<Toggle on={notifScore} onChange={() => setNotifScore(v => !v)} />} />
-        <Row label="Recordatorio de pago" sub="Aviso 3 días antes de tu próxima factura"
+        <SettingsRow textClass={tc} label="Recordatorio de pago" sub="Aviso 3 días antes de tu próxima factura"
           right={<Toggle on={notifPayment} onChange={() => setNotifPayment(v => !v)} />} />
         <div className="pt-4 flex justify-end">
           <button
@@ -479,27 +480,27 @@ function SettingsSection({ theme, t, setActiveNav }: { theme: Theme; t: typeof T
             {saved ? '✓ Guardado' : 'Guardar preferencias'}
           </button>
         </div>
-      </Block>
+      </SettingsBlock>
 
       {/* Seguridad */}
-      <Block title="Seguridad">
-        <Row label="Contraseña" sub="Última actualización hace más de 90 días"
+      <SettingsBlock title="Seguridad" cardStyle={cardStyle}>
+        <SettingsRow textClass={tc} label="Contraseña" sub="Última actualización hace más de 90 días"
           right={
             <button className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors hover:bg-white/5"
               style={{ color: '#e04a6e', borderColor: 'rgba(122,30,44,0.4)' }}>
               Cambiar
             </button>
           } />
-        <Row label="Verificación en dos pasos" sub="Código de un solo uso por correo"
+        <SettingsRow textClass={tc} label="Verificación en dos pasos" sub="Código de un solo uso por correo"
           right={<span className="text-xs font-semibold" style={{ color: '#22c55e' }}>Activa</span>} />
-      </Block>
+      </SettingsBlock>
 
       {/* Plan y facturación */}
-      <Block title="Plan y facturación">
-        <Row label="Plan actual" right={
-          <span className={`text-sm font-semibold ${t.text}`}>Premium — $149/mes</span>
+      <SettingsBlock title="Plan y facturación" cardStyle={cardStyle}>
+        <SettingsRow textClass={tc} label="Plan actual" right={
+          <span className={`text-sm font-semibold ${tc}`}>Premium — $149/mes</span>
         } />
-        <Row label="Próximo cobro" right={
+        <SettingsRow textClass={tc} label="Próximo cobro" right={
           <span className="text-sm" style={{ color: 'rgba(249,208,216,0.6)' }}>1 ago 2026</span>
         } />
         <div className="pt-3">
@@ -511,7 +512,7 @@ function SettingsSection({ theme, t, setActiveNav }: { theme: Theme; t: typeof T
             Ver historial de pagos <ChevronRight size={11} />
           </button>
         </div>
-      </Block>
+      </SettingsBlock>
     </div>
   );
 }
