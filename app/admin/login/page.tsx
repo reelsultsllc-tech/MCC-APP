@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { sendEmailOtp } from '@/lib/supabase'
 import { ShieldCheck, Mail } from 'lucide-react'
 
 const ADMIN_EMAIL = 'mycreditcafe2026@gmail.com'
@@ -23,8 +22,12 @@ export default function AdminLoginPage() {
     }
     setLoading(true)
     setError('')
-    const { error: err } = await sendEmailOtp(trimmed)
-    if (err) {
+    const res = await fetch('/api/admin/send-otp', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ email: trimmed }),
+    })
+    if (!res.ok) {
       setError('Error al enviar el código. Intenta de nuevo.')
       setLoading(false)
       return
