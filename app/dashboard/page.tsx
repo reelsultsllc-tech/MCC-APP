@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard, FileText, BarChart3, Settings, Bell, Search, ChevronRight,
@@ -107,7 +107,7 @@ function SkeletonCard({ theme, lines = 4 }: { theme: Theme; lines?: number }) {
 
 // ── GlowCard ──────────────────────────────────────────────────────────────────
 function GlowCard({ children, theme, className = '', delay = 0, loaded }: {
-  children: React.ReactNode; theme: Theme; className?: string; delay?: number; loaded: boolean;
+  children: ReactNode; theme: Theme; className?: string; delay?: number; loaded: boolean;
 }) {
   const t = T[theme];
   return (
@@ -395,6 +395,127 @@ function Sidebar({ active, setActive, collapsed, setCollapsed, mobileOpen, setMo
   );
 }
 
+// ── Toggle switch ─────────────────────────────────────────────────────────────
+function Toggle({ on, onChange }: { on: boolean; onChange: () => void }) {
+  return (
+    <button
+      onClick={onChange}
+      className="relative inline-flex h-5 w-9 flex-shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none"
+      style={{ background: on ? '#ab1c42' : 'rgba(122,30,44,0.3)' }}
+    >
+      <span
+        className="pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow transition-transform duration-200"
+        style={{ transform: on ? 'translateX(16px)' : 'translateX(0)' }}
+      />
+    </button>
+  );
+}
+
+// ── Settings section ──────────────────────────────────────────────────────────
+function SettingsSection({ theme, t, setActiveNav }: { theme: Theme; t: typeof T.dark; setActiveNav: (s: string) => void }) {
+  const [notifDisputes, setNotifDisputes] = useState(true);
+  const [notifScore,    setNotifScore]    = useState(true);
+  const [notifPayment,  setNotifPayment]  = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const card = {
+    background: theme === 'dark' ? 'rgba(255,255,255,0.02)' : '#fff',
+    borderColor: theme === 'dark' ? 'rgba(122,30,44,0.35)' : '#f0d8dd',
+  };
+
+  function Block({ title, children }: { title: string; children: ReactNode }) {
+    return (
+      <div className="rounded-2xl border p-5" style={card}>
+        <h3 className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: 'rgba(249,208,216,0.4)' }}>{title}</h3>
+        {children}
+      </div>
+    );
+  }
+
+  function Row({ label, sub, right }: { label: string; sub?: string; right: ReactNode }) {
+    return (
+      <div className="flex items-center justify-between gap-4 py-3 border-b last:border-0" style={{ borderColor: 'rgba(122,30,44,0.2)' }}>
+        <div>
+          <div className={`text-sm font-medium ${t.text}`}>{label}</div>
+          {sub && <div className="text-xs mt-0.5" style={{ color: 'rgba(249,208,216,0.4)' }}>{sub}</div>}
+        </div>
+        {right}
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto space-y-4">
+      <div className="mb-2">
+        <h1 className={`text-lg font-bold ${t.text}`}>Configuración</h1>
+        <p className="text-xs mt-0.5" style={{ color: 'rgba(249,208,216,0.4)' }}>Gestiona tu perfil, notificaciones y plan.</p>
+      </div>
+
+      {/* Perfil */}
+      <Block title="Perfil">
+        <Row label="Nombre" sub="Nombre completo en tu cuenta"
+          right={<span className={`text-sm ${t.text}`}>Elena Manchehi</span>} />
+        <Row label="Correo electrónico"
+          right={<span className="text-sm" style={{ color: 'rgba(249,208,216,0.5)' }}>el•••@gmail.com</span>} />
+        <Row label="Membresía" right={
+          <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: 'rgba(171,28,66,0.2)', color: '#e04a6e' }}>Premium</span>
+        } />
+      </Block>
+
+      {/* Notificaciones */}
+      <Block title="Notificaciones">
+        <Row label="Actualizaciones de disputas" sub="Recibe un correo cuando cambia el estatus de una disputa"
+          right={<Toggle on={notifDisputes} onChange={() => setNotifDisputes(v => !v)} />} />
+        <Row label="Cambio de puntaje" sub="Alerta cuando tu score sube o baja"
+          right={<Toggle on={notifScore} onChange={() => setNotifScore(v => !v)} />} />
+        <Row label="Recordatorio de pago" sub="Aviso 3 días antes de tu próxima factura"
+          right={<Toggle on={notifPayment} onChange={() => setNotifPayment(v => !v)} />} />
+        <div className="pt-4 flex justify-end">
+          <button
+            onClick={() => { setSaved(true); setTimeout(() => setSaved(false), 2200); }}
+            className="px-4 py-1.5 rounded-xl text-xs font-bold text-white transition-all"
+            style={{ background: 'linear-gradient(180deg,#9b3545,#7A1E2C)', boxShadow: '0 4px 14px -4px rgba(122,30,44,0.5)' }}
+          >
+            {saved ? '✓ Guardado' : 'Guardar preferencias'}
+          </button>
+        </div>
+      </Block>
+
+      {/* Seguridad */}
+      <Block title="Seguridad">
+        <Row label="Contraseña" sub="Última actualización hace más de 90 días"
+          right={
+            <button className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors hover:bg-white/5"
+              style={{ color: '#e04a6e', borderColor: 'rgba(122,30,44,0.4)' }}>
+              Cambiar
+            </button>
+          } />
+        <Row label="Verificación en dos pasos" sub="Código de un solo uso por correo"
+          right={<span className="text-xs font-semibold" style={{ color: '#22c55e' }}>Activa</span>} />
+      </Block>
+
+      {/* Plan y facturación */}
+      <Block title="Plan y facturación">
+        <Row label="Plan actual" right={
+          <span className={`text-sm font-semibold ${t.text}`}>Premium — $149/mes</span>
+        } />
+        <Row label="Próximo cobro" right={
+          <span className="text-sm" style={{ color: 'rgba(249,208,216,0.6)' }}>1 ago 2026</span>
+        } />
+        <div className="pt-3">
+          <button
+            onClick={() => setActiveNav('overview')}
+            className="text-xs font-semibold hover:opacity-80 transition-opacity flex items-center gap-1"
+            style={{ color: '#e04a6e' }}
+          >
+            Ver historial de pagos <ChevronRight size={11} />
+          </button>
+        </div>
+      </Block>
+    </div>
+  );
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const [activeNav, setActiveNav]       = useState('overview');
@@ -526,7 +647,9 @@ export default function DashboardPage() {
 
         {/* main content */}
         <main className="flex-1 overflow-auto p-4 sm:p-5 xl:p-6">
-          {themeLoading ? (
+          {activeNav === 'settings' ? (
+            <SettingsSection theme={theme} t={t} setActiveNav={setActiveNav} />
+          ) : themeLoading ? (
             <div className="grid grid-cols-12 gap-4 max-w-screen-2xl mx-auto">
               {[5, 7, 7, 5, 6, 6, 12].map((span, i) => (
                 <div key={i} className={`col-span-12 lg:col-span-${span} rounded-2xl border`}
