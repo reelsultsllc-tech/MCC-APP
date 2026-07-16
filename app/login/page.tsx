@@ -134,12 +134,12 @@ function BoxReveal({
 /* ─── Orbit config ─────────────────────────────────────────────────────── */
 
 const ORBIT_ICONS = [
-  { icon: CreditCard, radius: 58,  duration: 15, delay: 0,  reverse: false, color: 'rgba(255,200,210,0.75)' },
-  { icon: ShieldCheck,radius: 58,  duration: 15, delay: 7.5,reverse: false, color: 'rgba(255,200,210,0.75)' },
-  { icon: TrendingUp, radius: 95,  duration: 24, delay: 0,  reverse: true,  color: 'rgba(255,180,195,0.55)' },
-  { icon: Star,       radius: 95,  duration: 24, delay: 12, reverse: true,  color: 'rgba(255,180,195,0.55)' },
-  { icon: Lock,       radius: 128, duration: 34, delay: 0,  reverse: false, color: 'rgba(255,160,180,0.35)' },
-  { icon: Zap,        radius: 128, duration: 34, delay: 17, reverse: false, color: 'rgba(255,160,180,0.35)' },
+  { icon: CreditCard, radius: 44,  duration: 15, delay: 0,  reverse: false, color: 'rgba(255,200,210,0.80)' },
+  { icon: ShieldCheck,radius: 44,  duration: 15, delay: 7.5,reverse: false, color: 'rgba(255,200,210,0.80)' },
+  { icon: TrendingUp, radius: 72,  duration: 24, delay: 0,  reverse: true,  color: 'rgba(255,180,195,0.60)' },
+  { icon: Star,       radius: 72,  duration: 24, delay: 12, reverse: true,  color: 'rgba(255,180,195,0.60)' },
+  { icon: Lock,       radius: 100, duration: 34, delay: 0,  reverse: false, color: 'rgba(255,160,180,0.40)' },
+  { icon: Zap,        radius: 100, duration: 34, delay: 17, reverse: false, color: 'rgba(255,160,180,0.40)' },
 ]
 
 /* ─── Page ─────────────────────────────────────────────────────────────── */
@@ -245,32 +245,32 @@ export default function LoginPage() {
         {/* ── LEFT: Brand panel ────────────────────────────────────── */}
         <div
           ref={leftRef}
-          className="relative hidden md:flex flex-col justify-between p-6 overflow-hidden"
+          className="relative hidden md:flex flex-col overflow-hidden"
           style={{ background: 'linear-gradient(145deg,#7A1E2C 0%,#5C1520 55%,#241014 100%)' }}
           onMouseMove={handleSpotMove}
           onMouseLeave={() => setSpot(s => ({ ...s, on: false }))}
         >
           {/* Spotlight */}
           <div
-            className="absolute inset-0 pointer-events-none transition-opacity duration-300"
+            className="absolute inset-0 pointer-events-none transition-opacity duration-300 z-[1]"
             style={{ opacity: spot.on ? 1 : 0, background: `radial-gradient(500px circle at ${spot.x}% ${spot.y}%, rgba(255,255,255,0.11), transparent 60%)` }}
           />
           {/* Dot texture */}
           <div
-            className="absolute inset-0 pointer-events-none opacity-[0.18]"
+            className="absolute inset-0 pointer-events-none opacity-[0.18] z-[1]"
             style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.18) 1px, transparent 0)', backgroundSize: '20px 20px' }}
           />
 
-          {/* ── Orbit display — centered in the panel ── */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.9 }}>
+          {/* ── Orbit zone: own contained section at the top ── */}
+          <div className="relative flex-shrink-0 h-[240px] flex items-center justify-center pointer-events-none overflow-hidden">
             {/* Dashed orbit path rings */}
-            <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.1 }}>
-              {[58, 95, 128].map(r => (
+            <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.18 }}>
+              {[44, 72, 100].map(r => (
                 <circle key={r} cx="50%" cy="50%" r={r} fill="none" stroke="white" strokeWidth="1" strokeDasharray="3 8" />
               ))}
             </svg>
             {/* Center MCC orb */}
-            <div className="relative flex items-center justify-center rounded-full"
+            <div className="relative z-10 flex items-center justify-center rounded-full flex-shrink-0"
               style={{ width: 52, height: 52, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)' }}>
               <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z" />
@@ -278,40 +278,40 @@ export default function LoginPage() {
               </svg>
               <div className="absolute inset-0 rounded-full animate-ping" style={{ background: 'rgba(255,255,255,0.07)', animationDuration: '2.8s' }} />
             </div>
-            {/* Orbiting icons */}
             {ORBIT_ICONS.map((cfg, i) => (
               <OrbitIcon key={i} {...cfg} />
             ))}
           </div>
 
-          {/* Content top */}
-          <div className="relative z-10">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-rose-200/75 bg-white/10 border border-white/15 rounded-full px-2.5 py-0.5 mb-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-300 animate-pulse" />
-              Portal de Miembros
-            </span>
-            <h1 className="font-lora text-[1.6rem] leading-[1.1] font-bold text-white mb-2.5">
-              Tu score de crédito,<br />reimaginado.
-            </h1>
-            <p className="text-rose-100/75 text-[11px] leading-relaxed">
-              Disputas automatizadas, revisión experta y un asesor dedicado — diseñado para personas que exigen resultados.
-            </p>
-            <ul className="mt-4 space-y-2">
-              {FEATURES.map(f => (
-                <li key={f} className="flex items-center gap-2 text-[11px] text-rose-50/85">
-                  <span className="w-4 h-4 rounded-full bg-white/15 flex items-center justify-center shrink-0">
-                    <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
-                      <path d="M5 13l4 4L19 7" />
-                    </svg>
-                  </span>
-                  {f}
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* ── Content zone: below orbit ── */}
+          <div className="relative z-10 flex flex-col justify-between flex-1 px-6 pb-6">
+            <div>
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-rose-200/75 bg-white/10 border border-white/15 rounded-full px-2.5 py-0.5 mb-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-300 animate-pulse" />
+                Portal de Miembros
+              </span>
+              <h1 className="font-lora text-[1.5rem] leading-[1.1] font-bold text-white mb-2">
+                Tu score de crédito,<br />reimaginado.
+              </h1>
+              <p className="text-rose-100/75 text-[11px] leading-relaxed">
+                Disputas automatizadas, revisión experta y un asesor dedicado — diseñado para personas que exigen resultados.
+              </p>
+              <ul className="mt-3 space-y-1.5">
+                {FEATURES.map(f => (
+                  <li key={f} className="flex items-center gap-2 text-[11px] text-rose-50/85">
+                    <span className="w-4 h-4 rounded-full bg-white/15 flex items-center justify-center shrink-0">
+                      <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+                        <path d="M5 13l4 4L19 7" />
+                      </svg>
+                    </span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Content bottom: score card + testimonial */}
-          <div className="relative z-10 mt-5">
+          {/* Score card + testimonial */}
+          <div className="mt-4">
             <div className="bg-white/12 border border-white/15 rounded-xl p-3 mb-4 flex items-center justify-between">
               <div>
                 <p className="text-[9px] font-bold uppercase tracking-wider text-rose-200/60 mb-0.5">Score promedio</p>
@@ -362,6 +362,7 @@ export default function LoginPage() {
                 ))}
               </div>
             </div>
+          </div>
           </div>
         </div>
 
