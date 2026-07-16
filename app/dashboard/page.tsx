@@ -15,6 +15,9 @@ import { CreditCard3D } from '@/components/demo/credit-card-3d';
 import { StrategyTimeline } from '@/components/demo/strategy-timeline';
 import { AIInsights } from '@/components/demo/ai-insights';
 import { ChatWidget } from '@/components/demo/chat-widget';
+import { MccLogoIcon, MccLogo } from '@/components/MccLogo';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 type Theme = 'dark' | 'light';
 
@@ -311,8 +314,7 @@ function Sidebar({ active, setActive, collapsed, setCollapsed, mobileOpen, setMo
     <div className="flex flex-col h-full">
       <div className="px-4 py-3.5 border-b border-wine-950/50 flex items-center justify-between gap-2 flex-shrink-0">
         <div className="flex items-center gap-2 min-w-0">
-          <CoffeeCreditIcon size={24} color="white" />
-          {showLabel && <BrandText />}
+          {showLabel ? <MccLogo size="sm" dark={true} /> : <MccLogoIcon size={24} />}
         </div>
         {showLabel && (
           <button
@@ -332,18 +334,43 @@ function Sidebar({ active, setActive, collapsed, setCollapsed, mobileOpen, setMo
             style={{ background: 'rgba(74,8,32,0.2)' }}><ChevronRight size={15} /></button>
         </div>
       )}
-      <div className="px-3 py-3 border-t border-wine-950/50 flex items-center gap-2.5">
-        <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-          style={{ background: 'linear-gradient(135deg,#ab1c42,#4a0820)' }}>EM</div>
-        {showLabel && (
-          <>
-            <div className="flex-1 min-w-0">
-              <div className="text-xs font-semibold text-white truncate">Elena Manchehi</div>
-              <div className="text-xs text-wine-400/45">Miembro Premium</div>
+      <div className="px-3 py-3 border-t border-wine-950/50">
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="flex w-full items-center gap-2.5 rounded-lg px-1 py-1 hover:bg-white/5 transition-colors focus:outline-none">
+              <Avatar className="h-7 w-7 flex-shrink-0">
+                <AvatarFallback className="text-xs font-bold" style={{ background: 'linear-gradient(135deg,#ab1c42,#4a0820)', color: '#fff' }}>EM</AvatarFallback>
+              </Avatar>
+              {showLabel && (
+                <>
+                  <div className="flex-1 min-w-0 text-left">
+                    <div className="text-xs font-semibold text-white truncate">Elena Manchehi</div>
+                    <div className="text-xs text-wine-400/45">Miembro Premium</div>
+                  </div>
+                  <ChevronDown size={13} className="text-wine-400/35 flex-shrink-0" />
+                </>
+              )}
+            </button>
+          </PopoverTrigger>
+          <PopoverContent align="start" side="top" style={{ background: '#140810', borderColor: 'rgba(122,30,44,0.5)' }}>
+            <div className="flex items-center gap-3 px-4 py-3 border-b" style={{ borderColor: 'rgba(122,30,44,0.3)' }}>
+              <Avatar className="h-10 w-10">
+                <AvatarFallback className="text-sm font-bold" style={{ background: 'linear-gradient(135deg,#ab1c42,#4a0820)', color: '#fff' }}>EM</AvatarFallback>
+              </Avatar>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-white truncate">Elena Manchehi</p>
+                <p className="text-xs truncate" style={{ color: 'rgba(249,208,216,0.5)' }}>Miembro Premium</p>
+              </div>
             </div>
-            <ChevronDown size={13} className="text-wine-400/35 flex-shrink-0" />
-          </>
-        )}
+            <div className="py-2 px-2">
+              <button className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/5"
+                style={{ color: 'rgba(249,208,216,0.5)' }}>
+                <Settings size={14} />
+                Configuración
+              </button>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   );
@@ -438,8 +465,36 @@ export default function DashboardPage() {
               <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-wine-400" />
             </button>
           </div>
-          <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-            style={{ background: 'linear-gradient(135deg,#ab1c42,#4a0820)' }}>EM</div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="focus:outline-none">
+                <Avatar className="h-8 w-8 cursor-pointer">
+                  <AvatarFallback className="text-xs font-bold" style={{ background: 'linear-gradient(135deg,#ab1c42,#4a0820)', color: '#fff' }}>EM</AvatarFallback>
+                </Avatar>
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="end" style={{ background: '#140810', borderColor: 'rgba(122,30,44,0.5)' }}>
+              <div className="flex items-center gap-3 px-4 py-3 border-b" style={{ borderColor: 'rgba(122,30,44,0.3)' }}>
+                <Avatar className="h-10 w-10">
+                  <AvatarFallback className="text-sm font-bold" style={{ background: 'linear-gradient(135deg,#ab1c42,#4a0820)', color: '#fff' }}>EM</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-white truncate">Elena Manchehi</p>
+                  <p className="text-xs truncate" style={{ color: 'rgba(249,208,216,0.5)' }}>Miembro Premium</p>
+                </div>
+              </div>
+              <div className="py-2 px-2">
+                <button
+                  onClick={() => setActiveNav('settings')}
+                  className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/5"
+                  style={{ color: 'rgba(249,208,216,0.5)' }}
+                >
+                  <Settings size={14} />
+                  Configuración
+                </button>
+              </div>
+            </PopoverContent>
+          </Popover>
         </header>
 
         {/* Notifications panel — outside header to escape transform stacking context */}
