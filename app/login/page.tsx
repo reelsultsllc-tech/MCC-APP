@@ -239,8 +239,8 @@ export default function LoginPage() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.45 }}
-        className="w-full max-w-[780px] grid md:grid-cols-[1fr_1fr] rounded-[18px] overflow-hidden border border-red-100/80"
-        style={{ boxShadow: '0 32px 64px -16px rgba(155,44,44,0.22)' }}
+        className="w-full max-w-[360px] md:max-w-[780px] grid md:grid-cols-[1fr_1fr] rounded-2xl overflow-hidden border border-red-100/80"
+        style={{ boxShadow: '0 24px 48px -12px rgba(155,44,44,0.20)' }}
       >
         {/* ── LEFT: Brand panel ────────────────────────────────────── */}
         <div
