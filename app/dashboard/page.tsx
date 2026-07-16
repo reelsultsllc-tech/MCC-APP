@@ -411,10 +411,10 @@ function Toggle({ on, onChange }: { on: boolean; onChange: () => void }) {
   );
 }
 
-// ── Settings helpers (module-level to avoid SWC nested-JSX issue) ─────────────
-function SettingsBlock({ title, cardStyle, children }: { title: string; cardStyle: React.CSSProperties; children: ReactNode }) {
+// ── Settings helpers ─────────────────────────────────────────────────────────
+function SettingsBlock({ title, bg, border, children }: { title: string; bg: string; border: string; children: ReactNode }) {
   return (
-    <div className="rounded-2xl border p-5" style={cardStyle}>
+    <div className="rounded-2xl border p-5" style={{ background: bg, borderColor: border }}>
       <h3 className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: 'rgba(249,208,216,0.4)' }}>{title}</h3>
       {children}
     </div>
@@ -433,17 +433,15 @@ function SettingsRow({ label, sub, textClass, right }: { label: string; sub?: st
 }
 
 // ── Settings section ──────────────────────────────────────────────────────────
-function SettingsSection({ theme, t, setActiveNav }: { theme: Theme; t: typeof T.dark; setActiveNav: (s: string) => void }) {
+function SettingsSection({ theme, textClass, setActiveNav }: { theme: Theme; textClass: string; setActiveNav: (s: string) => void }) {
   const [notifDisputes, setNotifDisputes] = useState(true);
   const [notifScore,    setNotifScore]    = useState(true);
   const [notifPayment,  setNotifPayment]  = useState(false);
   const [saved, setSaved] = useState(false);
 
-  const cardStyle: React.CSSProperties = {
-    background:   theme === 'dark' ? 'rgba(255,255,255,0.02)' : '#fff',
-    borderColor:  theme === 'dark' ? 'rgba(122,30,44,0.35)' : '#f0d8dd',
-  };
-  const tc = t.text;
+  const bg     = theme === 'dark' ? 'rgba(255,255,255,0.02)' : '#fff';
+  const border = theme === 'dark' ? 'rgba(122,30,44,0.35)'   : '#f0d8dd';
+  const tc = textClass;
 
   return (
     <div className="max-w-2xl mx-auto space-y-4">
@@ -453,7 +451,7 @@ function SettingsSection({ theme, t, setActiveNav }: { theme: Theme; t: typeof T
       </div>
 
       {/* Perfil */}
-      <SettingsBlock title="Perfil" cardStyle={cardStyle}>
+      <SettingsBlock title="Perfil" bg={bg} border={border}>
         <SettingsRow textClass={tc} label="Nombre" sub="Nombre completo en tu cuenta"
           right={<span className={`text-sm ${tc}`}>Elena Manchehi</span>} />
         <SettingsRow textClass={tc} label="Correo electrónico"
@@ -464,7 +462,7 @@ function SettingsSection({ theme, t, setActiveNav }: { theme: Theme; t: typeof T
       </SettingsBlock>
 
       {/* Notificaciones */}
-      <SettingsBlock title="Notificaciones" cardStyle={cardStyle}>
+      <SettingsBlock title="Notificaciones" bg={bg} border={border}>
         <SettingsRow textClass={tc} label="Actualizaciones de disputas" sub="Recibe un correo cuando cambia el estatus de una disputa"
           right={<Toggle on={notifDisputes} onChange={() => setNotifDisputes(v => !v)} />} />
         <SettingsRow textClass={tc} label="Cambio de puntaje" sub="Alerta cuando tu score sube o baja"
@@ -483,7 +481,7 @@ function SettingsSection({ theme, t, setActiveNav }: { theme: Theme; t: typeof T
       </SettingsBlock>
 
       {/* Seguridad */}
-      <SettingsBlock title="Seguridad" cardStyle={cardStyle}>
+      <SettingsBlock title="Seguridad" bg={bg} border={border}>
         <SettingsRow textClass={tc} label="Contraseña" sub="Última actualización hace más de 90 días"
           right={
             <button className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors hover:bg-white/5"
@@ -496,7 +494,7 @@ function SettingsSection({ theme, t, setActiveNav }: { theme: Theme; t: typeof T
       </SettingsBlock>
 
       {/* Plan y facturación */}
-      <SettingsBlock title="Plan y facturación" cardStyle={cardStyle}>
+      <SettingsBlock title="Plan y facturación" bg={bg} border={border}>
         <SettingsRow textClass={tc} label="Plan actual" right={
           <span className={`text-sm font-semibold ${tc}`}>Premium — $149/mes</span>
         } />
@@ -649,7 +647,7 @@ export default function DashboardPage() {
         {/* main content */}
         <main className="flex-1 overflow-auto p-4 sm:p-5 xl:p-6">
           {activeNav === 'settings' ? (
-            <SettingsSection theme={theme} t={t} setActiveNav={setActiveNav} />
+            <SettingsSection theme={theme} textClass={t.text} setActiveNav={setActiveNav} />
           ) : themeLoading ? (
             <div className="grid grid-cols-12 gap-4 max-w-screen-2xl mx-auto">
               {[5, 7, 7, 5, 6, 6, 12].map((span, i) => (
