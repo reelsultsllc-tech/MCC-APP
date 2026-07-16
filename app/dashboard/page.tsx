@@ -527,7 +527,6 @@ export default function DashboardPage() {
   const [searchVal, setSearchVal]       = useState('');
   const [showDemo,  setShowDemo]        = useState(false);
   const [paymentsOpen, setPaymentsOpen]       = useState(false);
-  const [aiInsightsOpen, setAiInsightsOpen]   = useState(false);
 
   const tier   = TIER_CONFIG[TIER_DATA.accountTier];
   const t = T[theme];
@@ -688,22 +687,7 @@ export default function DashboardPage() {
 
               {/* AI Insights */}
               <GlowCard theme={theme} className="order-4 lg:col-start-1 lg:row-start-2" delay={550} loaded={loaded}>
-                <button
-                  className="md:hidden w-full flex items-center gap-2.5 px-5 pt-5 pb-4 border-b"
-                  style={{ borderColor: 'rgba(74,8,32,0.35)' }}
-                  onClick={() => setAiInsightsOpen(o => !o)}
-                >
-                  <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{ background: 'rgba(171,28,66,0.12)' }}>
-                    <Sparkles size={15} color="#e04a6e" />
-                  </div>
-                  <span className={`text-sm font-semibold flex-1 text-left ${t.text}`}>IA Insights</span>
-                  <ChevronDown size={15} className="flex-shrink-0 transition-transform duration-200"
-                    style={{ color: 'rgba(249,208,216,0.4)', transform: aiInsightsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
-                </button>
-                <div className={aiInsightsOpen ? 'block md:block' : 'hidden md:block'}>
-                  <AIInsights theme={theme} />
-                </div>
+                <AIInsights theme={theme} />
               </GlowCard>
 
               {/* Protección de identidad — real source: MyFreeScoreNow */}

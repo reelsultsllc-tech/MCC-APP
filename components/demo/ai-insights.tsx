@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Sparkles, Clock, ChevronRight, ChevronDown, CheckCircle, X, CreditCard, CalendarCheck, Search } from 'lucide-react';
 
 type Theme = 'dark' | 'light';
@@ -46,6 +46,10 @@ export function AIInsights({ theme }: { theme: Theme }) {
   const [dismissed, setDismissed] = useState<number[]>([]);
   const [expanded,  setExpanded]  = useState<number | null>(1);
   const [listOpen,  setListOpen]  = useState(false);
+
+  useEffect(() => {
+    if (window.innerWidth >= 768) setListOpen(true);
+  }, []);
 
   const visible = INSIGHTS.filter(i => !dismissed.includes(i.id));
   const dark    = theme === 'dark';
